@@ -1,13 +1,16 @@
-from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-from fastapi_users.authentication import JWTStrategy
-
 from config import JWT_SECRET
-
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    CookieTransport,
+    JWTStrategy,
+)
 
 SECRET = JWT_SECRET
 
 
-cookie_transport = CookieTransport(cookie_name='tg_parsing', cookie_max_age=3600)
+cookie_transport = CookieTransport(
+    cookie_name="tg_parsing", cookie_max_age=3600, cookie_secure=False
+)
 
 
 def get_jwt_strategy() -> JWTStrategy:
@@ -15,7 +18,7 @@ def get_jwt_strategy() -> JWTStrategy:
 
 
 auth_backend = AuthenticationBackend(
-    name='jwt',
+    name="jwt",
     transport=cookie_transport,
     get_strategy=get_jwt_strategy,
 )
