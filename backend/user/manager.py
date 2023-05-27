@@ -3,7 +3,8 @@ from typing import Optional
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 
-from auth.dependencies import get_user_db
+from user.dependencies import get_user_db
+from user.schemas import UserCreate
 from database.models.user_model import User
 from settings import config
 
