@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from fastapi.middleware.cors import CORSMiddleware
 
-from auth.auth import auth_backend
-from auth.manager import get_user_manager
-from auth.schemas import UserRead, UserCreate
+from user.auth import auth_backend
+from user.manager import get_user_manager
+from user.schemas import UserRead, UserCreate
 from database.models.user_model import User
 
 
@@ -32,14 +32,14 @@ app.add_middleware(
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
-    prefix="/auth",
-    tags=["auth"],
+    prefix="/user",
+    tags=["user"],
 )
 
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
-    prefix="/auth",
-    tags=["auth"],
+    prefix="/user",
+    tags=["user"],
 )
 
 
