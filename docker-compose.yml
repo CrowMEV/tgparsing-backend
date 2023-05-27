@@ -1,5 +1,11 @@
 version: "3.9"
 
+volumes:
+  static_volume:
+
+networks:
+  backend_net:
+
 services:
   backend:
     build: ./backend
@@ -11,6 +17,8 @@ services:
       - .env
     ports:
       - 48656:8000
+    networks:
+      - backend_net
 
   postgresql:
     image: postgres:15-alpine
@@ -26,14 +34,33 @@ services:
       timeout: 5s
       retries: 5
       start_period: 3s
+    networks:
+      - backend_net
 
-  frontend:
-    build: ./tgparsing-front
+  nginx:
+    image: nginx:latest
     ports:
-      - 80:80
+      - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx:/etc/nginx/conf.d
+      - type: volume
+        source: static_volume
+        target: /var/www/staticfiles
+        volume:
+          nocopy: true
     depends_on:
       - backend
-      - postgresql
+    networks:
+      - backend_net
+
+
+#  frontend:
+#    build: ./tgparsing-front
+#    ports:
+#      - 80:80
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+#    depends_on:
+#      - backend
+#      - postgresql
 
