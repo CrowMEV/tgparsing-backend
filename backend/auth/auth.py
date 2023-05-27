@@ -1,11 +1,11 @@
-from config import JWT_SECRET
+from settings import config
 from fastapi_users.authentication import (
     AuthenticationBackend,
     CookieTransport,
     JWTStrategy,
 )
 
-SECRET = JWT_SECRET
+SECRET = config.JWT_SECRET
 
 
 cookie_transport = CookieTransport(
