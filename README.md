@@ -1,61 +1,42 @@
 # tgparsing-backend
 
-## Запуск
+## Клонирование и настройка проекта
 
-### Виртуальное окружение  
-
-Создайте виртуальное окружение:  
-```sh
-python -m venv venv
+### HTTPS
+```bash
+git clone https://github.com/CrowMEV/tgparsing-backend.git tgparsing
+cd tgparsing
+python3 -m venv venv
+source venv/bin/activate
 ```
-Активируйте виртуальное окружение  
-```sh
-venv/Scripts/activate
-```
-Затем установите зависимости  
 
-```sh
+### SSH
+```bash
+git clone git@github.com:CrowMEV/tgparsing-backend.git tgparsing
+cd tgparsing
+python3 -m venv venv
+source venv/bin/activate
+```
+
+## Локальный запуск сервера
+
+### Переход в директорию, установка пакетов и накат миграций
+**Для запуска сервера переменные окружения не нужны. Данные для базы данных можно взять из файла settings. До запуска миграций база данных должна быть уже создана**
+```bash
+cd backend
 pip install -r requirements.txt
+alembic upgrade head
 ```
 
-Переменные окружения
-Создайте файл .env с переменными окружения в корне проекта  
-Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` рядом в корне проекта и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`.  
+### Запуск сервера
 
-Доступны переменные:  
-- `DB_NAME` — название бд.  
-- `DB_USER_NAME` — имя администратора бд.  
-- `DB_PASSWORD` — пароль бд.  
-- `BD_HOST` — хост бд.  
-- `BD_PORT` — порт бд.  
-- `JWT_SECRET` — секретное слово для генерации jwt tokena.  
-- `MANAGER_SECRET` — секретное слово для генерации ключа по манипуляциям с паролем.  
-- `BASE_API_URL` — базовый url приложения  
+```bash
+./manage.py site run
+```
 
-
-### Бэкенд API
-
-Перейдите в директорию api:  
-```sh
-cd api/
-```  
-
-Запустите сервер uvicorn:  
-```sh
-uvicorn api_main:app --reload
-```  
-
-Без перехода в директорию api:  
-Запустите сервер uvicorn:  
-```sh
-uvicorn api.api_main:app --reload
-```  
-
-Посмотреть реализованные http запросы:  
-- перейдите по адресу `127.0.0.1:8000/docs` (dev)  
-- также можно использовать `127.0.0.1:8000/redoc` (dev)  
+Документация:  
+- [Swagger](http://0.0.0.0:8000/docs)  
+- [Redoc](http://127.0.0.1:8000/redoc)  
 
 #### Примечание  
 В качестве логина используется e-mail  
-Создание миграции на alembic: `alembic revision --message="<Название миграции>" --autogenerate`  
-Применение миграций на alembic: `alembic upgrade head`  

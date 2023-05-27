@@ -1,13 +1,14 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import declarative_base
 
 
 Base = declarative_base()
 
 
-class User(Base):
+class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = "users"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)

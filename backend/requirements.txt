@@ -1,8 +1,9 @@
-alembic==1.10.4
+alembic==1.11.1
 asyncpg==0.27.0
-fastapi==0.95.1
-fastapi-users==10.4.2
+fastapi==0.95.2
+fastapi-users==11.0.0
 fastapi-users-db-sqlalchemy==5.0.0
 psycopg2-binary==2.9.6
-SQLAlchemy==2.0.11
-uvicorn==0.21.1
+python-dotenv==1.0.0
+SQLAlchemy==2.0.15
+uvicorn==0.22.0

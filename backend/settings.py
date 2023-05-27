@@ -1,18 +1,39 @@
-import os
+from pydantic import BaseSettings, Field
 
-DB_NAME = os.getenv("DB_NAME")
-DB_USER_NAME = os.getenv("DB_USER_NAME")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
 
-JWT_SECRET = os.getenv("JWT_SECRET")
+class Config(BaseSettings):
 
-MANAGER_SECRET = os.getenv("MANAGER_SECRET")
+    class Config:
+        env_file = '.env'
+        env_file_encoding = 'utf-8'
 
-DB_URL = f"postgresql+asyncpg://{DB_USER_NAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-DB_URL_NO_ASYNC = f"postgresql+psycopg2://{DB_USER_NAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    # server
+    HOST: str = Field(default='0.0.0.0')
+    PORT: int = Field(default=8000)
+    DEBUG: bool = Field(default=True)
 
-BASE_API_URL = os.getenv("BASE_API_URL")
+    # db
+    DB_USER: str = Field(default='tg_db')
+    DB_PASSWORD: str = Field(default='tg_db')
+    DB_HOST: str = Field(default='localhost')
+    DB_PORT: int = Field(default=5432)
+    DB_NAME: str = Field(default='tg_db')
 
-UPLOADED_FILES_PATH = "media/"
+    # secrets
+    JWT_SECRET: str = Field(default='jwt_secret')
+    FASTAPI_SECRET: str = Field(default='fastapi_secret')
+
+    UPLOADED_FILES_PATH = "media/"
+
+    @property
+    def sync_url(self) -> str:
+        return f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}' \
+               f'@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+
+    @property
+    def async_url(self) -> str:
+        return f'postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}' \
+               f'@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+
+
+config = Config()
