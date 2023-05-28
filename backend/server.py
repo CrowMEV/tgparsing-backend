@@ -1,14 +1,14 @@
 from fastapi import FastAPI
-from fastapi_users import FastAPIUsers
 from fastapi.middleware.cors import CORSMiddleware
 
-from user.auth import auth_backend
-from user.manager import get_user_manager
+from user.utils.authentication import auth_backend
+from user.dependencies import get_user_manager
+from user.utils.fastapiusers import FastApiUsers
 from user.schemas import UserRead, UserCreate
 from database.models.user_model import User
 
 
-fastapi_users = FastAPIUsers[User, int](
+fastapi_users = FastApiUsers[User, int](
     get_user_manager,
     [auth_backend],
 )
@@ -41,11 +41,3 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
-
-
-# current_user = fastapi_users.current_user()
-#
-#
-# @app.get("/protected-route")
-# def protected_route(user: User = Depends(current_user)):
-#     return f"Hello, {user.firstname}"
