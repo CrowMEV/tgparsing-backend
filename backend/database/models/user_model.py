@@ -8,6 +8,14 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.String, nullable=False)
+    permissions = sa.Column(sa.JSON)
+
+
 class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = "users"
 
@@ -22,3 +30,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_active = sa.Column(sa.Boolean, default=True, nullable=False)
     is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
     is_verified = sa.Column(sa.Boolean, default=False, nullable=False)
+    role_id = sa.Column(sa.Integer, sa.ForeignKey(Role.id))

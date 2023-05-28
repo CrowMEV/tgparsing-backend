@@ -8,6 +8,7 @@ class UserRead(schemas.BaseUser):
     firstname: str
     lastname: str
     email: EmailStr
+    role_id: int
 
     class Config:
         orm_mode = True
@@ -18,6 +19,7 @@ class UserCreate(CreateUpdateDictModel):
     lastname: str
     email: EmailStr
     password: str
+    role_id: int
 
 
 class UserUpdate(schemas.BaseUserUpdate):
