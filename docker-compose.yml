@@ -1,6 +1,5 @@
 version: "3.9"
 
-
 services:
   backend:
     build: ./backend
@@ -10,15 +9,12 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - 48656:8000
-
 
   postgresql:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db_data:/var/lib/postgresql/data
@@ -29,23 +25,10 @@ services:
       retries: 5
       start_period: 3s
 
-
-  nginx:
-    image: nginx:stable-alpine
-    ports:
-      - "85:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    depends_on:
-      - backend
-
-
   frontend:
     build: ./tgparsing-front
     ports:
       - 80:80
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
     depends_on:
       - backend
       - postgresql
