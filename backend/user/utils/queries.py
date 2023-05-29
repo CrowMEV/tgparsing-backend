@@ -9,9 +9,6 @@ async def get_role_id(
         name: str,
         session: AsyncSession = Depends(get_async_session),
 ):
-    print('***********************')
-
-
     query = sa.select(Role.id).filter(Role.name == name)
     result = await session.execute(query)
     return result.all()
