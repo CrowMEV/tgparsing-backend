@@ -7,6 +7,8 @@ from user.utils.fastapiusers import FastApiUsers
 from user.schemas import UserRead, UserCreate
 from database.models.user_model import User
 
+from role.routes import router as router_role
+
 
 fastapi_users = FastApiUsers[User, int](
     get_user_manager,
@@ -41,3 +43,5 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
+
+app.include_router(router_role)

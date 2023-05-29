@@ -2,11 +2,12 @@ from typing import Optional
 
 from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
-from fastapi_users import exceptions, models
+from fastapi_users import exceptions, models, schemas
 
 from user.schemas import UserLogin
 from database.models.user_model import User
 from settings import config
+from user.utils.queries import get_role_id
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
@@ -60,6 +61,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         safe: bool = False,
         request: Optional[Request] = None,
     ) -> models.UP:
+        DEFAULT_ROLE_NAME = 'User'
         await self.validate_password(user_create.password, user_create)
 
         existing_user = await self.user_db.get_by_email(user_create.email)
@@ -73,7 +75,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         )
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self.password_helper.hash(password)
-        user_dict["role_id"] = 1
 
         created_user = await self.user_db.create(user_dict)
 
