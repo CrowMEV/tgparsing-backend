@@ -1,12 +1,12 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import os
 
 from database.models.user_model import User
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from user.dependencies import get_user_manager
-from user.schemas import UserRead, UserCreate
+from user.schemas import UserCreate, UserRead
 from user.utils.authentication import auth_backend
 from user.utils.fastapiusers import FastApiUsers
-
 
 fastapi_users = FastApiUsers[User, int](
     get_user_manager,
@@ -14,17 +14,16 @@ fastapi_users = FastApiUsers[User, int](
 )
 
 
-app = FastAPI(title='TgParsing')
+app = FastAPI(title="TgParsing")
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "*").strip().split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
