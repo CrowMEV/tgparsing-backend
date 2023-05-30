@@ -7,9 +7,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker
 )
+from sqlalchemy import insert
 
 from database.db_async import get_async_session
-from database.models.user_model import Base
+from database.models.user_model import Base, Role
 from server import app
 from settings import config
 
@@ -33,6 +34,9 @@ app.dependency_overrides[get_async_session] = test_async_session
 async def prepare_database():
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        stmt = insert(Role).values(name="User")
+        await conn.execute(stmt)
+        await conn.commit()
     yield
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

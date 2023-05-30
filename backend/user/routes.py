@@ -14,6 +14,8 @@ from user.schemas import UserLogin, UserRead, UserLogout
 from user.utils.authentication import AppAuthenticationBackend
 from user.utils.manager import UserManager
 
+from user import views
+
 
 def get_auth_router(
     backend: AppAuthenticationBackend,
@@ -109,4 +111,25 @@ def get_auth_router(
         response = await backend.logout(strategy, user, token)
         return response
 
+
     return router
+
+
+router = APIRouter(prefix="/roles", tags=["Role"])
+
+
+router.add_api_route(
+    path="/all", endpoint=views.get_roles, methods=["GET"],
+)
+router.add_api_route(
+    path="/", endpoint=views.get_role, methods=["GET"],
+)
+router.add_api_route(
+    path="/", endpoint=views.add_role, methods=["POST"],
+)
+router.add_api_route(
+    path="/", endpoint=views.update_role, methods=["PATCH"],
+)
+router.add_api_route(
+    path="/", endpoint=views.delete_role, methods=["DELETE"],
+)

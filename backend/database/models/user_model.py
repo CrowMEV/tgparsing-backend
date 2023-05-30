@@ -4,10 +4,16 @@ import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import declarative_base
 
-from database.models.role_model import Role
-
 
 Base = declarative_base()
+
+
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.String, nullable=False, unique=True)
+    permissions = sa.Column(sa.JSON)
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):

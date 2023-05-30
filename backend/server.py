@@ -7,7 +7,7 @@ from user.dependencies import get_user_manager
 from user.schemas import UserCreate, UserRead
 from user.utils.authentication import auth_backend
 from user.utils.fastapiusers import FastApiUsers
-from role.routes import router as router_role
+from user.routes import router as router_user
 
 
 fastapi_users = FastApiUsers[User, int](
@@ -43,4 +43,4 @@ app.include_router(
     tags=["user"],
 )
 
-app.include_router(router_role)
+app.include_router(router_user)
