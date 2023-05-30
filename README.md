@@ -34,6 +34,11 @@ alembic upgrade head
 ./manage.py site run
 ```
 
+### Запуск тестов
+```bash
+pytest
+```
+
 Документация:  
 - [Swagger](http://0.0.0.0:8000/docs)  
 - [Redoc](http://127.0.0.1:8000/redoc)  

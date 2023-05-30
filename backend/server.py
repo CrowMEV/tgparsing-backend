@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from user.utils.authentication import auth_backend
-from user.dependencies import get_user_manager
-from user.utils.fastapiusers import FastApiUsers
-from user.schemas import UserRead, UserCreate
 from database.models.user_model import User
+from user.dependencies import get_user_manager
+from user.schemas import UserRead, UserCreate
+from user.utils.authentication import auth_backend
+from user.utils.fastapiusers import FastApiUsers
 
 
 fastapi_users = FastApiUsers[User, int](
