@@ -1,5 +1,5 @@
 from fastapi_users.schemas import CreateUpdateDictModel
-from pydantic import EmailStr, BaseModel
+from pydantic import EmailStr, BaseModel, Field
 from fastapi_users import schemas
 
 
@@ -24,11 +24,16 @@ class UserRead(schemas.BaseUser):
 
 
 class UserCreate(CreateUpdateDictModel):
-    firstname: str
-    lastname: str
+    firstname: str = Field(..., min_length=1, regex='^[a-zA-Z]+$')
+    lastname: str = Field(..., min_length=1, regex='^[a-zA-Z]+$')
     email: EmailStr
-    password: str
     role_id: int
+    password: str = Field(
+        ...,
+        min_length=8,
+        regex=r'([0-9]+\S*[A-Z]+|[A-Z]+\S*[0-9]+)\S*'
+              '[!"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+'
+    )
 
 
 class UserUpdate(schemas.BaseUserUpdate):
