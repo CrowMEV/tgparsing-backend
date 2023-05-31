@@ -1,12 +1,8 @@
 import asyncio
 
 import pytest
+import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    create_async_engine,
-    async_sessionmaker
-)
 
 from database.db_async import get_async_session
 from database.models.user_model import Base
@@ -14,14 +10,14 @@ from server import app
 from settings import config
 
 
-engine_test = create_async_engine(config.test_async_url, echo=True)
+engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 
-async_test_session = async_sessionmaker(
-    engine_test, class_=AsyncSession, expire_on_commit=False
+async_test_session = sa_asyncio.async_sessionmaker(
+    engine_test, class_=sa_asyncio.AsyncSession, expire_on_commit=False
 )
 
 
-async def test_async_session() -> AsyncSession:
+async def test_async_session() -> sa_asyncio.AsyncSession:
     async with async_test_session() as session:
         yield session
 

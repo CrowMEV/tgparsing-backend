@@ -80,6 +80,55 @@ class TestUser:
 
         assert response.status_code == code
 
+    patch_data = [
+        # wrong firstname
+        (' ', 'Pupkin', '123', 422),
+        (' Igor', 'Pupkin', '123', 422),
+        ('&Igor', 'Pupkin', '123', 422),
+        ('1Igor', 'Pupkin', '123', 422),
+        ('Igor1', 'Pupkin', '123', 422),
+        ('Igor ', 'Pupkin', '123', 422),
+        ('Igor%', 'Pupkin', '123', 422),
+
+        # wrong lastname
+        ('Igor', ' ', '123', 422),
+        ('Igor', ' Pupkin', '123', 422),
+        ('Igor', '1Pupkin', '123', 422),
+        ('Igor', '%Pupkin', '123', 422),
+        ('Igor', 'Pupkin ', '123', 422),
+        ('Igor', 'Pupkin1', '123', 422),
+        ('Igor', 'Pupkin%', '123', 422),
+
+        # wrong password
+        ('Igor', 'Pupkin', '1michail#', 422),
+        ('Igor', 'Pupkin', 'Michail#', 422),
+        ('Igor', 'Pupkin', '1Michail', 422),
+        ('Igor', 'Pupkin', '1michail#', 422),
+
+        # correct data
+        ('Vasya', '', '', 200),
+        ('', 'Gordeev', '', 200),
+        ('', '', 'HEro2023#', 200),
+        ('Masha', 'Zacharova', 'sAlenow2023#', 200),
+    ]
+
+    @pytest.mark.parametrize('name,surname,password,code', patch_data)
+    async def test_user_patch(
+            self, async_client, name, surname, password, code
+    ):
+        params = {
+            "firstname": name,
+            "lastname": surname,
+            "password": password
+        }
+        params = {key: value for key, value in params.items() if value}
+        response = await async_client.patch(
+            f"{self.prefix}/patch",
+            data=params
+        )
+
+        assert response.status_code == code
+
     logout_data = [
         200,
         401,

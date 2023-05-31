@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseSettings, Field
 
 
@@ -30,7 +32,11 @@ class Config(BaseSettings):
     JWT_SECRET: str = Field(default='jwt_secret')
     FASTAPI_SECRET: str = Field(default='fastapi_secret')
 
-    UPLOADED_FILES_PATH = "media/"
+    # static
+    BASE_DIR = os.path.dirname(__file__)
+    STATIC_DIR = "static"
+    AVATARS_FOLDER = "users_avatars"
+    BASE_AVATAR_NAME = "base_avatar.png"
 
     @property
     def sync_url(self) -> str:
