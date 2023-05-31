@@ -2,7 +2,6 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from database.models.user_model import User
 from settings import config
@@ -21,11 +20,6 @@ MEDIA_DIR = os.path.join(config.BASE_DIR, config.STATIC_DIR)
 
 
 app = FastAPI(title="TgParsing")
-app.mount(
-    '/static',
-    StaticFiles(directory=MEDIA_DIR),
-    name='static'
-)
 
 origins = [
     "http://localhost",

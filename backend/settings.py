@@ -33,10 +33,19 @@ class Config(BaseSettings):
     FASTAPI_SECRET: str = Field(default='fastapi_secret')
 
     # static
-    BASE_DIR = os.path.dirname(__file__)
+    BASE_DIR: str = os.getcwd()
     STATIC_DIR = "static"
     AVATARS_FOLDER = "users_avatars"
     BASE_AVATAR_NAME = "base_avatar.png"
+
+    @property
+    def base_avatar_url(self) -> str:
+        return os.path.join(
+            self.BASE_DIR,
+            self.STATIC_DIR,
+            self.AVATARS_FOLDER,
+            self.BASE_AVATAR_NAME
+        )
 
     @property
     def sync_url(self) -> str:
@@ -49,7 +58,7 @@ class Config(BaseSettings):
                f'@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
 
     @property
-    def test_async_url(self):
+    def test_async_url(self) -> str:
         return f'postgresql+asyncpg://' \
                f'{self.TEST_DB_USER}:{self.TEST_DB_PASSWORD}' \
                f'@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}'

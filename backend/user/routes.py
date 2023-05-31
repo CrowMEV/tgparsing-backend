@@ -1,4 +1,5 @@
-import os.path
+import glob
+import os
 from typing import Tuple, Optional
 
 import aiofiles
@@ -127,7 +128,7 @@ def get_users_router(
 
     @router.patch(
         "/patch",
-        # response_model=UserRead,
+        response_model=UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
         name="Patch current user",
         responses={
@@ -139,18 +140,18 @@ def get_users_router(
     async def user_update(
         request: fa.Request,
         firstname: Optional[str] = fa.Form(
-            None, min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
+            '', min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
         ),
         lastname: Optional[str] = fa.Form(
-            None, min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
+            '', min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
         ),
         password: Optional[str] = fa.Form(
-            None,
+            '',
             min_length=8,
             regex=r'([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*'
                   r'[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+'
         ),
-        picture: Optional[fa.UploadFile] = fa.Form(None),
+        picture: Optional[fa.UploadFile] = fa.Form(''),
         current_user: models.UP = fa.Depends(get_current_active_user),
         user_manager: UserManager = fa.Depends(get_user_manager),
     ):
@@ -159,28 +160,23 @@ def get_users_router(
             "lastname": lastname,
             "password": password,
         }
-        patch_model = UserPatch(
-            **data
-        )
+        if picture:
+            folder_path = os.path.join(
+                config.BASE_DIR, config.STATIC_DIR, config.AVATARS_FOLDER
+            )
+            file_name = f"{current_user.email}" \
+                        f".{picture.filename.split('.')[-1]}"
+            file_url = os.path.join(folder_path, file_name)
+            async with aiofiles.open(file_url, 'wb') as p_f:
+                await p_f.write(picture.file.read())
+            data['avatar_url'] = file_url
+
+        patch_model = UserPatch(**data)
         try:
-            user_data = await user_manager.update(
+            user = await user_manager.update(
                 patch_model, current_user, safe=True, request=request
             )
-            if picture:
-                new_name = f"{current_user.email}.{picture.filename.split('.')[-1]}"
-                folder_path = os.path.join(
-                    config.BASE_DIR, config.STATIC_DIR, config.AVATARS_FOLDER
-                )
-                async with aiofiles.open(
-                    os.path.join(folder_path, new_name), 'wb'
-                ) as p_f:
-                    await p_f.write(picture.file.read())
-            else:
-                new_name = config.BASE_AVATAR_NAME
-            return JSONResponse(
-                status_code=fa.status.HTTP_200_OK,
-                content={'filename': new_name},
-            )
+            return user.__dict__
         except exceptions.InvalidPasswordException as e:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_400_BAD_REQUEST,

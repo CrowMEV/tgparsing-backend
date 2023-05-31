@@ -20,6 +20,7 @@ class UserRead(schemas.BaseUser):
     firstname: str
     lastname: str
     email: EmailStr
+    avatar_url: str
 
     class Config:
         orm_mode = True
@@ -38,10 +39,10 @@ class UserCreate(CreateUpdateDictModel):
 
 
 class UserPatch(CreateUpdateDictModel):
-    firstname: Optional[str] = Field(None)
-    lastname: Optional[str] = Field(None)
-    password: Optional[str] = Field(None)
-    picture: Optional[UploadFile] = Field(None)
+    firstname: Optional[str] = Field('')
+    lastname: Optional[str] = Field('')
+    password: Optional[str] = Field('')
+    avatar_url: Optional[str] = Field('')
 
 
 class UserUpdate(schemas.BaseUserUpdate):
