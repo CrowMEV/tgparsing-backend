@@ -4,6 +4,7 @@ from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 from fastapi_users import exceptions, models
 
+from user import schemas
 from user.schemas import UserLogin
 from database.models.user_model import User
 from settings import config
@@ -53,3 +54,25 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
             })
 
         return user
+
+    async def update(
+        self,
+        user_update: schemas.UP,
+        user: models.UP,
+        safe: bool = False,
+        request: Optional[Request] = None,
+    ) -> models.UP:
+        """
+        Update a user.
+        Triggers the on_after_update handler on success
+        """
+        if safe:
+            updated_user_data = user_update.create_update_dict()
+            updated_user_data = {
+                key: value for key, value in updated_user_data.items() if value
+            }
+        else:
+            updated_user_data = user_update.create_update_dict_superuser()
+        updated_user = await self._update(user, updated_user_data)
+        await self.on_after_update(updated_user, updated_user_data, request)
+        return updated_user
