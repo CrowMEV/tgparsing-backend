@@ -14,6 +14,8 @@ from user.schemas import UserLogin, UserRead, SuccessResponse, UserPatch
 from user.utils.authentication import AppAuthenticationBackend
 from user.utils.manager import UserManager
 
+from user import views
+
 
 def get_auth_router(
     backend: AppAuthenticationBackend,
@@ -44,9 +46,7 @@ def get_auth_router(
                         },
                         ErrorCode.LOGIN_USER_NOT_VERIFIED: {
                             "summary": "The user is not verified.",
-                            "value": {
-                                "detail": ErrorCode.LOGIN_USER_NOT_VERIFIED
-                            },
+                            "value": {"detail": ErrorCode.LOGIN_USER_NOT_VERIFIED},
                         },
                     }
                 }
@@ -65,9 +65,7 @@ def get_auth_router(
         request: fa.Request,
         credentials: UserLogin = fa.Body(),
         user_manager: UserManager = fa.Depends(get_user_manager),
-        strategy: Strategy[models.UP, models.ID] = fa.Depends(
-            backend.get_strategy
-        ),
+        strategy: Strategy[models.UP, models.ID] = fa.Depends(backend.get_strategy),
     ):
         user = await user_manager.authenticate(credentials)
 
@@ -192,3 +190,33 @@ def get_users_router(
             )
 
     return router
+
+
+router = fa.APIRouter(prefix="/roles", tags=["Role"])
+
+
+router.add_api_route(
+    path="/all",
+    endpoint=views.get_roles,
+    methods=["GET"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.get_role,
+    methods=["GET"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.add_role,
+    methods=["POST"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.update_role,
+    methods=["PATCH"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.delete_role,
+    methods=["DELETE"],
+)
