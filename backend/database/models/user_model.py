@@ -24,3 +24,14 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_active = sa.Column(sa.Boolean, default=True, nullable=False)
     is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
     is_verified = sa.Column(sa.Boolean, default=False, nullable=False)
+
+
+class UserCharge(Base):
+    __tablename__ = "user_charge"
+
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    user = sa.Column(sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    action = sa.Column(sa.Enum('debit', 'credit', name='user_action'), nullable=False)
+    # source = sa.Column(sa.Integer, sa.ForeignKey('sources.id'))
+    amount = sa.Column(sa.Integer, nullable=False)
+    date = sa.Column(sa.TIMESTAMP, default=datetime.utcnow())
