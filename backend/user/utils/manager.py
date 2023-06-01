@@ -15,7 +15,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     verification_token_secret = config.FASTAPI_SECRET
 
     async def on_after_register(
-            self, user: User, request: Optional[Request] = None
+        self, user: User, request: Optional[Request] = None
     ):
         print(f"User {user.id} has registered.")
 
@@ -42,16 +42,19 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
             self.password_helper.hash(credentials.password)
             return None
 
-        verified, updated_password_hash = self.password_helper.verify_and_update(
+        (
+            verified,
+            updated_password_hash,
+        ) = self.password_helper.verify_and_update(
             credentials.password, user.hashed_password
         )
         if not verified:
             return None
         # Update password hash to a more robust one if needed
         if updated_password_hash is not None:
-            await self.user_db.update(user, {
-                "hashed_password": updated_password_hash
-            })
+            await self.user_db.update(
+                user, {"hashed_password": updated_password_hash}
+            )
 
         return user
 

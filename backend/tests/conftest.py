@@ -25,7 +25,7 @@ async def test_async_session() -> sa_asyncio.AsyncSession:
 app.dependency_overrides[get_async_session] = test_async_session
 
 
-@pytest.fixture(autouse=True, scope='class')
+@pytest.fixture(autouse=True, scope="class")
 async def prepare_database():
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -42,7 +42,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope="session")
 async def async_client():
-    async with AsyncClient(app=app, base_url='http://test') as client:
+    async with AsyncClient(app=app, base_url="http://test") as client:
         yield client

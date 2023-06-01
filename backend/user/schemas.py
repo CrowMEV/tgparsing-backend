@@ -27,22 +27,22 @@ class UserRead(schemas.BaseUser):
 
 
 class UserCreate(CreateUpdateDictModel):
-    firstname: str = Field(..., min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$')
-    lastname: str = Field(..., min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$')
+    firstname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
+    lastname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
     email: EmailStr
     password: str = Field(
         ...,
         min_length=8,
-        regex=r'([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*'
-              r'[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+'
+        regex=r"([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*"
+        r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
     )
 
 
 class UserPatch(CreateUpdateDictModel):
-    firstname: Optional[str] = Field('')
-    lastname: Optional[str] = Field('')
-    password: Optional[str] = Field('')
-    avatar_url: Optional[str] = Field('')
+    firstname: Optional[str] = Field("")
+    lastname: Optional[str] = Field("")
+    password: Optional[str] = Field("")
+    avatar_url: Optional[str] = Field("")
 
 
 class UserUpdate(schemas.BaseUserUpdate):
