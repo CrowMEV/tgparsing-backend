@@ -15,12 +15,11 @@ async def get_roles(
     query = sa.select(Role.name, Role.permissions)
     result = await session.execute(query)
     data = [
-        {"name": name, "permissions": permissions}
-        for name, permissions in result.all()
+        {"name": name, "permissions": permissions} for name, permissions in result.all()
     ]
     return {
-            "detail": "Success",
-            "data": data,
+        "detail": "Success",
+        "data": data,
     }
 
 
@@ -28,15 +27,13 @@ async def get_role(
     role_id: int = Query(..., ge=1),
     session: AsyncSession = Depends(get_async_session),
 ):
-    query = sa.select(Role.name, Role.permissions).filter(
-        Role.id == role_id
-    )
+    query = sa.select(Role.name, Role.permissions).filter(Role.id == role_id)
     result = await session.execute(query)
     result = result.fetchone()
     if not result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Role with id={role_id} does not exist"
+            detail=f"Role with id={role_id} does not exist",
         )
     name, permissions = result
     data = {
@@ -60,7 +57,7 @@ async def add_role(
     if existing_role.scalar():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Role with name \'{data['name']}\' already exists"
+            detail=f"Role with name '{data['name']}' already exists",
         )
     stmt = sa.insert(Role).values(data)
 
@@ -91,15 +88,13 @@ async def delete_role(
     role_id: int = Query(..., ge=1),
     session: AsyncSession = Depends(get_async_session),
 ):
-    query = sa.select(Role).filter(
-        Role.id == role_id
-    )
+    query = sa.select(Role).filter(Role.id == role_id)
     role = await session.execute(query)
     role = role.fetchone()
     if not role:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Role with id={role_id} does not exist"
+            detail=f"Role with id={role_id} does not exist",
         )
     await session.delete(role[0])
     await session.commit()
@@ -107,4 +102,3 @@ async def delete_role(
         "detail": "Success",
         "msg": "Role successfully deleted",
     }
-

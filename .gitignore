@@ -162,3 +162,7 @@ cython_debug/
 tgparsing-front/
 db_data/
 requirements-old.txt
+
+# media files
+backend/static/users_avatars/*
+!base_avatar.png

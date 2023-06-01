@@ -1,19 +1,23 @@
 import os
 
-from database.models.user_model import User
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from database.models.user_model import User
+from settings import config
 from user.dependencies import get_user_manager
 from user.schemas import UserCreate, UserRead
 from user.utils.authentication import auth_backend
 from user.utils.fastapiusers import FastApiUsers
-from user.routes import router as router_user
+from user.routes import router as router_role
 
 
 fastapi_users = FastApiUsers[User, int](
     get_user_manager,
     [auth_backend],
 )
+
+MEDIA_DIR = os.path.join(config.BASE_DIR, config.STATIC_DIR)
 
 
 app = FastAPI(title="TgParsing")
@@ -36,11 +40,14 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
-
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/user",
     tags=["user"],
 )
-
-app.include_router(router_user)
+app.include_router(
+    fastapi_users.get_users_router(UserRead),
+    prefix="/user",
+    tags=["user"],
+)
+app.include_router(router_role)

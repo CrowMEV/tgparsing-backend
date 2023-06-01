@@ -1,12 +1,8 @@
 import asyncio
 
 import pytest
+import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    create_async_engine,
-    async_sessionmaker
-)
 from sqlalchemy import insert
 
 from database.db_async import get_async_session
@@ -15,14 +11,14 @@ from server import app
 from settings import config
 
 
-engine_test = create_async_engine(config.test_async_url, echo=True)
+engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 
-async_test_session = async_sessionmaker(
-    engine_test, class_=AsyncSession, expire_on_commit=False
+async_test_session = sa_asyncio.async_sessionmaker(
+    engine_test, class_=sa_asyncio.AsyncSession, expire_on_commit=False
 )
 
 
-async def test_async_session() -> AsyncSession:
+async def test_async_session() -> sa_asyncio.AsyncSession:
     async with async_test_session() as session:
         yield session
 
@@ -30,7 +26,7 @@ async def test_async_session() -> AsyncSession:
 app.dependency_overrides[get_async_session] = test_async_session
 
 
-@pytest.fixture(autouse=True, scope='class')
+@pytest.fixture(autouse=True, scope="class")
 async def prepare_database():
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -50,7 +46,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope="session")
 async def async_client():
-    async with AsyncClient(app=app, base_url='http://test') as client:
+    async with AsyncClient(app=app, base_url="http://test") as client:
         yield client

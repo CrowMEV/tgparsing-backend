@@ -1,13 +1,8 @@
 from fastapi import Response, status
 from fastapi_users import models
 from fastapi_users.authentication import AuthenticationBackend
-from fastapi_users.authentication.transport import (
-    TransportLogoutNotSupportedError
-)
-from fastapi_users.authentication.strategy import (
-    Strategy,
-    StrategyDestroyNotSupportedError
-)
+import fastapi_users.authentication.transport as fu_tr
+import fastapi_users.authentication.strategy as fu_str
 
 from user.schemas import UserRead
 from user.utils.cookie_transport import cookie_transport, AppCookieTransport
@@ -19,23 +14,23 @@ class AppAuthenticationBackend(AuthenticationBackend):
     transport: AppCookieTransport
 
     async def login(
-        self, strategy: Strategy[models.UP, models.ID], user: models.UP
+        self, strategy: fu_str.Strategy[models.UP, models.ID], user: models.UP
     ) -> Response:
         token = await strategy.write_token(user)
         user = UserRead(**user.__dict__).__dict__
         return await self.transport.get_login_response(token, user)
 
     async def logout(
-        self, strategy: Strategy[models.UP, models.ID], user: models.UP, token: str
+        self, strategy: fu_str.Strategy[models.UP, models.ID], user: models.UP, token: str
     ) -> Response:
         try:
             await strategy.destroy_token(token, user)
-        except StrategyDestroyNotSupportedError:
+        except fu_str.StrategyDestroyNotSupportedError:
             pass
 
         try:
             response = await self.transport.get_logout_response()
-        except TransportLogoutNotSupportedError:
+        except fu_tr.TransportLogoutNotSupportedError:
             response = Response(status_code=status.HTTP_204_NO_CONTENT)
 
         return response
