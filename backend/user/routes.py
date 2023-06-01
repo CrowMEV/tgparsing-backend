@@ -1,4 +1,3 @@
-import glob
 import os
 from typing import Tuple, Optional
 
@@ -39,8 +38,11 @@ def get_auth_router(
                 "application/json": {
                     "examples": {
                         ErrorCode.LOGIN_BAD_CREDENTIALS: {
-                            "summary": "Bad credentials or " "the user is inactive.",
-                            "value": {"detail": ErrorCode.LOGIN_BAD_CREDENTIALS},
+                            "summary": "Bad credentials or "
+                            "the user is inactive.",
+                            "value": {
+                                "detail": ErrorCode.LOGIN_BAD_CREDENTIALS
+                            },
                         },
                         ErrorCode.LOGIN_USER_NOT_VERIFIED: {
                             "summary": "The user is not verified.",
@@ -54,7 +56,10 @@ def get_auth_router(
     }
 
     @router.post(
-        "/login", name="User login", responses=login_responses, response_model=UserRead
+        "/login",
+        name=config.USER_LOGIN,
+        responses=login_responses,
+        response_model=UserRead,
     )
     async def login(
         request: fa.Request,
@@ -89,13 +94,15 @@ def get_auth_router(
 
     @router.post(
         "/logout",
-        name="User logout",
+        name=config.USER_LOGOUT,
         responses=logout_responses,
         response_model=SuccessResponse,
     )
     async def logout(
         user_token: Tuple[models.UP, str] = fa.Depends(get_current_user_token),
-        strategy: Strategy[models.UP, models.ID] = fa.Depends(backend.get_strategy),
+        strategy: Strategy[models.UP, models.ID] = fa.Depends(
+            backend.get_strategy
+        ),
     ):
         user, token = user_token
         response = await backend.logout(strategy, user, token)
@@ -118,9 +125,9 @@ def get_users_router(
 
     @router.patch(
         "/patch",
+        name=config.USER_PATCH,
         response_model=UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
-        name="Patch current user",
         responses={
             fa.status.HTTP_401_UNAUTHORIZED: {
                 "description": "Missing token or inactive user.",
@@ -154,7 +161,9 @@ def get_users_router(
             folder_path = os.path.join(
                 config.BASE_DIR, config.STATIC_DIR, config.AVATARS_FOLDER
             )
-            file_name = f"{current_user.email}" f".{picture.filename.split('.')[-1]}"
+            file_name = (
+                f"{current_user.email}" f".{picture.filename.split('.')[-1]}"
+            )
             file_url = os.path.join(folder_path, file_name)
             async with aiofiles.open(file_url, "wb") as p_f:
                 await p_f.write(picture.file.read())

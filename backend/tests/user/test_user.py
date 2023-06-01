@@ -1,8 +1,16 @@
 import pytest
 
+from server import app
+from settings import config
+
 
 class TestUser:
-    prefix: str = "/user"
+    # TODO: После переопределения роута регистрации раскомментировать строку
+    #       ниже и изменить роут в тесте регистрации
+    # register_url: str = app.url_path_for(config.USER_REGISTER)
+    login_url: str = app.url_path_for(config.USER_LOGIN)
+    logout_url: str = app.url_path_for(config.USER_LOGOUT)
+    patch_url: str = app.url_path_for(config.USER_PATCH)
 
     register_data = [
         # wrong email
@@ -44,7 +52,7 @@ class TestUser:
         self, async_client, email, name, surname, password, code
     ):
         response = await async_client.post(
-            f"{self.prefix}/register",
+            "/user/register",
             json={
                 "email": email,
                 "firstname": name,
@@ -66,7 +74,7 @@ class TestUser:
     @pytest.mark.parametrize("email,password,code", login_data)
     async def test_user_login(self, async_client, email, password, code):
         response = await async_client.post(
-            f"{self.prefix}/login", json={"email": email, "password": password}
+            self.login_url, json={"email": email, "password": password}
         )
 
         assert response.status_code == code
@@ -101,10 +109,12 @@ class TestUser:
     ]
 
     @pytest.mark.parametrize("name,surname,password,code", patch_data)
-    async def test_user_patch(self, async_client, name, surname, password, code):
+    async def test_user_patch(
+        self, async_client, name, surname, password, code
+    ):
         params = {"firstname": name, "lastname": surname, "password": password}
         params = {key: value for key, value in params.items() if value}
-        response = await async_client.patch(f"{self.prefix}/patch", data=params)
+        response = await async_client.patch(self.patch_url, data=params)
 
         assert response.status_code == code
 
@@ -116,7 +126,7 @@ class TestUser:
     @pytest.mark.parametrize("code", logout_data)
     async def test_user_logout(self, async_client, code):
         response = await async_client.post(
-            f"{self.prefix}/logout",
+            self.logout_url,
         )
 
         assert response.status_code == code
