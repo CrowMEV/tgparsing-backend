@@ -10,5 +10,5 @@ Base = declarative_base()
 class Role(Base):
     __tablename__ = "roles"
 
-    name = sa.Column(sa.Enum(RolesChoice), primary_key=True, unique=True)
+    name = sa.Column(sa.Enum(RolesChoice), primary_key=True)
     permissions = sa.Column(sa.JSON)
