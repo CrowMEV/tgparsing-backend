@@ -22,9 +22,13 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
+        print(
+            f"User {user.id} has forgot their password. Reset token: {token}"
+        )
 
-    async def authenticate(self, credentials: UserLogin) -> Optional[models.UP]:
+    async def authenticate(
+        self, credentials: UserLogin
+    ) -> Optional[models.UP]:
         """
         Authenticate and return a user following an email and a password.
         Will automatically upgrade password hash if necessary.

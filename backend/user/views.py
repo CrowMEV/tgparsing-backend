@@ -15,7 +15,8 @@ async def get_roles(
     query = sa.select(Role.name, Role.permissions)
     result = await session.execute(query)
     data = [
-        {"name": name, "permissions": permissions} for name, permissions in result.all()
+        {"name": name, "permissions": permissions}
+        for name, permissions in result.all()
     ]
     return {
         "detail": "Success",

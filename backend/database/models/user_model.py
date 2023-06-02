@@ -24,7 +24,9 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     firstname = sa.Column(sa.String, nullable=False)
     lastname = sa.Column(sa.String, nullable=False)
     created_at = sa.Column(sa.TIMESTAMP, default=datetime.utcnow())
-    email = sa.Column(sa.String(length=320), unique=True, index=True, nullable=False)
+    email = sa.Column(
+        sa.String(length=320), unique=True, index=True, nullable=False
+    )
     hashed_password = sa.Column(sa.String(length=1024), nullable=False)
     avatar_url = sa.Column(sa.String, default=config.base_avatar_url)
     is_active = sa.Column(sa.Boolean, default=True, nullable=False)
