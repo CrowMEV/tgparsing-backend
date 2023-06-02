@@ -10,7 +10,6 @@ from user.schemas import UserCreate, UserRead
 from user.utils.authentication import auth_backend
 from user.utils.fastapiusers import FastApiUsers
 from accounts.routes import router as router_account
-from user.routes import router as router_role
 
 
 fastapi_users = FastApiUsers[User, int](
@@ -51,5 +50,4 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
-app.include_router(router_role)
 app.include_router(router_account)
