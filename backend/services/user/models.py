@@ -2,14 +2,14 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy.orm import declarative_base, relationship
-
 from services.role.models import Role
 from services.role.schemas import RolesChoice
 from settings import config
+from sqlalchemy.orm import declarative_base, relationship
 
 
 Base = declarative_base()
+
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
