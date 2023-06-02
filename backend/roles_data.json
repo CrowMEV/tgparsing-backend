@@ -1,0 +1,9 @@
+{
+  "user": {
+    "read": "False"
+  },
+  "accountant": {
+    "read": "True"
+  },
+  "admin": {}
+}

@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy import insert
 
 from database.db_async import get_async_session
-from database.models.user_model import Base, Role
+from services.user.models import Base, Role
 from server import app
 from settings import config
 

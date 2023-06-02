@@ -3,13 +3,13 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database.models.user_model import User
+from services.user.models import User
 from settings import config
-from user.dependencies import get_user_manager
-from user.schemas import UserCreate, UserRead
-from user.utils.authentication import auth_backend
-from user.utils.fastapiusers import FastApiUsers
-from user.routes import router as router_role
+from services.user.dependencies import get_user_manager
+from services.user.schemas import UserCreate, UserRead
+from services.user.utils.authentication import auth_backend
+from services.user.utils.fastapiusers import FastApiUsers
+from services.role.routes import role_routes
 
 
 fastapi_users = FastApiUsers[User, int](
@@ -36,7 +36,9 @@ app.add_middleware(
 )
 
 app.include_router(
-    fastapi_users.get_auth_router(auth_backend),
+    fastapi_users.get_auth_router(
+        auth_backend, requires_verification=config.IS_VERIFIED
+    ),
     prefix="/user",
     tags=["user"],
 )
@@ -50,4 +52,4 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
-app.include_router(router_role)
+app.include_router(role_routes)

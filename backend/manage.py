@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import click
 
+from database.cli import db_group
 from settings import config
 
 
@@ -40,6 +41,7 @@ def run(host: str = None, port: int = None, log_level: str = None):
 
 
 main_group.add_command(site_group)
+main_group.add_command(db_group)
 
 
 if __name__ == "__main__":

@@ -3,10 +3,11 @@ from fastapi import Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
-from database.models.user_model import Role
-from user.schemas import RoleCreate, RoleUpdate
+from services.user.models import Role
 from starlette import status
 from fastapi.responses import JSONResponse
+
+from services.role.schemas import RoleCreate, RoleUpdate
 
 
 async def get_roles(
@@ -15,7 +16,8 @@ async def get_roles(
     query = sa.select(Role.name, Role.permissions)
     result = await session.execute(query)
     data = [
-        {"name": name, "permissions": permissions} for name, permissions in result.all()
+        {"name": name, "permissions": permissions}
+        for name, permissions in result.all()
     ]
     return {
         "detail": "Success",
