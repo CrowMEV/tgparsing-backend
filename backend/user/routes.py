@@ -1,10 +1,8 @@
-import glob
 import os
 from typing import Tuple, Optional
 
 import aiofiles
 import fastapi as fa
-from fastapi.responses import JSONResponse
 from fastapi_users import models, exceptions
 from fastapi_users.authentication import Authenticator, Strategy
 from fastapi_users.manager import UserManagerDependency
@@ -15,6 +13,8 @@ from settings import config
 from user.schemas import UserLogin, UserRead, SuccessResponse, UserPatch
 from user.utils.authentication import AppAuthenticationBackend
 from user.utils.manager import UserManager
+
+from user import views
 
 
 def get_auth_router(
@@ -39,16 +39,14 @@ def get_auth_router(
                     "examples": {
                         ErrorCode.LOGIN_BAD_CREDENTIALS: {
                             "summary": "Bad credentials or "
-                                       "the user is inactive.",
+                            "the user is inactive.",
                             "value": {
                                 "detail": ErrorCode.LOGIN_BAD_CREDENTIALS
                             },
                         },
                         ErrorCode.LOGIN_USER_NOT_VERIFIED: {
                             "summary": "The user is not verified.",
-                            "value": {
-                                "detail": ErrorCode.LOGIN_USER_NOT_VERIFIED
-                            },
+                            "value": {"detail": ErrorCode.LOGIN_USER_NOT_VERIFIED},
                         },
                     }
                 }
@@ -59,17 +57,15 @@ def get_auth_router(
 
     @router.post(
         "/login",
-        name="User login",
+        name=config.USER_LOGIN,
         responses=login_responses,
-        response_model=UserRead
+        response_model=UserRead,
     )
     async def login(
         request: fa.Request,
         credentials: UserLogin = fa.Body(),
         user_manager: UserManager = fa.Depends(get_user_manager),
-        strategy: Strategy[models.UP, models.ID] = fa.Depends(
-            backend.get_strategy
-        ),
+        strategy: Strategy[models.UP, models.ID] = fa.Depends(backend.get_strategy),
     ):
         user = await user_manager.authenticate(credentials)
 
@@ -97,15 +93,16 @@ def get_auth_router(
     }
 
     @router.post(
-        "/logout", name="User logout",
+        "/logout",
+        name=config.USER_LOGOUT,
         responses=logout_responses,
-        response_model=SuccessResponse
+        response_model=SuccessResponse,
     )
     async def logout(
         user_token: Tuple[models.UP, str] = fa.Depends(get_current_user_token),
         strategy: Strategy[models.UP, models.ID] = fa.Depends(
             backend.get_strategy
-        )
+        ),
     ):
         user, token = user_token
         response = await backend.logout(strategy, user, token)
@@ -128,9 +125,9 @@ def get_users_router(
 
     @router.patch(
         "/patch",
+        name=config.USER_PATCH,
         response_model=UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
-        name="Patch current user",
         responses={
             fa.status.HTTP_401_UNAUTHORIZED: {
                 "description": "Missing token or inactive user.",
@@ -140,18 +137,18 @@ def get_users_router(
     async def user_update(
         request: fa.Request,
         firstname: Optional[str] = fa.Form(
-            '', min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
+            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
         ),
         lastname: Optional[str] = fa.Form(
-            '', min_length=1, regex='^[a-zA-Zа-яА-яёЁ]+$'
+            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
         ),
         password: Optional[str] = fa.Form(
-            '',
+            "",
             min_length=8,
-            regex=r'([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*'
-                  r'[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+'
+            regex=r"([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*"
+            r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
         ),
-        picture: Optional[fa.UploadFile] = fa.Form(''),
+        picture: Optional[fa.UploadFile] = fa.Form(""),
         current_user: models.UP = fa.Depends(get_current_active_user),
         user_manager: UserManager = fa.Depends(get_user_manager),
     ):
@@ -164,12 +161,13 @@ def get_users_router(
             folder_path = os.path.join(
                 config.BASE_DIR, config.STATIC_DIR, config.AVATARS_FOLDER
             )
-            file_name = f"{current_user.email}" \
-                        f".{picture.filename.split('.')[-1]}"
+            file_name = (
+                f"{current_user.email}" f".{picture.filename.split('.')[-1]}"
+            )
             file_url = os.path.join(folder_path, file_name)
-            async with aiofiles.open(file_url, 'wb') as p_f:
+            async with aiofiles.open(file_url, "wb") as p_f:
                 await p_f.write(picture.file.read())
-            data['avatar_url'] = file_url
+            data["avatar_url"] = file_url
 
         patch_model = UserPatch(**data)
         try:
@@ -192,3 +190,33 @@ def get_users_router(
             )
 
     return router
+
+
+router = fa.APIRouter(prefix="/roles", tags=["Role"])
+
+
+router.add_api_route(
+    path="/all",
+    endpoint=views.get_roles,
+    methods=["GET"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.get_role,
+    methods=["GET"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.add_role,
+    methods=["POST"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.update_role,
+    methods=["PATCH"],
+)
+router.add_api_route(
+    path="/",
+    endpoint=views.delete_role,
+    methods=["DELETE"],
+)

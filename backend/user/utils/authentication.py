@@ -10,7 +10,6 @@ from user.utils.strategy import get_jwt_strategy
 
 
 class AppAuthenticationBackend(AuthenticationBackend):
-
     transport: AppCookieTransport
 
     async def login(
@@ -21,7 +20,10 @@ class AppAuthenticationBackend(AuthenticationBackend):
         return await self.transport.get_login_response(token, user)
 
     async def logout(
-        self, strategy: fu_str.Strategy[models.UP, models.ID], user: models.UP, token: str
+        self,
+        strategy: fu_str.Strategy[models.UP, models.ID],
+        user: models.UP,
+        token: str,
     ) -> Response:
         try:
             await strategy.destroy_token(token, user)

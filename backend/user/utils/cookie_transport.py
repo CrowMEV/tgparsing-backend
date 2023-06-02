@@ -4,7 +4,9 @@ from fastapi_users.authentication import CookieTransport
 
 
 class AppCookieTransport(CookieTransport):
-    async def get_login_response(self, token: str, data: dict = {}) -> Response:
+    async def get_login_response(
+        self, token: str, data: dict = {}
+    ) -> Response:
         response = JSONResponse(status_code=status.HTTP_200_OK, content=data)
         return self._set_login_cookie(response, token)
 
