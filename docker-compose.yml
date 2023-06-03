@@ -11,11 +11,11 @@ services:
       - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing.rule=Host(`tgparsing.ru`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.tgparsing.entrypoints=websecure"
-      - "traefik.http.routers.tgparsing.tls.certresolver=myresolver"
-      - "traefik.http.routers.tgparsing.service=tgparsing-service"
-      - "traefik.http.services.tgparsing-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.tgparsing1.rule=Host(`api.localhost`)" #&& PathPrefix(/`api`)
+      - "traefik.http.routers.tgparsing1.entrypoints=websecure"
+      - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
+      - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
+      - "traefik.http.services.tgparsing-service1.loadbalancer.server.port=8000"
     networks:
       - traefik-network
 
@@ -43,11 +43,11 @@ services:
       - postgresql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing.rule=Host(`tgparsing.ru`)"
+      - "traefik.http.routers.tgparsing.rule=Host(`localhost`)"
       - "traefik.http.routers.tgparsing.entrypoints=websecure"
       - "traefik.http.routers.tgparsing.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing.service=tgparsing-service"
-      - "traefik.http.services.tgparsing-service.loadbalancer.server.port=80"
+      - "traefik.http.services.tgparsing-service.loadbalancer.server.port=3000"
     networks:
       - traefik-network
 
