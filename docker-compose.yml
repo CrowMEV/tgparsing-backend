@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    restart: always
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tgparsing.rule=Host(`tgparsing.ru`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.tgparsing.entrypoints=websecure"
+      - "traefik.http.routers.tgparsing.tls.certresolver=myresolver"
+      - "traefik.http.routers.tgparsing.service=tgparsing-service"
+      - "traefik.http.services.tgparsing-service.loadbalancer.server.port=80"
+    networks:
+      - traefik-network
+
+  postgresql:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+    networks:
+      - traefik-network
+
+  frontend:
+    build: ./tgparsing-front
+    depends_on:
+      - backend
+      - postgresql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tgparsing.rule=Host(`tgparsing.ru`)"
+      - "traefik.http.routers.tgparsing.entrypoints=websecure"
+      - "traefik.http.routers.tgparsing.tls.certresolver=myresolver"
+      - "traefik.http.routers.tgparsing.service=tgparsing-service"
+      - "traefik.http.services.tgparsing-service.loadbalancer.server.port=80"
+    networks:
+      - traefik-network
+
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=web"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=info@tgparisng.ru"
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      - "traefik.enable=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+      - ./traefik_config/:/etc/traefik
+    networks:
+      - traefik-network
+networks:
+  traefik-network:
+    external: true
