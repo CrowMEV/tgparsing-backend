@@ -1,0 +1,27 @@
+#Указываем какие порты будет слушать наш роутер. Это 80 и 443.
+entryPoints:
+  web:
+    address: ":80"
+    #Для 80 порта указываем redirect для перенаправления трафика с http на https
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+#Указываем провайдера сети
+providers:
+  docker:
+    network: traefik-network
+# Задаем настройки resolver для получения ssl сертификатов
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: info@tgparsing.ru
+      #Меняем стандартное расположение файла acme.json.
+      #В этот файл будут записываться выданные сертификаты.
+      #Дело в том, что стандартное расположение файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
