@@ -4,9 +4,9 @@ from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 from fastapi_users import exceptions, models
 
-from user import schemas
-from user.schemas import UserLogin
-from database.models.user_model import User
+from services.user import schemas
+from services.user.schemas import UserLogin
+from services.user.models import User
 from settings import config
 
 

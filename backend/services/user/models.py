@@ -2,14 +2,13 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy.orm import declarative_base
-
+from services.role.models import Role
+from services.role.schemas import RolesChoice
 from settings import config
+from sqlalchemy.orm import declarative_base, relationship
+
 
 Base = declarative_base()
-
-
-payment_type = sa.Enum("debit", "credit", name="user_payment")
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -25,20 +24,17 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     hashed_password = sa.Column(sa.String(length=1024), nullable=False)
     avatar_url = sa.Column(sa.String, default=config.base_avatar_url)
     is_active = sa.Column(sa.Boolean, default=True, nullable=False)
+    is_staff = sa.Column(sa.Boolean, nullable=False, default=False)
     is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
     is_verified = sa.Column(sa.Boolean, default=False, nullable=False)
-
-
-class Payment(Base):
-    __tablename__ = "payment"
-
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    user = sa.Column(
-        sa.Integer,
-        sa.ForeignKey("users.id", name="payment_user_id_fkey"),
+    role_name = sa.Column(
+        sa.Enum(RolesChoice),
+        sa.ForeignKey(Role.name, name="users_roles_name_fkey"),
+        default=RolesChoice.user,
         nullable=False,
     )
-    action = sa.Column("user_action", payment_type, nullable=False)
-    # source = sa.Column(sa.Integer, sa.ForeignKey('sources.id'))
-    amount = sa.Column(sa.Integer, nullable=False)
-    date = sa.Column(sa.TIMESTAMP, default=datetime.utcnow())
+    role = relationship(
+        Role,
+        backref="users",
+        lazy="selectin",
+    )

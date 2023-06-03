@@ -10,9 +10,9 @@ from fastapi_users.openapi import OpenAPIResponseType
 from fastapi_users.router.common import ErrorCode, ErrorModel
 
 from settings import config
-from user.schemas import UserLogin, UserRead, SuccessResponse, UserPatch
-from user.utils.authentication import AppAuthenticationBackend
-from user.utils.manager import UserManager
+from services.user import schemas as user_schemas
+from services.user.utils.authentication import AppAuthenticationBackend
+from services.user.utils.manager import UserManager
 
 
 def get_auth_router(
@@ -59,11 +59,11 @@ def get_auth_router(
         "/login",
         name=config.USER_LOGIN,
         responses=login_responses,
-        response_model=UserRead,
+        response_model=user_schemas.UserRead,
     )
     async def login(
         request: fa.Request,
-        credentials: UserLogin = fa.Body(),
+        credentials: user_schemas.UserLogin = fa.Body(),
         user_manager: UserManager = fa.Depends(get_user_manager),
         strategy: Strategy[models.UP, models.ID] = fa.Depends(
             backend.get_strategy
@@ -98,7 +98,7 @@ def get_auth_router(
         "/logout",
         name=config.USER_LOGOUT,
         responses=logout_responses,
-        response_model=SuccessResponse,
+        response_model=user_schemas.SuccessResponse,
     )
     async def logout(
         user_token: Tuple[models.UP, str] = fa.Depends(get_current_user_token),
@@ -128,7 +128,7 @@ def get_users_router(
     @router.patch(
         "/patch",
         name=config.USER_PATCH,
-        response_model=UserRead,
+        response_model=user_schemas.UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
         responses={
             fa.status.HTTP_401_UNAUTHORIZED: {
@@ -171,7 +171,7 @@ def get_users_router(
                 await p_f.write(picture.file.read())
             data["avatar_url"] = file_url
 
-        patch_model = UserPatch(**data)
+        patch_model = user_schemas.UserPatch(**data)
         try:
             user = await user_manager.update(
                 patch_model, current_user, safe=True, request=request

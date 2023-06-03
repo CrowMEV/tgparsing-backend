@@ -1,8 +1,8 @@
 """Add accounts
 
-Revision ID: 08d8a6218cf3
-Revises: d61a73e95878
-Create Date: 2023-06-02 17:19:33.796720
+Revision ID: 68c0279efd2f
+Revises: 3d5571355882
+Create Date: 2023-06-03 11:34:19.226741
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "08d8a6218cf3"
-down_revision = "d61a73e95878"
+revision = "68c0279efd2f"
+down_revision = "3d5571355882"
 branch_labels = None
 depends_on = None
 

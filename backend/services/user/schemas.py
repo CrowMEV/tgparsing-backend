@@ -1,9 +1,10 @@
 from typing import Optional, TypeVar
 
-from fastapi import UploadFile
 from fastapi_users.schemas import CreateUpdateDictModel
 from pydantic import EmailStr, BaseModel, Field
 from fastapi_users import schemas
+
+from services.role.schemas import RoleRead
 
 
 class UserLogin(BaseModel):
@@ -20,7 +21,9 @@ class UserRead(schemas.BaseUser):
     firstname: str
     lastname: str
     email: EmailStr
+    is_staff: bool
     avatar_url: str
+    role: RoleRead
 
     class Config:
         orm_mode = True

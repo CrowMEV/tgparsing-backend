@@ -8,10 +8,13 @@ class Config(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-    # server
+    # run server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
     DEBUG: bool = Field(default=True)
+
+    # fastapi app
+    IS_VERIFIED: bool = Field(default=False)
 
     # db
     DB_USER: str = Field(default="tg_db")

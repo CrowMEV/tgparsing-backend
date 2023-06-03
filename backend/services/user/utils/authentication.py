@@ -4,9 +4,12 @@ from fastapi_users.authentication import AuthenticationBackend
 import fastapi_users.authentication.transport as fu_tr
 import fastapi_users.authentication.strategy as fu_str
 
-from user.schemas import UserRead
-from user.utils.cookie_transport import cookie_transport, AppCookieTransport
-from user.utils.strategy import get_jwt_strategy
+from services.user.schemas import UserRead
+from services.user.utils.cookie_transport import (
+    cookie_transport,
+    AppCookieTransport,
+)
+from services.user.utils.strategy import get_jwt_strategy
 
 
 class AppAuthenticationBackend(AuthenticationBackend):

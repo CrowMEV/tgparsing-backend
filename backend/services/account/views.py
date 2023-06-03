@@ -6,9 +6,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
-from accounts.schemas import AccountCreate, AccountUpdate
-from accounts.utils.humanhash import humanize
-from database.models.account_model import TelegramAccount as Acc
+from services.account.schemas import AccountCreate, AccountUpdate
+from services.account.utils.humanhash import humanize
+from services.account.models import TelegramAccount as Acc
 from starlette import status
 
 
