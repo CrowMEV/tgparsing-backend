@@ -166,3 +166,8 @@ requirements-old.txt
 # media files
 backend/static/users_avatars/*
 !base_avatar.png
+
+#SSL Cert
+**/acme.json
+
+

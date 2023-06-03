@@ -11,13 +11,11 @@ services:
       - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing1.rule=Host(`api.localhost`)" #&& PathPrefix(/`api`)
+      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)" #&& PathPrefix(/`api`)
       - "traefik.http.routers.tgparsing1.entrypoints=websecure"
       - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
       - "traefik.http.services.tgparsing-service1.loadbalancer.server.port=8000"
-    networks:
-      - traefik-network
 
   postgresql:
     image: postgres:15-alpine
@@ -33,23 +31,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 3s
-    networks:
-      - traefik-network
 
   frontend:
     build: ./tgparsing-front
     depends_on:
       - backend
-      - postgresql
+    restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing.rule=Host(`localhost`)"
+      - "traefik.http.routers.tgparsing.rule=Host(`tgparsing.ru`)"
       - "traefik.http.routers.tgparsing.entrypoints=websecure"
       - "traefik.http.routers.tgparsing.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing.service=tgparsing-service"
       - "traefik.http.services.tgparsing-service.loadbalancer.server.port=3000"
-    networks:
-      - traefik-network
 
   traefik:
     image: traefik:v3.0
@@ -69,8 +63,3 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
       - ./traefik_config/:/etc/traefik
-    networks:
-      - traefik-network
-networks:
-  traefik-network:
-    external: true
