@@ -15,6 +15,7 @@ class Config(BaseSettings):
 
     # fastapi app
     IS_VERIFIED: bool = Field(default=False)
+    DB_ECHO: bool = Field(default=True)
 
     # db
     DB_USER: str = Field(default="tg_db")

@@ -7,18 +7,18 @@ from fastapi_users.authentication import Strategy
 from fastapi_users.router import ErrorCode
 
 from services.user.schemas import UserPatch, UserLogin
-from services.user.utils.authentication import AppAuthenticationBackend
+from services.user.utils.authentication_backend import AppAuthenticationBackend
 from services.user.utils.manager import UserManager
 from settings import config
 
 
 async def user_login(
-        request: fa.Request,
-        backend: AppAuthenticationBackend,
-        credentials: UserLogin,
-        user_manager: UserManager,
-        strategy: Strategy[models.UP, models.ID],
-        requires_verification: bool = False,
+    request: fa.Request,
+    backend: AppAuthenticationBackend,
+    credentials: UserLogin,
+    user_manager: UserManager,
+    strategy: Strategy[models.UP, models.ID],
+    requires_verification: bool = False,
 ):
     user = await user_manager.authenticate(credentials)
 
@@ -38,17 +38,18 @@ async def user_login(
 
 
 async def user_patch(
-        request: fa.Request,
-        patch_data: UserPatch,
-        current_user: models.UP,
-        user_manager: UserManager
+    request: fa.Request,
+    patch_data: UserPatch,
+    current_user: models.UP,
+    user_manager: UserManager,
 ):
     if patch_data.avatar_url:
         folder_path = os.path.join(
             config.BASE_DIR, config.STATIC_DIR, config.AVATARS_FOLDER
         )
         file_name = (
-            f"{current_user.email}" f".{patch_data.avatar_url.filename.split('.')[-1]}"
+            f"{current_user.email}"
+            f".{patch_data.avatar_url.filename.split('.')[-1]}"
         )
         file_url = os.path.join(folder_path, file_name)
         async with aiofiles.open(file_url, "wb") as p_f:

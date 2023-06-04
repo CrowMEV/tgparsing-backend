@@ -4,6 +4,7 @@ import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
 from services import Base
+from services.role.models import Role
 from services.role.schemas import RolesChoice
 from settings import config
 from sqlalchemy.orm import relationship

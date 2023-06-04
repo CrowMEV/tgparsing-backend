@@ -61,15 +61,15 @@ class UserPatch(CreateUpdateDictModel):
             "",
             min_length=8,
             regex=r"([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*"
-                  r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+            r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
         ),
-        avatar_url: Optional[UploadFile] = Form(None, alias="picture")
+        avatar_url: Optional[UploadFile] = Form(None, alias="picture"),
     ):
         return cls(
             firstname=firstname,
             lastname=lastname,
             password=password,
-            avatar_url=avatar_url
+            avatar_url=avatar_url,
         )
 
 

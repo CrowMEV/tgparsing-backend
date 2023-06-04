@@ -3,19 +3,12 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.user.models import User
+from services.role.routes import router as role_router
 from settings import config
-from services.user.dependencies import get_user_manager
 from services.user.schemas import UserCreate, UserRead
-from services.user.utils.authentication import auth_backend
-from services.user.utils.fastapiusers import FastApiUsers
-from services.role.routes import role_routes
+from services.user.utils.authentication_backend import auth_backend
+from services.user.utils.fastapiusers import fastapi_users
 
-
-fastapi_users = FastApiUsers[User, int](
-    get_user_manager,
-    [auth_backend],
-)
 
 MEDIA_DIR = os.path.join(config.BASE_DIR, config.STATIC_DIR)
 
@@ -52,4 +45,4 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
-app.include_router(role_routes)
+app.include_router(role_router)

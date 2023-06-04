@@ -9,7 +9,7 @@ from fastapi_users.openapi import OpenAPIResponseType
 from services.user.utils.responses import resp, login_resp
 from settings import config
 from services.user import schemas as user_schemas, views
-from services.user.utils.authentication import AppAuthenticationBackend
+from services.user.utils.authentication_backend import AppAuthenticationBackend
 from services.user.utils.manager import UserManager
 
 
@@ -51,8 +51,12 @@ def get_auth_router(
         ),
     ):
         return await views.user_login(
-            request, backend, credentials, user_manager, strategy,
-            requires_verification
+            request,
+            backend,
+            credentials,
+            user_manager,
+            strategy,
+            requires_verification,
         )
 
     @router.post(
@@ -91,7 +95,7 @@ def get_users_router(
         name=config.USER_PATCH,
         response_model=user_schemas.UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
-        responses=resp
+        responses=resp,
     )
     async def user_patch(
         request: fa.Request,
