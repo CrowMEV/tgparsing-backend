@@ -3,7 +3,7 @@ from fastapi import Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
-from services.user.models import Role
+from services.role.models import Role
 from starlette import status
 from fastapi.responses import JSONResponse
 

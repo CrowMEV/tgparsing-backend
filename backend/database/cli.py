@@ -13,10 +13,10 @@ def load_roles(path: str):
     import json
 
     from database.db_sync import db_sync
-    from services.user.models import Role
+    from services.role.models import Role
 
     db = db_sync().__next__()
-    path = "roles_data.json"
+
     with open(path) as file:
         data: dict = json.load(file)
     for key, value in data.items():
