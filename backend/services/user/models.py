@@ -2,14 +2,11 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTable
-from services.role.models import Role
+
+from services import Base
 from services.role.schemas import RolesChoice
 from settings import config
-from sqlalchemy.orm import declarative_base, relationship
-
-
-Base = declarative_base()
-
+from sqlalchemy.orm import relationship
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -30,12 +27,12 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified = sa.Column(sa.Boolean, default=False, nullable=False)
     role_name = sa.Column(
         sa.Enum(RolesChoice),
-        sa.ForeignKey(Role.name, name="users_roles_name_fkey"),
+        sa.ForeignKey("roles.name", name="users_roles_name_fkey"),
         default=RolesChoice.user,
         nullable=False,
     )
     role = relationship(
-        Role,
+        "Role",
         backref="users",
         lazy="selectin",
     )

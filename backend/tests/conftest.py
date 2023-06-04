@@ -1,4 +1,5 @@
 import asyncio
+import subprocess
 
 import pytest
 import sqlalchemy.ext.asyncio as sa_asyncio
@@ -6,8 +7,9 @@ from httpx import AsyncClient
 from sqlalchemy import insert
 
 from database.db_async import get_async_session
-from services.user.models import Base, Role
 from server import app
+from services import Base
+from services.role.models import Role
 from settings import config
 
 
@@ -30,9 +32,8 @@ app.dependency_overrides[get_async_session] = test_async_session
 async def prepare_database():
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        stmt = insert(Role).values(name="User")
+        stmt = insert(Role).values(name="user", permissions={})
         await conn.execute(stmt)
-        await conn.commit()
     yield
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

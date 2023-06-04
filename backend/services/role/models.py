@@ -1,10 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import declarative_base
 
+from services import Base
 from services.role.schemas import RolesChoice
-
-
-Base = declarative_base()
 
 
 class Role(Base):

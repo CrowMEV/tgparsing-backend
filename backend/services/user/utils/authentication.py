@@ -1,3 +1,5 @@
+import json
+
 from fastapi import Response, status
 from fastapi_users import models
 from fastapi_users.authentication import AuthenticationBackend
@@ -19,8 +21,9 @@ class AppAuthenticationBackend(AuthenticationBackend):
         self, strategy: fu_str.Strategy[models.UP, models.ID], user: models.UP
     ) -> Response:
         token = await strategy.write_token(user)
-        user = UserRead(**user.__dict__).__dict__
-        return await self.transport.get_login_response(token, user)
+        user = UserRead(**user.__dict__).json()
+        user_data = json.loads(user)
+        return await self.transport.get_login_response(token, user_data)
 
     async def logout(
         self,
