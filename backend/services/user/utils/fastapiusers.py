@@ -3,8 +3,13 @@ from typing import Generic, Type
 from fastapi import APIRouter
 from fastapi_users import FastAPIUsers, models, schemas
 
+from services.user.dependencies import get_user_manager
+from services.user.models import User
 from services.user.routes import get_auth_router, get_users_router
-from services.user.utils.authentication import AppAuthenticationBackend
+from services.user.utils.authentication_backend import (
+    AppAuthenticationBackend,
+    auth_backend,
+)
 
 
 class FastApiUsers(FastAPIUsers, Generic[models.UP, models.ID]):
@@ -37,3 +42,9 @@ class FastApiUsers(FastAPIUsers, Generic[models.UP, models.ID]):
             self.authenticator,
             requires_verification,
         )
+
+
+fastapi_users = FastApiUsers[User, int](
+    get_user_manager,
+    [auth_backend],
+)

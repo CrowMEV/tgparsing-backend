@@ -5,7 +5,7 @@ from fastapi_users.schemas import CreateUpdateDictModel
 from pydantic import EmailStr, BaseModel, Field
 from fastapi_users import schemas
 
-from services.role.schemas import RoleRead
+from services.role.schemas import RoleResponse
 
 
 class UserLogin(BaseModel):
@@ -24,7 +24,7 @@ class UserRead(schemas.BaseUser):
     email: EmailStr
     is_staff: bool
     avatar_url: str
-    role: RoleRead
+    role: RoleResponse
 
     class Config:
         orm_mode = True
@@ -37,7 +37,9 @@ class UserCreate(CreateUpdateDictModel):
     password: str = Field(
         ...,
         min_length=8,
-        regex=r"([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*"
+        regex=r""
+        r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
+        r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
         r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
     )
 
@@ -60,16 +62,18 @@ class UserPatch(CreateUpdateDictModel):
         password: Optional[str] = Form(
             "",
             min_length=8,
-            regex=r"([0-9]+\S*[A-Z]+|\S[A-Z]+\S*[0-9]+)\S*"
-                  r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+            regex=r""
+            r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
+            r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
+            r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
         ),
-        avatar_url: Optional[UploadFile] = Form(None, alias="picture")
+        avatar_url: Optional[UploadFile] = Form(None, alias="picture"),
     ):
         return cls(
             firstname=firstname,
             lastname=lastname,
             password=password,
-            avatar_url=avatar_url
+            avatar_url=avatar_url,
         )
 
 

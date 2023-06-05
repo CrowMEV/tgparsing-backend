@@ -27,22 +27,28 @@ cd backend
 pip install -r requirements.txt
 alembic upgrade head
 ```
-
+### Загрузка ролей в базу данных
+```bash
+./manage.py db load-roles roles_data.json
+```
+### Запуск тестов
+```bash
+pytest
+```
 ### Запуск сервера
 
 ```bash
 ./manage.py site run
 ```
 
-### Запуск тестов
-```bash
-pytest
-```
-
 ### Форматирование кода
 Прежде чем добавлять и коммитить файлы, необходимо привести код к определенному стандарту. Для этого выполните команду ниже:
 ```bash
 python3 -m black .
+```
+or
+```bash
+black .
 ```
 
 Документация:  

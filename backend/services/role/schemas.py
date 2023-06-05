@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -9,9 +10,18 @@ class RolesChoice(enum.Enum):
     accountant = "accountant"
 
 
-class RoleRead(BaseModel):
+class RoleGet(BaseModel):
     name: RolesChoice
-    permissions: dict
+
+
+class RolePatch(RoleGet):
+    # Inherit name from RoreGet
+    is_active: Optional[bool]
+    permissions: Optional[dict]
+
+
+class RoleResponse(RolePatch):
+    # Inherit fields from RolePatch
 
     class Config:
         orm_mode = True

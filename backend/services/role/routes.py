@@ -1,32 +1,33 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
 from services.role import views
+import services.role.schemas as role_schemas
+from services.user.utils.permissions import is_superuser
+from settings import config
 
 
-role_routes = APIRouter(prefix="/roles", tags=["Role"])
+router = APIRouter(prefix="/role", tags=["Role"])
 
-
-role_routes.add_api_route(
-    path="/all",
-    endpoint=views.get_roles,
-    methods=["GET"],
-)
-role_routes.add_api_route(
+router.add_api_route(
     path="/",
     endpoint=views.get_role,
     methods=["GET"],
+    name=config.ROLE_GET,
+    response_model=role_schemas.RoleResponse,
+    dependencies=[Depends(is_superuser)],
 )
-role_routes.add_api_route(
+router.add_api_route(
     path="/",
-    endpoint=views.add_role,
-    methods=["POST"],
-)
-role_routes.add_api_route(
-    path="/",
-    endpoint=views.update_role,
+    endpoint=views.patch_role,
     methods=["PATCH"],
+    name=config.ROLE_PATCH,
+    response_model=role_schemas.RoleResponse,
+    dependencies=[Depends(is_superuser)],
 )
-role_routes.add_api_route(
-    path="/",
-    endpoint=views.delete_role,
-    methods=["DELETE"],
+router.add_api_route(
+    path="/all",
+    endpoint=views.get_roles,
+    methods=["GET"],
+    name=config.ROLE_GET_ALL,
+    dependencies=[Depends(is_superuser)],
 )

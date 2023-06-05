@@ -15,6 +15,7 @@ class Config(BaseSettings):
 
     # fastapi app
     IS_VERIFIED: bool = Field(default=False)
+    DB_ECHO: bool = Field(default=True)
 
     # db
     DB_USER: str = Field(default="tg_db")
@@ -72,10 +73,17 @@ class Config(BaseSettings):
         )
 
     # url names
+    # user
     USER_REGISTER: str = "user_register"
     USER_LOGIN: str = "user_login"
     USER_LOGOUT: str = "user_logout"
     USER_PATCH: str = "user_patch"
+    # role
+    ROLE_GET: str = "role_get"
+    ROLE_ADD: str = "role_add"
+    ROLE_DELETE: str = "role_delete"
+    ROLE_PATCH: str = "role_patch"
+    ROLE_GET_ALL: str = "role_get_all"
 
 
 config = Config()
