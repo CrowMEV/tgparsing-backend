@@ -19,42 +19,44 @@ def load_roles(path: str):
     with open(path) as file:
         data: dict = json.load(file)
     with Session() as session:
-        for key, value in data.items():
+        for item in data:
             role = Role(
-                name=key,
-                permissions=value,
+                name=item["name"],
+                is_active=item["is_active"],
+                permissions=item["permissions"],
             )
             session.add(role)
-        session.commit()
+        await session.commit()
 
 
 @db_group.command()
-def add_admin():
+@click.option("-f", "--firstname", help="User name", required=True)
+@click.option("-l", "--lastname", help="User surname", required=True)
+@click.option("-e", "--email", help="User email", required=True)
+@click.option("-p", "--password", help="User password", required=True)
+@click.option("-r", "--role", default="user", help="User role")
+@click.option("-s", "--superuser", default=False, help="User is superuser")
+def add_admin(firstname, lastname, email, password, role, superuser):
     with Session() as session:
         import sys
         from passlib.context import CryptContext
 
         from pydantic import ValidationError
-        from sqlalchemy import select
+        from sqlalchemy import select, and_
         from sqlalchemy.dialects.postgresql import insert
 
         from services.user.models import User
         from services.user.schemas import UserCreate
 
-        firstname = input('Please, enter admin name: ')
-        lastname = input('Please, enter admin surname: ')
-        email = input('Please, enter admin email: ')
-
-        stmt = select(User).where(User.email == email)
+        stmt = select(User).where(and_(User.email == email))
         user = session.execute(stmt).first()
         if user:
-            sys.exit('There is such email in the database')
-        password = input('Please enter admin password: ')
+            sys.exit("There is such email in the database")
         prepared_data = {
             "firstname": firstname,
             "lastname": lastname,
             "email": email,
-            "password": password
+            "password": password,
         }
         try:
             UserCreate(**prepared_data)
@@ -63,15 +65,15 @@ def add_admin():
         hashed_password = CryptContext(
             schemes=["bcrypt"], deprecated="auto"
         ).hash(password)
-        prepared_data.pop('password')
+        prepared_data.pop("password")
         prepared_data.update(
             {
                 "hashed_password": hashed_password,
-                "is_superuser": True,
-                "role_name": "admin"
+                "is_superuser": superuser,
+                "role_name": role,
             }
         )
         stmt = insert(User).values(**prepared_data)
         session.execute(stmt)
         session.commit()
-        print('The admin was created successfully')
+        print("The admin was created successfully")

@@ -1,9 +1,21 @@
-{
-  "user": {
-    "read": "False"
+[
+  {
+    "name": "user",
+    "is_active": true,
+    "permissions": {
+      "read": true
+    }
   },
-  "accountant": {
-    "read": "True"
+  {
+    "name": "accountant",
+    "is_active": true,
+    "permissions": {
+      "read": false
+    }
   },
-  "admin": {}
-}
+  {
+    "name": "admin",
+    "is_active": true,
+    "permissions": {}
+  }
+]

@@ -33,7 +33,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
         nullable=False,
     )
     role = relationship(
-        "Role",
+        Role,
         backref="users",
         lazy="selectin",
     )
