@@ -1,21 +1,13 @@
 [
   {
-    "name": "user",
-    "is_active": true,
-    "permissions": {
-      "read": true
-    }
+    "name": "USER"
   },
   {
-    "name": "accountant",
-    "is_active": true,
-    "permissions": {
-      "read": false
-    }
+    "name": "ACCOUNTANT",
+    "payment_action": ["READ"]
   },
   {
-    "name": "admin",
-    "is_active": true,
-    "permissions": {}
+    "name": "ADMIN",
+    "staff_action": ["READ", "WRITE", "UPDATE", "DELETE"]
   }
 ]

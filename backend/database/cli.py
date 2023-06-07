@@ -10,7 +10,7 @@ def db_group():
 
 @db_group.command()
 @click.argument("path")
-def load_roles(path: str):
+def load_roles(path: str, db_session=Session):
     """Load roles to the "roles" table in the database"""
     import json
 
@@ -18,15 +18,11 @@ def load_roles(path: str):
 
     with open(path) as file:
         data: dict = json.load(file)
-    with Session() as session:
-        for item in data:
-            role = Role(
-                name=item["name"],
-                is_active=item["is_active"],
-                permissions=item["permissions"],
-            )
+    with db_session() as session:
+        for item_data in data:
+            role = Role(**item_data)
             session.add(role)
-        session.commit()
+            session.commit()
 
 
 @db_group.command()
