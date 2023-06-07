@@ -26,7 +26,7 @@ def load_roles(path: str):
                 permissions=item["permissions"],
             )
             session.add(role)
-        await session.commit()
+        session.commit()
 
 
 @db_group.command()

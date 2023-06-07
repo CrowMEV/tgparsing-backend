@@ -15,7 +15,11 @@ class Config(BaseSettings):
 
     # fastapi app
     IS_VERIFIED: bool = Field(default=False)
+    COOKIE_SECURE: bool = Field(default=False)
     DB_ECHO: bool = Field(default=True)
+
+    # cookie
+    COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # db
     DB_USER: str = Field(default="tg_db")

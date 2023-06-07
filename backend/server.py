@@ -41,7 +41,9 @@ app.include_router(
     tags=["user"],
 )
 app.include_router(
-    fastapi_users.get_users_router(UserRead),
+    fastapi_users.get_users_router(
+        UserRead, requires_verification=config.IS_VERIFIED
+    ),
     prefix="/user",
     tags=["user"],
 )
