@@ -1,8 +1,8 @@
-"""add_model_tgaccont
+"""add_model_tgaccount
 
-Revision ID: d555ae763812
+Revision ID: fe79d686410a
 Revises: 7bbf58250ecb
-Create Date: 2023-06-10 11:49:24.281665
+Create Date: 2023-06-11 15:34:14.657796
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd555ae763812'
+revision = 'fe79d686410a'
 down_revision = '7bbf58250ecb'
 branch_labels = None
 depends_on = None
@@ -22,11 +22,11 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('api_id', sa.Integer(), nullable=False),
     sa.Column('api_hash', sa.String(), nullable=False),
-    sa.Column('session_strins', sa.String(), nullable=False),
+    sa.Column('session_string', sa.String(), nullable=False),
     sa.Column('in_work', sa.Boolean(), nullable=True),
     sa.Column('is_blocked', sa.Boolean(), nullable=True),
     sa.Column('by_geo', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('id', 'api_id')
+    sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 

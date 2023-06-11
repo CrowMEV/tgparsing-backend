@@ -1,3 +1,5 @@
+import typing
+
 from fastapi import APIRouter, Depends
 
 from services.telegram import views
@@ -13,7 +15,7 @@ router.add_api_route(
     endpoint=views.get_all_tgacconts,
     methods=["GET"],
     name=config.ACCOUNT_GET_ALL,
-    response_model=tg_schemas.TgAccountRead,
+    response_model=typing.List[tg_schemas.TgAccountResponse],
 )
 
 
@@ -22,7 +24,7 @@ router.add_api_route(
     endpoint=views.get_tgacconts,
     methods=["GET"],
     name=config.ACCOUNT_GET,
-    response_model=tg_schemas.TgAccountRead,
+    response_model=typing.List[tg_schemas.TgAccountResponse],
 )
 
 
@@ -40,7 +42,7 @@ router.add_api_route(
     endpoint=views.update_inwork_tgaccount,
     methods=["PATCH"],
     name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountUpdate,
+    response_model=tg_schemas.TgAccountResponse,
 )
 
 
@@ -49,7 +51,7 @@ router.add_api_route(
     endpoint=views.update_isblocked_tgaccount,
     methods=["PATCH"],
     name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountUpdate,
+    response_model=tg_schemas.TgAccountResponse,
 )
 
 
@@ -58,7 +60,7 @@ router.add_api_route(
     endpoint=views.update_bygeo_tgaccount,
     methods=["PATCH"],
     name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountUpdate,
+    response_model=tg_schemas.TgAccountResponse,
 )
 
 
@@ -67,7 +69,7 @@ router.add_api_route(
     endpoint=views.update_sessionstring_tgaccount,
     methods=["PATCH"],
     name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountUpdate,
+    response_model=tg_schemas.TgAccountResponse,
 )
 
 # delete_tgaccount

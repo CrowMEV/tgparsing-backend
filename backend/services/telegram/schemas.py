@@ -1,17 +1,16 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class TgAccountRead(BaseModel):
-    # id: int
-    # api_id: int
-    # api_hash: str
-    # session_strins: str
-    # in_work: bool
-    # is_blocked: bool
-    # by_geo: bool
-
-    class Config:
-        orm_mode = True
+    id: int
+    api_id: int
+    api_hash: str
+    session_string: str
+    in_work: bool
+    is_blocked: bool
+    by_geo: bool
 
 
 class TgAccountCreate(BaseModel):
@@ -20,7 +19,7 @@ class TgAccountCreate(BaseModel):
     session_string: str
 
 
-class TgAccountResponse(TgAccountCreate):
+class TgAccountResponse(TgAccountRead):
     # Inherit fields from RolePatch
 
     class Config:
