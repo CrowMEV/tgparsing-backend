@@ -1,23 +1,31 @@
 import enum
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
 
-class RolesChoice(enum.Enum):
-    user = "user"
-    admin = "admin"
-    accountant = "accountant"
+class RoleNameChoice(enum.Enum):
+    USER = "user"
+    ADMIN = "admin"
+    ACCOUNTANT = "accountant"
+
+
+class ActionChoice(enum.Enum):
+    READ = "read"
+    WRITE = "write"
+    DELETE = "delete"
+    UPDATE = "update"
 
 
 class RoleGet(BaseModel):
-    name: RolesChoice
+    name: RoleNameChoice
 
 
 class RolePatch(RoleGet):
     # Inherit name from RoreGet
     is_active: Optional[bool]
-    permissions: Optional[dict]
+    stuff_action: Optional[List[ActionChoice]]
+    payment_action: Optional[List[ActionChoice]]
 
 
 class RoleResponse(RolePatch):

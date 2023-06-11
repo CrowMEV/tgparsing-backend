@@ -50,7 +50,7 @@ def get_auth_router(
             backend.get_strategy
         ),
     ):
-        return await views.user_login(
+        response = await views.user_login(
             request,
             backend,
             credentials,
@@ -58,6 +58,8 @@ def get_auth_router(
             strategy,
             requires_verification,
         )
+
+        return response
 
     @router.post(
         "/logout",
