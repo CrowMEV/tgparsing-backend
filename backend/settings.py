@@ -89,7 +89,6 @@ class Config(BaseSettings):
     ACCOUNT_ADD: str = "account_add"
     ACCOUNT_DELETE: str = "account_delete"
     ACCOUNT_UPDATE: str = "account_update"
-    ACCOUNT_GET_ALL: str = "account_get_all"
 
 
 config = Config()
