@@ -31,7 +31,7 @@ router.add_api_route(
     endpoint=views.create_tgaccount,
     methods=["POST"],
     name=config.ACCOUNT_ADD,
-    response_model=tg_schemas.TgAccountCreate,
+    response_model=tg_schemas.TgAccountResponse,
 )
 
 

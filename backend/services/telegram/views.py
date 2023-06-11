@@ -31,9 +31,10 @@ async def create_tgaccount(
         session_string: str,
         session: AsyncSession = Depends(get_async_session)
 ):
-    return await db_handlers.create_tgaccount(
+    account = await db_handlers.create_tgaccount(
         session, api_id, api_hash, session_string
     )
+    return account
 
 
 async def update_inwork_tgaccount(

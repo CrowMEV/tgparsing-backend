@@ -1,10 +1,10 @@
 from typing import Sequence
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.telegram.models import TgAccount
-
 
 
 async def get_all_tgaccounts(session: AsyncSession):
@@ -17,23 +17,15 @@ async def get_all_tgaccounts(session: AsyncSession):
 
 
 async def create_tgaccount(
-        session: AsyncSession,
-        api_id: int,
-        api_hash: str,
-        session_string: str
+    session: AsyncSession, api_id: int, api_hash: str, session_string: str
 ) -> TgAccount:
-    ins = sa.insert(TgAccount).values(
-        api_id = api_id,
-        api_hash = api_hash,
-        session_strins = session_string
-    )
+    ins = insert(TgAccount).values(
+        api_id=api_id, api_hash=api_hash, session_string=session_string
+    ).returning(TgAccount)
     result = await session.execute(ins)
-    await session.commit()
-    new_account = result.scalar()
+    # await session.commit()
+    new_account = result.scalars().first()
     return new_account
-
-
-
 
 
 # async def get_all_tgaccounts(session: AsyncSession):
@@ -106,7 +98,7 @@ async def create_tgaccount(
 #     # session.add(new_account)
 #     # await session.commit()
 #     # await session.refresh(new_account)
-    
+
 #     # stmt = sa.insert(TgAccount).values(new_account).returning(TgAccount)
 #     # result = await session.execute(stmt)
 #     # acc = result.scalars().first()
