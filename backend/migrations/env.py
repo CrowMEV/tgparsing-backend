@@ -4,6 +4,7 @@ import services.role.models as role_models
 import services.tariff.models as tariff_models
 import services.user.models as user_models
 import services.payment.models as payment_models
+import services.telegram.models as telegram_models
 from alembic import context
 
 from services import Base

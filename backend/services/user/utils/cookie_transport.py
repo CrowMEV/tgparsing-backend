@@ -21,5 +21,6 @@ class AppCookieTransport(CookieTransport):
 
 cookie_transport = AppCookieTransport(
     cookie_name="tg_parsing",
-    cookie_max_age=3600
+    cookie_max_age=3600,
+    cookie_secure = False
 )

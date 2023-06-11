@@ -84,6 +84,12 @@ class Config(BaseSettings):
     ROLE_DELETE: str = "role_delete"
     ROLE_PATCH: str = "role_patch"
     ROLE_GET_ALL: str = "role_get_all"
+    # tg account
+    ACCOUNT_GET: str = "account_get"
+    ACCOUNT_ADD: str = "account_add"
+    ACCOUNT_DELETE: str = "account_delete"
+    ACCOUNT_UPDATE: str = "account_update"
+    ACCOUNT_GET_ALL: str = "account_get_all"
 
 
 config = Config()

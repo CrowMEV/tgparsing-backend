@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.role.routes import router as role_router
+from services.telegram.routes import router as tg_router
 from settings import config
 from services.user.schemas import UserCreate, UserRead
 from services.user.utils.authentication_backend import auth_backend
@@ -46,3 +47,5 @@ app.include_router(
     tags=["user"],
 )
 app.include_router(role_router)
+
+app.include_router(tg_router)
