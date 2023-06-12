@@ -19,7 +19,10 @@ class Config(BaseSettings):
 
     # cookie
     COOKIE_SECURE: bool = Field(default=False)
-    COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
+    COOKIE_AGE: int = Field(default=60, ge=1, le=86400)
+
+    # verify token
+    TOKEN_AGE: int = Field(default=60, ge=1, le=86400)
 
     # user settings
     IS_ACTIVE: bool = Field(default=True)
@@ -93,6 +96,8 @@ class Config(BaseSettings):
     USER_LOGIN: str = "user_login"
     USER_LOGOUT: str = "user_logout"
     USER_PATCH: str = "user_patch"
+    USER_REFRESH_TOKEN: str = "user_refresh_token"
+    USER_ALL: str = "user_all"
     # role
     ROLE_GET: str = "role_get"
     ROLE_ADD: str = "role_add"
