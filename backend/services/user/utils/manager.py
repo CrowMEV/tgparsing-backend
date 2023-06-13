@@ -13,6 +13,7 @@ from settings import config
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = config.FASTAPI_SECRET
     verification_token_secret = config.FASTAPI_SECRET
+    verification_token_lifetime_seconds: int = config.TOKEN_AGE
 
     async def on_after_register(
         self, user: User, request: Optional[Request] = None

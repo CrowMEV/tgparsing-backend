@@ -1,11 +1,15 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import fastapi as fa
 from fastapi_users import models
 from fastapi_users.authentication import Authenticator, Strategy
 from fastapi_users.manager import UserManagerDependency
 from fastapi_users.openapi import OpenAPIResponseType
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.db_async import get_async_session
+from services.user.db_handlers import get_users
+import services.user.utils.permissions as perm
 from services.user.utils.responses import resp, login_resp
 from settings import config
 from services.user import schemas as user_schemas, views
@@ -50,7 +54,7 @@ def get_auth_router(
             backend.get_strategy
         ),
     ):
-        return await views.user_login(
+        response = await views.user_login(
             request,
             backend,
             credentials,
@@ -58,6 +62,8 @@ def get_auth_router(
             strategy,
             requires_verification,
         )
+
+        return response
 
     @router.post(
         "/logout",
@@ -73,6 +79,21 @@ def get_auth_router(
     ):
         user, token = user_token
         response = await backend.logout(strategy, user, token)
+        return response
+
+    @router.get(
+        "/refresh",
+        name=config.USER_REFRESH_TOKEN,
+        response_model=user_schemas.UserRead,
+        responses=resp,
+    )
+    async def check_token(
+        data: Tuple[models.UP, str] = fa.Depends(get_current_user_token),
+        strategy: Strategy[models.UP, models.ID] = fa.Depends(
+            backend.get_strategy
+        )
+    ):
+        response = await backend.login(strategy, data[0])
         return response
 
     return router
@@ -108,5 +129,15 @@ def get_users_router(
         return await views.user_patch(
             request, patch_data, current_user, user_manager
         )
+
+    @router.get(
+        "/all",
+        name=config.USER_ALL,
+        response_model=List[user_schemas.UserRead],
+        dependencies=[fa.Depends(perm.is_staff)],
+    )
+    async def all_users(session: AsyncSession = fa.Depends(get_async_session)):
+        users = await get_users(session)
+        return users
 
     return router

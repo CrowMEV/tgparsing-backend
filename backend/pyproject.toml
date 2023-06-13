@@ -4,7 +4,7 @@ line-length = 79
 
 # pytest
 [tool.pytest.ini_options]
-addopts = "-rsxX -v"
+addopts = "-v"
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -13,3 +13,8 @@ asyncio_mode = "auto"
 filterwarnings = [
     "ignore:pkg_resources is deprecated as an API:DeprecationWarning"
 ]
+
+# pytest-pytest_alembic
+pytest_alembic_tests_path = "tests/pytest_alembic"
+#pytest_alembic_exclude = "test_alembic.py"
+#pytest_alembic_tests_path = "tests/pytest_alembic"

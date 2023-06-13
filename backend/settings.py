@@ -17,6 +17,16 @@ class Config(BaseSettings):
     IS_VERIFIED: bool = Field(default=False)
     DB_ECHO: bool = Field(default=True)
 
+    # cookie
+    COOKIE_SECURE: bool = Field(default=False)
+    COOKIE_AGE: int = Field(default=60, ge=1, le=86400)
+
+    # verify token
+    TOKEN_AGE: int = Field(default=60, ge=1, le=86400)
+
+    # user settings
+    IS_ACTIVE: bool = Field(default=True)
+
     # db
     DB_USER: str = Field(default="tg_db")
     DB_PASSWORD: str = Field(default="tg_db")
@@ -44,6 +54,14 @@ class Config(BaseSettings):
     TEST_DB_HOST: str = Field(default="localhost")
     TEST_DB_PORT: int = Field(default=5432)
     TEST_DB_NAME: str = Field(default="test_tg_db")
+
+    @property
+    def test_sync_url(self) -> str:
+        return (
+            f"postgresql://"
+            f"{self.TEST_DB_USER}:{self.TEST_DB_PASSWORD}"
+            f"@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+        )
 
     @property
     def test_async_url(self) -> str:
@@ -78,6 +96,8 @@ class Config(BaseSettings):
     USER_LOGIN: str = "user_login"
     USER_LOGOUT: str = "user_logout"
     USER_PATCH: str = "user_patch"
+    USER_REFRESH_TOKEN: str = "user_refresh_token"
+    USER_ALL: str = "user_all"
     # role
     ROLE_GET: str = "role_get"
     ROLE_ADD: str = "role_add"

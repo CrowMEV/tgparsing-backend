@@ -25,6 +25,10 @@ async def patch_role(
     role_schema: role_schemas.RolePatch,
     session: AsyncSession = Depends(get_async_session),
 ):
-    data = {key: value for key, value in role_schema.dict().items() if value}
-    role = await db_hand.change_is_active(session, data)
+    data = {
+        key: value
+        for key, value in role_schema.dict().items()
+        if value is not None
+    }
+    role = await db_hand.change_role(session, data)
     return role
