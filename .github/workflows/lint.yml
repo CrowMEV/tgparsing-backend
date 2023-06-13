@@ -3,7 +3,7 @@ name: Lint Code
 on: [ push ]
   # push:
   #  branches: [ master ]
-
+  # merge in main - start test -> pull to server
 jobs:
   build:
     runs-on: ubuntu-latest
