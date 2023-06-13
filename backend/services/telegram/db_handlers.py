@@ -4,6 +4,7 @@ from fastapi import HTTPException
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from services.telegram.models import TgAccount
 import services.telegram.schemas as tg_schemas
@@ -34,7 +35,7 @@ async def get_tgaccounts(
 
 
 async def create_tgaccount(
-    session: AsyncSession, api_id: int, api_hash: str, session_string: str
+    session: Session, api_id: int, api_hash: str, session_string: str
 ) -> TgAccount:
     stmt = insert(TgAccount).values(
         api_id = api_id,
