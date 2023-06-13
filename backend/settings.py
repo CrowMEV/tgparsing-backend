@@ -72,6 +72,11 @@ class Config(BaseSettings):
     JWT_SECRET: str = Field(default="jwt_secret")
     FASTAPI_SECRET: str = Field(default="fastapi_secret")
 
+    # robokassa settings
+    RK_PAYMENT_URL: str = Field("")
+    RK_CHECK_LOGIN: str = Field("")
+    RK_CHECK_PASS: str = Field("")
+
     # static
     BASE_DIR: str = os.getcwd()
     STATIC_DIR: str = "static"
@@ -99,6 +104,8 @@ class Config(BaseSettings):
     ROLE_DELETE: str = "role_delete"
     ROLE_PATCH: str = "role_patch"
     ROLE_GET_ALL: str = "role_get_all"
+    # robokassa
+    PAYMENT_ADD: str = "payment_get_link"
 
 
 config = Config()
