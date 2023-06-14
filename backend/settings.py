@@ -19,7 +19,10 @@ class Config(BaseSettings):
 
     # cookie
     COOKIE_SECURE: bool = Field(default=False)
-    COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
+    COOKIE_AGE: int = Field(default=60, ge=1, le=86400)
+
+    # verify token
+    TOKEN_AGE: int = Field(default=60, ge=1, le=86400)
 
     # user settings
     IS_ACTIVE: bool = Field(default=True)
@@ -73,9 +76,13 @@ class Config(BaseSettings):
     FASTAPI_SECRET: str = Field(default="fastapi_secret")
 
     # robokassa settings
-    RK_PAYMENT_URL: str = Field("")
     RK_CHECK_LOGIN: str = Field("")
-    RK_CHECK_PASS: str = Field("")
+    RK_PAYMENT_URL: str = Field("")
+    RK_CHECK_PASS_1ST: str = Field("")
+    RK_CHECK_PASS_2ND: str = Field("")
+    RK_TAX_SYSTEM: str = Field("")
+    RK_REPLENISHMENT_NAME: str = Field("")
+    RK_TAX: str = Field("")
 
     # static
     BASE_DIR: str = os.getcwd()
@@ -98,6 +105,8 @@ class Config(BaseSettings):
     USER_LOGIN: str = "user_login"
     USER_LOGOUT: str = "user_logout"
     USER_PATCH: str = "user_patch"
+    USER_REFRESH_TOKEN: str = "user_refresh_token"
+    USER_ALL: str = "user_all"
     # role
     ROLE_GET: str = "role_get"
     ROLE_ADD: str = "role_add"
@@ -106,6 +115,7 @@ class Config(BaseSettings):
     ROLE_GET_ALL: str = "role_get_all"
     # robokassa
     PAYMENT_ADD: str = "payment_get_link"
+    PAYMENT_CONFIRM: str = "payment_confirm"
 
 
 config = Config()

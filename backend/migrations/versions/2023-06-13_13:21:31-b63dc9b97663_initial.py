@@ -1,8 +1,8 @@
-"""initial
+"""Initial
 
-Revision ID: 89a162b6fcc4
+Revision ID: b63dc9b97663
 Revises: 
-Create Date: 2023-06-11 21:01:23.962863
+Create Date: 2023-06-13 13:21:31.170241
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "89a162b6fcc4"
+revision = "b63dc9b97663"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -137,5 +137,5 @@ def downgrade() -> None:
     op.drop_table("users")
     op.drop_table("tariffs")
     op.drop_table("roles")
-    op.execute("DROP TYPE rolenamechoice, crudchoice, paymentchoice;")
+    op.execute("DROP TYPE rolenamechoice, actionchoice, paymentchoice;")
     # ### end Alembic commands ###
