@@ -20,6 +20,7 @@ class Config(BaseSettings):
     # cookie
     COOKIE_SECURE: bool = Field(default=False)
     COOKIE_AGE: int = Field(default=60, ge=1, le=86400)
+    SAME_SITE: str = Field(default="lax")
 
     # verify token
     TOKEN_AGE: int = Field(default=60, ge=1, le=86400)
