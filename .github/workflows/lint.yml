@@ -1,4 +1,4 @@
-name: Lint Code
+name: Test Backend and Deploy
 
 on:
    push:
@@ -42,7 +42,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           #   - name: Test with flake8
           # run: flake8 .
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -55,8 +55,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.SSH_PROJECT_FOLDER }}
-            ls -al
             git switch main
             git pull
-            docker compose down
-            docker compose up -d --build
+            docker compose up -d --build --no-deps backend
