@@ -1,11 +1,11 @@
 name: Lint Code
 
-on: [ push ]
-  # push:
-  #  branches: [ master ]
-  # merge in main - start test -> pull to server
+on:
+   push:
+    branches: [ main ]
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,7 +40,23 @@ jobs:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
           #   - name: Test with flake8
           # run: flake8 .
-
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Connect and Deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.SSH_PROJECT_FOLDER }}
+            ls -al
+            # git checkout main
+            # git pull
+            # docker compose down
+            # docker compose up -d --build
