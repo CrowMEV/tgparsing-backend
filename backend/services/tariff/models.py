@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy.orm import Mapped, mapped_column
 
 from services import Base
 
@@ -6,5 +7,5 @@ from services import Base
 class Tariff(Base):
     __tablename__ = "tariffs"
 
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]

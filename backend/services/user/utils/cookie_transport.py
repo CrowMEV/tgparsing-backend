@@ -1,6 +1,7 @@
 from fastapi import Response, status
 from fastapi.responses import JSONResponse
 from fastapi_users.authentication import CookieTransport
+from settings import config
 
 
 class AppCookieTransport(CookieTransport):
@@ -20,5 +21,8 @@ class AppCookieTransport(CookieTransport):
 
 
 cookie_transport = AppCookieTransport(
-    cookie_name="tg_parsing", cookie_max_age=3600, cookie_secure=False
+    cookie_name="tg_parsing",
+    cookie_max_age=config.COOKIE_AGE,
+    cookie_secure=config.COOKIE_SECURE,
+    cookie_samesite=config.SAME_SITE,
 )
