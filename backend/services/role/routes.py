@@ -9,7 +9,7 @@ from settings import config
 router = APIRouter(prefix="/role", tags=["Role"])
 
 router.add_api_route(
-    path="/",
+    path="/{name}",
     endpoint=views.get_role,
     methods=["GET"],
     name=config.ROLE_GET,
@@ -25,7 +25,7 @@ router.add_api_route(
     dependencies=[Depends(is_superuser)],
 )
 router.add_api_route(
-    path="/all",
+    path="/",
     endpoint=views.get_roles,
     methods=["GET"],
     name=config.ROLE_GET_ALL,
