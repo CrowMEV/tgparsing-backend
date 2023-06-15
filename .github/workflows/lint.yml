@@ -56,7 +56,7 @@ jobs:
           script: |
             cd ${{ secrets.SSH_PROJECT_FOLDER }}
             ls -al
-            # git checkout main
-            # git pull
-            # docker compose down
-            # docker compose up -d --build
+            git switch main
+            git pull
+            docker compose down
+            docker compose up -d --build
