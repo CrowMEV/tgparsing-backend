@@ -4,7 +4,6 @@ from fastapi import HTTPException
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 
 from services.telegram.models import TgAccount
 import services.telegram.schemas as tg_schemas
@@ -18,15 +17,17 @@ async def get_tgaccounts(
 ) -> Sequence[TgAccount]:
     stmt = sa.select(TgAccount)
 
-    opt = {}
-    if work != tg_schemas.WorkChoice.EMPTY:
-        opt['work'] = work
-    if blocked != tg_schemas.BlockChoice.EMPTY:
-        opt['blocked'] = blocked
-    if by_geo != tg_schemas.GeoChoice.EMPTY:
-        opt['by_geo'] = by_geo
-        
-    if opt:
+    if (work != tg_schemas.WorkChoice.EMPTY or
+        blocked != tg_schemas.BlockChoice.EMPTY or
+        by_geo != tg_schemas.GeoChoice.EMPTY):
+        opt = {}
+        if work != tg_schemas.WorkChoice.EMPTY:
+            opt['work'] = work
+        if blocked != tg_schemas.BlockChoice.EMPTY:
+            opt['blocked'] = blocked
+        if by_geo != tg_schemas.GeoChoice.EMPTY:
+            opt['by_geo'] = by_geo
+            
         stmt = stmt.filter_by(**opt)
     
     result = await session.execute(stmt)
@@ -35,7 +36,7 @@ async def get_tgaccounts(
 
 
 async def create_tgaccount(
-    session: Session, api_id: int, api_hash: str, session_string: str
+    session: AsyncSession, api_id: int, api_hash: str, session_string: str
 ) -> TgAccount:
     stmt = insert(TgAccount).values(
         api_id = api_id,
@@ -52,30 +53,15 @@ async def create_tgaccount(
 async def update_tgaccount(
         session: AsyncSession,
         id_account: int,
-        work: tg_schemas.WorkChoice = tg_schemas.WorkChoice.EMPTY,
-        blocked: tg_schemas.BlockChoice = tg_schemas.BlockChoice.EMPTY,
-        by_geo: tg_schemas.GeoChoice = tg_schemas.GeoChoice.EMPTY,
-        session_string: str = ''
+        data: dict
 ) -> TgAccount:
-    stmt = sa.select(TgAccount).where(TgAccount.id == id_account)
+    stmt = (
+        sa.update(TgAccount).where(TgAccount.id == id_account).values(**data).returning(TgAccount)
+    )
     result = await session.execute(stmt)
-    selected_account = result.scalars().first()
-
-    if not selected_account:
-        raise HTTPException(status_code=400, detail="error id")
-
-    if work != tg_schemas.WorkChoice.EMPTY:
-        selected_account.work = work
-    if blocked != tg_schemas.BlockChoice.EMPTY:
-        selected_account.blocked = blocked
-    if by_geo != tg_schemas.GeoChoice.EMPTY:
-        selected_account.by_geo = by_geo
-    if session_string:
-        selected_account.session_string = session_string
-    
+    tgaccount = result.scalars().first()
     await session.commit()
-    await session.refresh(selected_account)
-    return selected_account
+    return tgaccount
 
 
 async def delete_tgaccount(

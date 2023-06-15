@@ -31,15 +31,12 @@ async def create_tgaccount(
 
 async def update_tgaccount(
         id_account: int,
-        in_work: tg_schemas.WorkChoice = tg_schemas.WorkChoice.EMPTY,
-        is_blocked: tg_schemas.BlockChoice = tg_schemas.BlockChoice.EMPTY,
-        by_geo: tg_schemas.GeoChoice = tg_schemas.GeoChoice.EMPTY,
-        session_string: str = '',
+        tg_schema: tg_schemas.TgAccountPatch,
         session: AsyncSession = Depends(get_async_session)
 ):
+    data = {key: value for key, value in tg_schema.dict().items() if value}
     return await db_handlers.update_tgaccount(
-        session, id_account, in_work, is_blocked, by_geo, session_string
-    )
+        session, id_account, data)
 
 
 async def delete_tgaccount(

@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -38,3 +39,10 @@ class TgAccountResponse(TgAccountRead):
 
     class Config:
         orm_mode = True
+
+
+class TgAccountPatch(BaseModel):
+    session_string: Optional[str]
+    work: Optional[WorkChoice]
+    blocked: Optional[BlockChoice]
+    by_geo: Optional[GeoChoice]

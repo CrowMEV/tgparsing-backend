@@ -11,8 +11,3 @@ Session = sessionmaker(bind=engine)
 def db_sync():
     with Session() as session:
         yield session
-
-
-def create_db_session():
-    SessionLocal = sessionmaker(bind=engine)
-    return SessionLocal()
