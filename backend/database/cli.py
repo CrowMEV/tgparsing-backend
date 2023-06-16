@@ -1,4 +1,5 @@
 import click
+from sqlalchemy.dialects.postgresql import insert
 
 from database.db_sync import Session
 
@@ -20,8 +21,8 @@ def load_roles(path: str, db_session=Session):
         data: dict = json.load(file)
     with db_session() as session:
         for item_data in data:
-            role = Role(**item_data)
-            session.add(role)
+            stmt = insert(Role).values(**item_data).on_conflict_do_nothing()
+            session.execute(stmt)
             session.commit()
 
 
@@ -32,7 +33,14 @@ def load_roles(path: str, db_session=Session):
 @click.option("-p", "--password", help="User password", required=True)
 @click.option("-r", "--role", default="user", help="User role")
 @click.option("-s", "--superuser", default=False, help="User is superuser")
-def add_admin(firstname, lastname, email, password, role, superuser):
+def add_admin(
+    firstname: str,
+    lastname: str,
+    email: str,
+    password: str,
+    role: str,
+    superuser: str,
+):
     with Session() as session:
         import sys
         from passlib.context import CryptContext
@@ -66,7 +74,7 @@ def add_admin(firstname, lastname, email, password, role, superuser):
             {
                 "hashed_password": hashed_password,
                 "is_superuser": superuser,
-                "role_name": role,
+                "role_name": role.upper(),
             }
         )
         stmt = insert(User).values(**prepared_data)

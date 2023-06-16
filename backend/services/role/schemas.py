@@ -8,6 +8,7 @@ class RoleNameChoice(enum.Enum):
     USER = "user"
     ADMIN = "admin"
     ACCOUNTANT = "accountant"
+    HR = "hr"
 
 
 class ActionChoice(enum.Enum):
@@ -24,8 +25,9 @@ class RoleGet(BaseModel):
 class RolePatch(RoleGet):
     # Inherit name from RoreGet
     is_active: Optional[bool]
-    stuff_action: Optional[List[ActionChoice]]
+    staff_action: Optional[List[ActionChoice]]
     payment_action: Optional[List[ActionChoice]]
+    role_action: Optional[List[ActionChoice]]
 
 
 class RoleResponse(RolePatch):

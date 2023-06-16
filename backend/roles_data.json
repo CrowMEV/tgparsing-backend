@@ -8,6 +8,11 @@
   },
   {
     "name": "ADMIN",
+    "bot_action": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "payment_action": ["READ"]
+  },
+  {
+    "name": "HR",
     "staff_action": ["READ", "WRITE", "UPDATE", "DELETE"]
   }
 ]
