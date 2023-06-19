@@ -85,7 +85,7 @@ class Config(BaseSettings):
     @property
     def base_avatar_url(self) -> str:
         return os.path.join(
-            # self.BASE_DIR,
+            self.BASE_DIR,
             self.STATIC_DIR,
             self.AVATARS_FOLDER,
             self.BASE_AVATAR_NAME,
