@@ -106,6 +106,17 @@ class Config(BaseSettings):
     ROLE_DELETE: str = "role_delete"
     ROLE_PATCH: str = "role_patch"
     ROLE_GET_ALL: str = "role_get_all"
+    # tariffs
+    TARIFF_GET: str = "tariff_get"
+    TARIFF_ADD: str = "tariff_add"
+    TARIFF_PATCH: str = "tariff_patch"
+    TARIFF_DELETE: str = "tariff_delete"
+    TARIFF_GET_ALL: str = "tariff_get_all"
+    # tariff_prices
+    TARIFF_PRICE_GET: str = "tariff_price_get"
+    TARIFF_PRICE_ADD: str = "tariff_price_add"
+    TARIFF_PRICE_GET_ALL: str = "tariff_price_get_all"
+    TARIFF_PRICE_DELETE: str = "tariff_price_delete"
 
 
 config = Config()
