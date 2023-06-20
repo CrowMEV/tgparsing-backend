@@ -6,7 +6,16 @@ import services.telegram.db_handlers as db_handlers
 import services.telegram.schemas as tg_schemas
 
 
-async def get_tgacconts(
+async def get_tgaccount(
+        id_account: int,
+        session: AsyncSession = Depends(get_async_session)
+):
+    return await db_handlers.get_tgaccount(
+        session, id_account
+    )
+
+
+async def get_tgaccounts(
         work: tg_schemas.WorkChoice = tg_schemas.WorkChoice.EMPTY,
         blocked: tg_schemas.BlockChoice = tg_schemas.BlockChoice.EMPTY,
         by_geo: tg_schemas.GeoChoice = tg_schemas.GeoChoice.EMPTY,
@@ -31,7 +40,7 @@ async def create_tgaccount(
 
 async def update_tgaccount(
         id_account: int,
-        tg_schema: tg_schemas.TgAccountPatch,
+        tg_schema: tg_schemas.TgAccountBase,
         session: AsyncSession = Depends(get_async_session)
 ):
     data = {key: value for key, value in tg_schema.dict().items() if value}

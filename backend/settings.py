@@ -108,6 +108,7 @@ class Config(BaseSettings):
     ROLE_GET_ALL: str = "role_get_all"
     # tg account
     ACCOUNT_GET: str = "account_get"
+    ACCOUNTS_GET: str = "accounts_get"
     ACCOUNT_ADD: str = "account_add"
     ACCOUNT_DELETE: str = "account_delete"
     ACCOUNT_UPDATE: str = "account_update"

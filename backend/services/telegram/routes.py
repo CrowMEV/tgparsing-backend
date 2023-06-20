@@ -11,34 +11,43 @@ router = APIRouter(prefix="/telegram", tags=["TgAccount"])
 
 
 router.add_api_route(
-    path="/get_tgaccounts",
-    endpoint=views.get_tgacconts,
+    path="/{id_account}",
+    endpoint=views.get_tgaccount,
     methods=["GET"],
     name=config.ACCOUNT_GET,
-    response_model=typing.List[tg_schemas.TgAccountResponse],
+    response_model=tg_schemas.TgAccountRead
 )
 
 
 router.add_api_route(
-    path="/create_tgaccount",
+    path="/",
+    endpoint=views.get_tgaccounts,
+    methods=["GET"],
+    name=config.ACCOUNTS_GET,
+    response_model=typing.List[tg_schemas.TgAccountRead],
+)
+
+
+router.add_api_route(
+    path="/",
     endpoint=views.create_tgaccount,
     methods=["POST"],
     name=config.ACCOUNT_ADD,
-    response_model=tg_schemas.TgAccountResponse,
+    response_model=tg_schemas.TgAccountRead,
 )
 
 
 router.add_api_route(
-    path="/update_tgaccount",
+    path="/{id_account}",
     endpoint=views.update_tgaccount,
     methods=["PATCH"],
     name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountResponse,
+    response_model=tg_schemas.TgAccountBase,
 )
 
 
 router.add_api_route(
-    path="/delete_tgaccount",
+    path="/{id_account}",
     endpoint=views.delete_tgaccount,
     methods=["DELETE"],
     name=config.ACCOUNT_DELETE

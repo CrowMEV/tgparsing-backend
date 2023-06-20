@@ -22,8 +22,7 @@ class GeoChoice(enum.Enum):
     EMPTY = ''
 
 
-class TgAccountRead(BaseModel):
-    id: int
+class TgAccountBase(BaseModel):
     api_id: int
     api_hash: str
     session_string: str
@@ -35,14 +34,5 @@ class TgAccountRead(BaseModel):
         orm_mode = True
 
 
-class TgAccountResponse(TgAccountRead):
-
-    class Config:
-        orm_mode = True
-
-
-class TgAccountPatch(BaseModel):
-    session_string: Optional[str]
-    work: Optional[WorkChoice]
-    blocked: Optional[BlockChoice]
-    by_geo: Optional[GeoChoice]
+class TgAccountRead(TgAccountBase):
+    id: int

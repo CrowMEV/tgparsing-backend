@@ -9,11 +9,23 @@ from services.telegram.models import TgAccount
 import services.telegram.schemas as tg_schemas
 
 
+async def get_tgaccount(
+        session: AsyncSession,
+        id_account: int
+) -> TgAccount:
+    stmt = sa.select(TgAccount).where(TgAccount.id == id_account)
+    result = await session.execute(stmt)
+    selected_account = result.scalars().first()
+    if not selected_account:
+        raise HTTPException(status_code=400, detail="error id")
+    return selected_account
+
+
 async def get_tgaccounts(
         session: AsyncSession,
-        work: tg_schemas.WorkChoice = tg_schemas.WorkChoice.EMPTY,
-        blocked: tg_schemas.BlockChoice = tg_schemas.BlockChoice.EMPTY,
-        by_geo: tg_schemas.GeoChoice = tg_schemas.GeoChoice.EMPTY,
+        work: tg_schemas.WorkChoice,
+        blocked: tg_schemas.BlockChoice,
+        by_geo: tg_schemas.GeoChoice,
 ) -> Sequence[TgAccount]:
     stmt = sa.select(TgAccount)
 
