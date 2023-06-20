@@ -119,6 +119,17 @@ class Config(BaseSettings):
     TARIFF_PRICES_GET: str = "tariff_prices_get"
     TARIFF_PRICE_GET_ALL: str = "tariff_price_get_all"
     TARIFF_PRICE_DELETE: str = "tariff_price_delete"
+    # chat_members
+    MEMBER_GET: str = "member_get"
+    MEMBER_ADD: str = "member_add"
+    MEMBER_PATCH: str = "member_patch"
+    MEMBER_DELETE: str = "member_delete"
+    MEMBER_GET_ALL: str = "member_get_all"
+    # parcered_chats
+    CHAT_GET: str = "chat_get"
+    CHAT_ADD: str = "chat_add"
+    CHAT_GET_ALL: str = "chat_get_all"
+    CHAT_DELETE: str = "chat_delete"
 
 
 config = Config()
