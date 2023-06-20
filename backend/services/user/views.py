@@ -1,11 +1,15 @@
 import os
+from typing import Any
 
 import aiofiles
 import fastapi as fa
 from fastapi_users import models
 from fastapi_users.authentication import Strategy
 from fastapi_users.router import ErrorCode
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.db_async import get_async_session
+from services.user import db_handlers as db_hand
 from services.user.schemas import UserPatch, UserLogin
 from services.user.utils.authentication_backend import AppAuthenticationBackend
 from services.user.utils.manager import UserManager
@@ -60,3 +64,20 @@ async def user_patch(
         patch_data, current_user, safe=True, request=request
     )
     return user.__dict__
+
+
+async def get_user(
+    id: int,
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    user = await db_hand.get_current_by_id(session, id)
+    if not user:
+        raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
+    return user
+
+
+async def get_users(
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    users = await db_hand.get_users(session)
+    return users

@@ -43,4 +43,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
         default=RoleNameChoice.USER,
         server_default=RoleNameChoice.USER.name,
     )
-    role = relationship(Role, backref="users", lazy="selectin")
+    role = relationship(Role, backref="users", lazy="joined")

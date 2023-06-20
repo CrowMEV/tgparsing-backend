@@ -25,3 +25,13 @@ class Role(Base):
         default=[],
         server_default="{}",
     )
+    role_action: Mapped[List[ActionChoice]] = mapped_column(
+        ARRAY(sa.Enum(ActionChoice)),
+        default=[],
+        server_default="{}",
+    )
+    bot_action: Mapped[List[ActionChoice]] = mapped_column(
+        ARRAY(sa.Enum(ActionChoice)),
+        default=[],
+        server_default="{}",
+    )
