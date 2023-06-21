@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from services.tariff import views
 from services.tariff.schemas import TariffResponse, TariffLimitResponse
-from services.user.utils.permissions import is_superuser
+# from services.user.utils.permissions import is_superuser
 from settings import config
 
 router = APIRouter(prefix="/tariff", tags=["Tariff"])
@@ -19,7 +19,7 @@ router.add_api_route(
     endpoint=views.create_tariff_view,
     methods=["POST"],
     name=config.TARIFF_ADD,
-    dependencies=[Depends(is_superuser)],
+    # dependencies=[Depends(is_superuser)],
     response_model=TariffResponse
 )
 
@@ -37,7 +37,7 @@ router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PATCH,
     response_model=TariffResponse,
-    dependencies=[Depends(is_superuser)],
+    # dependencies=[Depends(is_superuser)],
 )
 
 router.add_api_route(
@@ -45,7 +45,7 @@ router.add_api_route(
     endpoint=views.delete_tariff_view,
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
-    dependencies=[Depends(is_superuser)]
+    # dependencies=[Depends(is_superuser)]
 )
 
 router.add_api_route(
@@ -69,7 +69,7 @@ router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_PRICE_ADD,
     response_model=TariffLimitResponse,
-    dependencies=[Depends(is_superuser)]
+    # dependencies=[Depends(is_superuser)]
 )
 
 router.add_api_route(
@@ -78,7 +78,7 @@ router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PRICE_PATCH,
     response_model=TariffLimitResponse,
-    dependencies=[Depends(is_superuser)]
+    # dependencies=[Depends(is_superuser)]
 )
 
 router.add_api_route(
@@ -86,7 +86,7 @@ router.add_api_route(
     endpoint=views.delete_tariff_price_view,
     methods=["DELETE"],
     name=config.TARIFF_PRICE_DELETE,
-    dependencies=[Depends(is_superuser)]
+    # dependencies=[Depends(is_superuser)]
 )
 
 router.add_api_route(

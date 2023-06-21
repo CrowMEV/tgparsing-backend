@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from pydantic import BaseSettings, Field
 
@@ -14,16 +15,22 @@ class Config(BaseSettings):
     DEBUG: bool = Field(default=True)
 
     # fastapi app
-    IS_VERIFIED: bool = Field(default=False)
+    APP_NAME: str = "TgParsing"
+    SECRET: str = Field(default="secret")
     DB_ECHO: bool = Field(default=True)
 
     # cookie
+    COOKIE_NAME: str = Field(default="TgParsing")
     COOKIE_SECURE: bool = Field(default=False)
     COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
-    SAME_SITE: str = Field(default="lax")
+    COOKIE_PATH: str = Field(default="")
+    COOKIE_DOMAIN: Optional[str] = None
+    COOKIE_HTTPONLY: bool = Field(default=False)
+    COOKIE_SAME_SITE: str = Field(default="lax")
 
-    # verify token
-    TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
+    # jwt
+    JWT_ALGORITHM = "HS256"
+    JWT_TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings
     IS_ACTIVE: bool = Field(default=True)
@@ -100,6 +107,7 @@ class Config(BaseSettings):
     USER_REFRESH_TOKEN: str = "user_refresh_token"
     USER_ALL: str = "user_all"
     USER_BY_ID: str = "user_by_id"
+    USER_DELETE: str = "user_delete"
     # role
     ROLE_GET: str = "role_get"
     ROLE_ADD: str = "role_add"

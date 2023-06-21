@@ -1,9 +1,7 @@
-from typing import Optional, TypeVar
+from typing import Optional
 
 from fastapi import Form, UploadFile
-from fastapi_users.schemas import CreateUpdateDictModel
 from pydantic import EmailStr, BaseModel, Field
-from fastapi_users import schemas
 
 from services.role.schemas import RoleResponse
 
@@ -17,12 +15,15 @@ class SuccessResponse(BaseModel):
     status: str
 
 
-class UserRead(schemas.BaseUser):
+class UserRead(BaseModel):
     id: int
     firstname: str
     lastname: str
     email: EmailStr
     is_staff: bool
+    is_active: bool = True
+    is_superuser: bool = False
+    is_verified: bool = False
     avatar_url: str
     role: RoleResponse
 
@@ -30,12 +31,13 @@ class UserRead(schemas.BaseUser):
         orm_mode = True
 
 
-class UserCreate(CreateUpdateDictModel):
+class UserCreate(BaseModel):
     firstname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
     lastname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
     email: EmailStr
-    password: str = Field(
+    hashed_password: str = Field(
         ...,
+        alias="password",
         min_length=8,
         regex=r""
         r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
@@ -44,7 +46,7 @@ class UserCreate(CreateUpdateDictModel):
     )
 
 
-class UserPatch(CreateUpdateDictModel):
+class UserPatch(BaseModel):
     firstname: Optional[str]
     lastname: Optional[str]
     password: Optional[str]
@@ -75,10 +77,3 @@ class UserPatch(CreateUpdateDictModel):
             password=password,
             avatar_url=avatar_url,
         )
-
-
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
-
-
-UP = TypeVar("UP", bound=UserPatch)

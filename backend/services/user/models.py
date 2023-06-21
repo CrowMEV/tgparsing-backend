@@ -2,7 +2,6 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from fastapi_users.db import SQLAlchemyBaseUserTable
 
 from services import Base
 from services.role.models import Role
@@ -10,7 +9,7 @@ from services.role.schemas import RoleNameChoice
 from settings import config
 
 
-class User(SQLAlchemyBaseUserTable[int], Base):
+class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
