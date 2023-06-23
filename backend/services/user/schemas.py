@@ -31,16 +31,13 @@ class UserRead(schemas.BaseUser):
 
 
 class UserCreate(CreateUpdateDictModel):
-    firstname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
-    lastname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
+    firstname: str = Field(..., min_length=2, regex="^[a-zA-Zа-яА-яёЁ]+$")
+    lastname: str = Field(..., min_length=2, regex="^[a-zA-Zа-яА-яёЁ]+$")
     email: EmailStr
     password: str = Field(
         ...,
         min_length=8,
-        regex=r""
-        r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
-        r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
-        r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
     )
 
 
