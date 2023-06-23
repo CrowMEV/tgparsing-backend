@@ -5,16 +5,14 @@ from fastapi_users import models
 from fastapi_users.authentication import Authenticator, Strategy
 from fastapi_users.manager import UserManagerDependency
 from fastapi_users.openapi import OpenAPIResponseType
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.db_async import get_async_session
-from services.user.db_handlers import get_users
-import services.user.utils.permissions as perm
-from services.user.utils.responses import resp, login_resp
-from settings import config
-from services.user import schemas as user_schemas, views
+from services.user import schemas as user_schemas
+from services.user import views
+from services.user.utils import permissions as perm
+from services.user.utils import responses as resp
 from services.user.utils.authentication_backend import AppAuthenticationBackend
 from services.user.utils.manager import UserManager
+from settings import config
 
 
 def get_auth_router(
@@ -32,11 +30,11 @@ def get_auth_router(
     )
 
     login_responses: OpenAPIResponseType = {
-        **login_resp,
+        **resp.HTTP_400,
         **backend.transport.get_openapi_login_responses_success(),
     }
     logout_responses: OpenAPIResponseType = {
-        **resp,
+        **resp.HTTP_401,
         **backend.transport.get_openapi_logout_responses_success(),
     }
 
@@ -85,7 +83,7 @@ def get_auth_router(
         "/refresh",
         name=config.USER_REFRESH_TOKEN,
         response_model=user_schemas.UserRead,
-        responses=resp,
+        responses={**resp.HTTP_401},
     )
     async def check_token(
         data: Tuple[models.UP, str] = fa.Depends(get_current_user_token),
@@ -116,7 +114,7 @@ def get_users_router(
         name=config.USER_PATCH,
         response_model=user_schemas.UserRead,
         dependencies=[fa.Depends(get_current_active_user)],
-        responses=resp,
+        responses={**resp.HTTP_401},
     )
     async def user_patch(
         request: fa.Request,
@@ -130,14 +128,21 @@ def get_users_router(
             request, patch_data, current_user, user_manager
         )
 
-    @router.get(
-        "/all",
+    router.add_api_route(
+        path="/",
+        endpoint=views.get_users,
         name=config.USER_ALL,
         response_model=List[user_schemas.UserRead],
-        dependencies=[fa.Depends(perm.is_staff)],
+        dependencies=[fa.Depends(perm.user_read)],
     )
-    async def all_users(session: AsyncSession = fa.Depends(get_async_session)):
-        users = await get_users(session)
-        return users
+
+    router.add_api_route(
+        path="/{id}",
+        endpoint=views.get_user,
+        response_model=user_schemas.UserRead,
+        name=config.USER_BY_ID,
+        dependencies=[fa.Depends(perm.user_read)],
+        responses={**resp.HTTP_401, **resp.HTTP_403, **resp.HTTP_404},
+    )
 
     return router

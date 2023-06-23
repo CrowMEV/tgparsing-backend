@@ -1,8 +1,8 @@
 """upd payments
 
-Revision ID: c7f20cd4b794
-Revises: b63dc9b97663
-Create Date: 2023-06-14 13:49:31.860970
+Revision ID: 491d4a076637
+Revises: 9d0d330eaebf
+Create Date: 2023-06-23 10:41:37.335800
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "c7f20cd4b794"
-down_revision = "b63dc9b97663"
+revision = "491d4a076637"
+down_revision = "9d0d330eaebf"
 branch_labels = None
 depends_on = None
 

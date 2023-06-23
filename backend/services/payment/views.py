@@ -19,7 +19,7 @@ async def get_payment_link(
     data = {
         "user": user.id,
         "amount": schema.amount,
-        "action": payment_schemas.PaymentChoice.DEBIT
+        "action": payment_schemas.PaymentChoice.DEBIT,
     }
     payment = await db_hand.add_payment(session, data)
     url = generate_payment_link(payment.id, schema)

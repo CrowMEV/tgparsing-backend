@@ -19,10 +19,11 @@ class Config(BaseSettings):
 
     # cookie
     COOKIE_SECURE: bool = Field(default=False)
-    COOKIE_AGE: int = Field(default=60, ge=1, le=86400)
+    COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
+    SAME_SITE: str = Field(default="lax")
 
     # verify token
-    TOKEN_AGE: int = Field(default=60, ge=1, le=86400)
+    TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings
     IS_ACTIVE: bool = Field(default=True)
@@ -93,7 +94,7 @@ class Config(BaseSettings):
     @property
     def base_avatar_url(self) -> str:
         return os.path.join(
-            self.BASE_DIR,
+            # self.BASE_DIR,
             self.STATIC_DIR,
             self.AVATARS_FOLDER,
             self.BASE_AVATAR_NAME,
@@ -107,15 +108,28 @@ class Config(BaseSettings):
     USER_PATCH: str = "user_patch"
     USER_REFRESH_TOKEN: str = "user_refresh_token"
     USER_ALL: str = "user_all"
+    USER_BY_ID: str = "user_by_id"
     # role
     ROLE_GET: str = "role_get"
     ROLE_ADD: str = "role_add"
     ROLE_DELETE: str = "role_delete"
     ROLE_PATCH: str = "role_patch"
     ROLE_GET_ALL: str = "role_get_all"
-    # robokassa
+    # payment
     PAYMENT_ADD: str = "payment_get_link"
-    PAYMENT_CONFIRM: str = "payment_confirm"
+    # tariffs
+    TARIFF_GET: str = "tariff_get"
+    TARIFF_ADD: str = "tariff_add"
+    TARIFF_PATCH: str = "tariff_patch"
+    TARIFF_DELETE: str = "tariff_delete"
+    TARIFF_GET_ALL: str = "tariff_get_all"
+    # tariff_prices
+    TARIFF_PRICE_GET: str = "tariff_price_get"
+    TARIFF_PRICE_ADD: str = "tariff_price_add"
+    TARIFF_PRICE_PATCH: str = "tariff_price_patch"
+    TARIFF_PRICES_GET: str = "tariff_prices_get"
+    TARIFF_PRICE_GET_ALL: str = "tariff_price_get_all"
+    TARIFF_PRICE_DELETE: str = "tariff_price_delete"
 
 
 config = Config()

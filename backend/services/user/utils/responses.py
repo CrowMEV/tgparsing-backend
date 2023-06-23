@@ -2,13 +2,7 @@ from fastapi import status
 from fastapi_users.router.common import ErrorModel, ErrorCode
 
 
-resp = {
-    status.HTTP_401_UNAUTHORIZED: {
-        "description": "Missing token or inactive user.",
-    },
-}
-
-login_resp = {
+HTTP_400 = {
     status.HTTP_400_BAD_REQUEST: {
         "model": ErrorModel,
         "content": {
@@ -27,4 +21,22 @@ login_resp = {
             }
         },
     },
+}
+
+HTTP_401 = {
+    status.HTTP_401_UNAUTHORIZED: {
+        "description": "Missing token or inactive user.",
+    }
+}
+
+HTTP_403 = {
+    status.HTTP_403_FORBIDDEN: {
+        "description": "Not a superuser or an admin.",
+    }
+}
+
+HTTP_404 = {
+    status.HTTP_404_NOT_FOUND: {
+        "description": "Missing token or inactive user.",
+    }
 }
