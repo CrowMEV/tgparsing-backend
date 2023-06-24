@@ -1,10 +1,9 @@
 from typing import Optional, TypeVar
 
 from fastapi import Form, UploadFile
-from fastapi_users.schemas import CreateUpdateDictModel
-from pydantic import EmailStr, BaseModel, Field
 from fastapi_users import schemas
-
+from fastapi_users.schemas import CreateUpdateDictModel
+from pydantic import BaseModel, EmailStr, Field
 from services.role.schemas import RoleResponse
 
 
@@ -37,7 +36,7 @@ class UserCreate(CreateUpdateDictModel):
     password: str = Field(
         ...,
         min_length=8,
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
+        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
     )
 
 
@@ -51,18 +50,15 @@ class UserPatch(CreateUpdateDictModel):
     def as_form(
         cls,
         firstname: Optional[str] = Form(
-            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
+            "", min_length=2, regex="^[a-zA-Zа-яА-яёЁ]+$"
         ),
         lastname: Optional[str] = Form(
-            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
+            "", min_length=2, regex="^[a-zA-Zа-яА-яёЁ]+$"
         ),
         password: Optional[str] = Form(
             "",
             min_length=8,
-            regex=r""
-            r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
-            r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
-            r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+            regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
         ),
         avatar_url: Optional[UploadFile] = Form(None, alias="picture"),
     ):
