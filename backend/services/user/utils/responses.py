@@ -1,4 +1,5 @@
 from fastapi import status
+
 # from fastapi_users.router.common import ErrorModel, ErrorCode
 
 
@@ -15,7 +16,9 @@ from fastapi import status
 #                     },
 #                     ErrorCode.LOGIN_USER_NOT_VERIFIED: {
 #                         "summary": "The user is not verified.",
-#                         "value": {"detail": ErrorCode.LOGIN_USER_NOT_VERIFIED},
+#                         "value": {
+#                             "detail": ErrorCode.LOGIN_USER_NOT_VERIFIED
+#                         },
 #                     },
 #                 }
 #             }
@@ -42,13 +45,5 @@ HTTP_404 = {
 }
 
 HTTP_201 = {
-    status.HTTP_201_CREATED: {
-        "content": {
-            "application/json": {
-                "example": {
-                    "detail": "created",
-                }
-            }
-        }
-    }
+    201: {"content": {"application/json": {"example": {"detail": "created"}}}}
 }

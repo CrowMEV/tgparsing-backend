@@ -12,8 +12,6 @@ def set_cookie(response: fa.Response, token: str) -> fa.Response:
         key=config.COOKIE_NAME,
         value=token,
         max_age=config.COOKIE_AGE,
-        path=config.COOKIE_PATH,
-        domain=config.COOKIE_DOMAIN,
         secure=config.COOKIE_SECURE,
         httponly=config.COOKIE_HTTPONLY,
         samesite=config.COOKIE_SAME_SITE,
@@ -24,8 +22,6 @@ def set_cookie(response: fa.Response, token: str) -> fa.Response:
 def drop_cookie(response: fa.Response) -> fa.Response:
     response.delete_cookie(
         key=config.COOKIE_NAME,
-        path=config.COOKIE_PATH,
-        domain=config.COOKIE_DOMAIN,
         secure=config.COOKIE_SECURE,
         httponly=config.COOKIE_HTTPONLY,
         samesite=config.COOKIE_SAME_SITE,
@@ -35,7 +31,5 @@ def drop_cookie(response: fa.Response) -> fa.Response:
 
 async def get_cookie_key(token: str = fa.Security(api_key)) -> str:
     if not token:
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_401_UNAUTHORIZED
-        )
+        raise fa.HTTPException(status_code=fa.status.HTTP_401_UNAUTHORIZED)
     return token

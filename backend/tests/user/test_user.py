@@ -5,9 +5,7 @@ from settings import config
 
 
 class TestUser:
-    # TODO: После переопределения роута регистрации раскомментировать строку
-    #       ниже и изменить роут в тесте регистрации
-    # register_url: str = app.url_path_for(config.USER_REGISTER)
+    register_url: str = app.url_path_for(config.USER_REGISTER)
     login_url: str = app.url_path_for(config.USER_LOGIN)
     logout_url: str = app.url_path_for(config.USER_LOGOUT)
     patch_url: str = app.url_path_for(config.USER_PATCH)
@@ -52,7 +50,7 @@ class TestUser:
         self, async_client, email, name, surname, password, code
     ):
         response = await async_client.post(
-            "/user/register",
+            self.register_url,
             json={
                 "email": email,
                 "firstname": name,

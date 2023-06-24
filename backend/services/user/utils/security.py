@@ -1,9 +1,14 @@
+import json
 from datetime import datetime, timedelta
 
 import fastapi as fa
+from fastapi.responses import JSONResponse
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
+from services.user.models import User
+from services.user.schemas import UserRead
+from services.user.utils.cookie import set_cookie
 from settings import config
 
 
@@ -21,7 +26,7 @@ def create_token(data: dict) -> str:
     return encoded_jwt
 
 
-def decode_token(token: str) -> dict | str:
+def decode_token(token: str) -> dict:
     try:
         data = jwt.decode(
             token, config.JWT_SECRET, algorithms=[config.JWT_ALGORITHM]
@@ -43,3 +48,15 @@ def get_hash_password(password: str) -> str:
 def validate_password(password: str, hashed_password: str) -> bool:
     """Validate password hash with user db hash."""
     return pwd_context.verify(password, hashed_password)
+
+
+def login(user: User, data: dict) -> fa.Response:
+    access_token = create_token(data)
+    user_json = UserRead.from_orm(user).json()
+    user_data = json.loads(user_json)
+    response = JSONResponse(
+        status_code=fa.status.HTTP_200_OK,
+        content=user_data,
+    )
+    set_cookie(response, access_token)
+    return response
