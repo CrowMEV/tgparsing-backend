@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from services.payment.routes import router as payment_router
 from services.role.routes import router as role_router
 from services.tariff.routes import router as tariff_router
 from settings import config
@@ -43,5 +44,6 @@ app.include_router(
     prefix="/user",
     tags=["user"],
 )
+app.include_router(payment_router)
 app.include_router(role_router)
 app.include_router(tariff_router)

@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -13,5 +14,6 @@ class Payment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user: Mapped[int] = mapped_column(sa.ForeignKey("users.id"))
     action: Mapped[PaymentChoice]
-    amount: Mapped[int]
+    amount: Mapped[decimal.Decimal]
     date: Mapped[datetime] = mapped_column(default=datetime.utcnow())
+    status: Mapped[bool] = mapped_column(default=False)
