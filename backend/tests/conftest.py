@@ -11,8 +11,6 @@ from server import app
 from services import Base
 from services.role.models import Role
 from services.user.models import User
-from services.payment.models import Payment
-from services.tariff.models import Tariff
 from settings import config
 
 

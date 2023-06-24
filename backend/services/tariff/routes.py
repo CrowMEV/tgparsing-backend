@@ -11,7 +11,7 @@ router.add_api_route(
     path="/",
     endpoint=views.get_tariff_list_view,
     methods=["GET"],
-    name=config.TARIFF_GET_ALL
+    name=config.TARIFF_GET_ALL,
 )
 
 router.add_api_route(
@@ -20,7 +20,7 @@ router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     dependencies=[Depends(is_superuser)],
-    response_model=TariffResponse
+    response_model=TariffResponse,
 )
 
 router.add_api_route(
@@ -28,7 +28,7 @@ router.add_api_route(
     endpoint=views.get_tariff_view,
     methods=["GET"],
     name=config.TARIFF_GET,
-    response_model=TariffResponse
+    response_model=TariffResponse,
 )
 
 router.add_api_route(
@@ -45,14 +45,14 @@ router.add_api_route(
     endpoint=views.delete_tariff_view,
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
-    dependencies=[Depends(is_superuser)]
+    dependencies=[Depends(is_superuser)],
 )
 
 router.add_api_route(
     path="/limit/prices",
     endpoint=views.tariff_prices_list_view,
     methods=["GET"],
-    name=config.TARIFF_PRICE_GET_ALL
+    name=config.TARIFF_PRICE_GET_ALL,
 )
 
 router.add_api_route(
@@ -69,7 +69,7 @@ router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_PRICE_ADD,
     response_model=TariffLimitResponse,
-    dependencies=[Depends(is_superuser)]
+    dependencies=[Depends(is_superuser)],
 )
 
 router.add_api_route(
@@ -78,7 +78,7 @@ router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PRICE_PATCH,
     response_model=TariffLimitResponse,
-    dependencies=[Depends(is_superuser)]
+    dependencies=[Depends(is_superuser)],
 )
 
 router.add_api_route(
@@ -86,12 +86,12 @@ router.add_api_route(
     endpoint=views.delete_tariff_price_view,
     methods=["DELETE"],
     name=config.TARIFF_PRICE_DELETE,
-    dependencies=[Depends(is_superuser)]
+    dependencies=[Depends(is_superuser)],
 )
 
 router.add_api_route(
     path="/limit/prices/all/{tariff_id}",
     endpoint=views.get_tariff_prices_view,
     methods=["GET"],
-    name=config.TARIFF_PRICES_GET
+    name=config.TARIFF_PRICES_GET,
 )

@@ -37,7 +37,7 @@ class UserCreate(CreateUpdateDictModel):
     password: str = Field(
         ...,
         min_length=8,
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
+        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
     )
 
 
