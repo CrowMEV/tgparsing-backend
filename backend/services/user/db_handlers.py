@@ -16,5 +16,5 @@ async def get_users(session: AsyncSession) -> Sequence[User]:
 async def get_current_by_id(session: AsyncSession, user_id: int) -> User:
     stmt = sa.select(User).where(User.id == user_id)
     result = await session.execute(stmt)
-    users = result.scalars().first()
+    users = result.scalars().one()
     return users

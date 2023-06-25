@@ -59,7 +59,7 @@ async def change_tariff_view(
         for key, value in tariff_schema.dict().items()
         if value is not None
     }
-    changed_tariff: Tariff = await tariff_db.change_tariff(
+    changed_tariff: Tariff | None = await tariff_db.change_tariff(
         session, tariff_id, patch_data
     )
     return changed_tariff
@@ -133,7 +133,7 @@ async def change_tariff_price_view(
         for key, value in tariff_price_schema.dict().items()
         if value is not None
     }
-    changed_tariff_price: TariffLimitPrice = (
+    changed_tariff_price: TariffLimitPrice | None = (
         await tariff_db.change_tariff_price(
             session, tariff_price_id, patch_data
         )

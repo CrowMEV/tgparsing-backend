@@ -7,7 +7,7 @@ async def add_payment(session: AsyncSession, data: dict) -> Payment:
     stmt = sa.insert(Payment).values(**data).returning(Payment)
     payment = await session.execute(stmt)
     await session.commit()
-    return payment.scalars().first()
+    return payment.scalars().one()
 
 
 async def get_payment(

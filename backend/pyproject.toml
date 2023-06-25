@@ -1,6 +1,11 @@
 # black
 [tool.black]
 line-length = 79
+include = '\.pyi?$'
+exclude = [
+    "migrations",
+]
+
 
 # pytest
 [tool.pytest.ini_options]
@@ -18,3 +23,9 @@ filterwarnings = [
 pytest_alembic_tests_path = "tests/pytest_alembic"
 #pytest_alembic_exclude = "test_alembic.py"
 #pytest_alembic_tests_path = "tests/pytest_alembic"
+
+# mypy
+[tool.mypy]
+exclude = [
+    "migrations",
+]

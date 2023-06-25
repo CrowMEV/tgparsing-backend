@@ -11,10 +11,9 @@ from server import app
 from services import Base
 from services.role.models import Role
 from services.user.models import User
-from services.payment.models import Payment
-from services.tariff.models import Tariff
 from settings import config
 
+import sqlalchemy.ext.asyncio
 
 engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 

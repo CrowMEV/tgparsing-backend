@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 
 from pydantic import BaseSettings, Field
 
@@ -20,7 +21,7 @@ class Config(BaseSettings):
     # cookie
     COOKIE_SECURE: bool = Field(default=False)
     COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
-    SAME_SITE: str = Field(default="lax")
+    SAME_SITE: Literal["lax", "strict", "none"] = Field(default="lax")
 
     # verify token
     TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
@@ -77,13 +78,13 @@ class Config(BaseSettings):
     FASTAPI_SECRET: str = Field(default="fastapi_secret")
 
     # robokassa settings
-    RK_CHECK_LOGIN: str = Field("")
-    RK_PAYMENT_URL: str = Field("")
-    RK_CHECK_PASS_1ST: str = Field("")
-    RK_CHECK_PASS_2ND: str = Field("")
-    RK_TAX_SYSTEM: str = Field("")
-    RK_REPLENISHMENT_NAME: str = Field("")
-    RK_TAX: str = Field("")
+    RK_CHECK_LOGIN: str = Field(default="")
+    RK_PAYMENT_URL: str = Field(default="")
+    RK_CHECK_PASS_1ST: str = Field(default="")
+    RK_CHECK_PASS_2ND: str = Field(default="")
+    RK_TAX_SYSTEM: str = Field(default="")
+    RK_REPLENISHMENT_NAME: str = Field(default="")
+    RK_TAX: str = Field(default="")
 
     # static
     BASE_DIR: str = os.getcwd()
