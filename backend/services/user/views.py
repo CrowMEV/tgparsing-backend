@@ -89,7 +89,7 @@ async def patch_current_user(
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     data = update_data.dict()
-    if "avatar_url" in data:
+    if data.get("avatar_url"):
         folder_path = os.path.join(config.STATIC_DIR, config.AVATARS_FOLDER)
         file_name = (
             f"{current_user.email}"
@@ -99,7 +99,7 @@ async def patch_current_user(
         async with aiofiles.open(file_url, "wb") as p_f:
             await p_f.write(data["avatar_url"].file.read())
         data["avatar_url"] = file_url
-    if "hashed_password" in data:
+    if data.get("hashed_password"):
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]
         )
