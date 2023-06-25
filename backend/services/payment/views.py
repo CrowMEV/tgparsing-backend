@@ -3,17 +3,15 @@ import fastapi as fa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
-from services.user.utils.permissions import fastapi_users
-from services.payment.utils.robokassa import (
-    generate_payment_link,
-)
+from services.payment.utils.robokassa import generate_payment_link
 import services.payment.db_handlers as db_hand
 import services.payment.schemas as payment_schemas
+from services.user.dependencies import get_current_user
 
 
 async def get_payment_link(
     schema: payment_schemas.PaymentCreate,
-    user=fa.Depends(fastapi_users.current_user()),
+    user=fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> str:
     data = {

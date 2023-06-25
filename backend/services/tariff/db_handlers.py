@@ -32,16 +32,15 @@ async def get_tariff_by_name(
 
 
 async def create_tariff(session: AsyncSession, data: dict) -> Tariff:
-    stmt = sa.insert(Tariff).values(**data).returning(Tariff)
-    result = await session.execute(stmt)
-    tariff: Tariff = result.scalars().first()
+    tariff = Tariff(**data)
+    session.add(tariff)
     await session.commit()
     return tariff
 
 
 async def change_tariff(
     session: AsyncSession, tariff_id: int, data: dict
-) -> Tariff:
+) -> Tariff | None:
     stmt = (
         sa.update(Tariff)
         .values(**data)
@@ -84,7 +83,7 @@ async def get_tariff_prices(
 
 async def get_tariff_price_by_id(
     session: AsyncSession, tariff_limit_id: int
-) -> TariffLimitPrice:
+) -> TariffLimitPrice | None:
     stmt = sa.select(TariffLimitPrice).where(
         TariffLimitPrice.id == tariff_limit_id
     )
@@ -114,18 +113,15 @@ async def delete_tariff_prices(session: AsyncSession, tariff_id: int) -> None:
 async def create_tariff_price(
     session: AsyncSession, data: dict
 ) -> TariffLimitPrice:
-    stmt = (
-        sa.insert(TariffLimitPrice).values(**data).returning(TariffLimitPrice)
-    )
-    result = await session.execute(stmt)
-    tariff_limit: TariffLimitPrice = result.scalars().first()
+    tariff_limit = TariffLimitPrice(**data)
+    session.add(tariff_limit)
     await session.commit()
     return tariff_limit
 
 
 async def change_tariff_price(
     session: AsyncSession, tariff_price_id: int, data: dict
-) -> TariffLimitPrice:
+) -> TariffLimitPrice | None:
     stmt = (
         sa.update(TariffLimitPrice)
         .values(**data)

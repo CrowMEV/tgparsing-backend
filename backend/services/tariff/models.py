@@ -1,5 +1,4 @@
 import sqlalchemy as sa
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from services import Base
@@ -8,10 +7,9 @@ from services.tariff.schemas import TariffLimitChoices
 
 class Tariff(Base):
     __tablename__ = "tariffs"
-    __table_args__ = (UniqueConstraint("name", name="name_unique"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[dict] = mapped_column(sa.JSON)
 
 

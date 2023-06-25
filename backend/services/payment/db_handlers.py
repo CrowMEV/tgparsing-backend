@@ -4,10 +4,10 @@ from services.payment.models import Payment
 
 
 async def add_payment(session: AsyncSession, data: dict) -> Payment:
-    stmt = sa.insert(Payment).values(**data).returning(Payment)
-    payment = await session.execute(stmt)
+    payment = Payment(**data)
+    session.add(payment)
     await session.commit()
-    return payment.scalars().first()
+    return payment
 
 
 async def get_payment(

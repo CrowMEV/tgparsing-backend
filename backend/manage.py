@@ -29,7 +29,11 @@ def site_group():
     default=config.DEBUG,
     help="Logging level. One of: [critical|error|warning|info|debug|trace]",
 )
-def run(host: str = None, port: int = None, log_level: str = None):
+def run(
+    host: str,
+    port: int,
+    log_level: str,
+):
     """Run server"""
     import uvicorn
 

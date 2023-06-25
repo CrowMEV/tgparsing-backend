@@ -4,9 +4,9 @@ from settings import config
 from services.payment import views
 
 
-router = APIRouter(prefix="/payment", tags=["Payment"])
+payment_router = APIRouter(prefix="/payment", tags=["Payment"])
 
-router.add_api_route(
+payment_router.add_api_route(
     path="/",
     endpoint=views.get_payment_link,
     methods=["POST"],
