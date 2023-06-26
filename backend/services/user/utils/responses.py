@@ -28,22 +28,22 @@ from fastapi import status
 
 HTTP_401 = {
     status.HTTP_401_UNAUTHORIZED: {
-        "description": "Missing token or inactive user.",
+        "description": "Пропущен токен или неактивный юзер",
     }
 }
 
 HTTP_403 = {
     status.HTTP_403_FORBIDDEN: {
-        "description": "Not a superuser or an admin.",
+        "description": "Не суперюзер или не админ",
     }
 }
 
 HTTP_404 = {
     status.HTTP_404_NOT_FOUND: {
-        "description": "Missing token or inactive user.",
+        "description": "Пропущен токен или неактивный юзер",
     }
 }
 
 HTTP_201 = {
-    201: {"content": {"application/json": {"example": {"detail": "created"}}}}
+    201: {"content": {"application/json": {"example": {"detail": "Создано"}}}}
 }

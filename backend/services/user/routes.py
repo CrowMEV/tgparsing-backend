@@ -9,7 +9,6 @@ from services.user.utils.permissions import user_read
 from services.user.utils.responses import HTTP_201, HTTP_401
 from settings import config
 
-
 user_router = fa.APIRouter(prefix="/user", tags=["User"])
 
 user_router.add_api_route(
