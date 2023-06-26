@@ -1,66 +1,69 @@
-from fastapi import APIRouter
+from typing import List
 
-from services.tgmember import views as tgm_views
+import fastapi as fa
+
 from services.tgmember import schemas as tgm_schemas
+from services.tgmember import views as tgm_views
 from settings import config
 
-tgmember_router = APIRouter()
+tgmember_router = fa.APIRouter(prefix="/tgmembers", tags=["TG members"])
 
 tgmember_router.add_api_route(
     path="/",
-    endpoint=tgm_views.get_members_list,
+    endpoint=tgm_views.get_members,
     methods=["GET"],
-    tags=["parsing"],
-    name=config.MEMBER_GET_ALL
+    name=config.MEMBER_ALL,
+    response_model=List[tgm_schemas.ChatMemberRead],
 )
 
 tgmember_router.add_api_route(
-    path="/{member_id}",
-    endpoint=tgm_views.get_member,
+    path="/{id_row}",
+    endpoint=tgm_views.get_member_by_id,
     methods=["GET"],
-    tags=["parsing"],
-    name=config.MEMBER_GET,
-    response_model=tgm_schemas.ChatMemberRead
+    name=config.MEMBER_BY_ID,
+    response_model=tgm_schemas.ChatMemberRead,
 )
 
 tgmember_router.add_api_route(
     path="/",
     endpoint=tgm_views.create_members,
     methods=["POST"],
-    tags=["parsing"],
-    response_model=tgm_schemas.ChatMemberRead,
-    name=config.MEMBER_ADD
+    name=config.MEMBER_ADD,
+    response_model=tgm_schemas.ChatMemberCreate,
 )
 
 tgmember_router.add_api_route(
-    path="/{member_id}",
+    path="/{id_row}",
     endpoint=tgm_views.delete_member,
     methods=["DELETE"],
-    tags=["parsing"],
-    name=config.MEMBER_DELETE
+    name=config.MEMBER_DELETE,
 )
 
-tgmember_router.add_api_route(
-    path="/chats",
-    endpoint=tgm_views.get_chats_list,
+
+chat_router = fa.APIRouter(prefix="/chats", tags=["Parsered chats"])
+
+
+chat_router.add_api_route(
+    path="/",
+    endpoint=tgm_views.get_chats,
     methods=["GET"],
-    tags=["parsing"],
-    name=config.CHAT_GET_ALL
+    name=config.CHAT_ALL,
+    response_model=List[tgm_schemas.ParseredChatRead],
 )
 
-tgmember_router.add_api_route(
-    path="/chats/{chat_id}",
-    endpoint=tgm_views.get_chat,
+chat_router.add_api_route(
+    path="/{id_row}",
+    endpoint=tgm_views.get_chats,
     methods=["GET"],
-    tags=["parsing"],
-    name=config.CHAT_GET,
-    response_model=tgm_schemas.ParseredChatRead
+    name=config.CHAT_BY_ID,
+    response_model=tgm_schemas.ParseredChatRead,
 )
 
-tgmember_router.add_api_route(
-    path="/chats/{chat_id}",
+chat_router.add_api_route(
+    path="/{id_row}",
     endpoint=tgm_views.delete_chat,
     methods=["DELETE"],
-    tags=["parsing"],
-    name=config.CHAT_DELETE
+    name=config.CHAT_DELETE,
 )
+
+tgmember_router.include_router(chat_router)

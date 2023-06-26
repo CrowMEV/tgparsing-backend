@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
 
@@ -23,12 +23,8 @@ class ChatMember(Base):
 
 class ParseredChat(Base):
     __tablename__ = "parsered_chats"
-    __table_args__ = (
-        sa.UniqueConstraint("name", name="chatname_unique"),
-    )
+    __table_args__ = (sa.UniqueConstraint("name", name="chatname_unique"),)
     chat_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     title: Mapped[str]
-    chat_member: Mapped[ChatMember] = relationship(
-        back_populates="chats"
-    )
+    chat_member: Mapped[ChatMember] = relationship(back_populates="chats")

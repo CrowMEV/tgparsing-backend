@@ -10,7 +10,6 @@ from services.user.routes import user_router
 from services.tgmember.routes import tgmember_router
 from settings import config
 
-
 app = FastAPI(title=config.APP_NAME)
 
 app.add_middleware(

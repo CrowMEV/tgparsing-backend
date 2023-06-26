@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 from pydantic import BaseSettings, Field
 
@@ -136,15 +136,15 @@ class Config(BaseSettings):
     TARIFF_PRICE_GET_ALL: str = Field(default="tariff_price_get_all")
     TARIFF_PRICE_DELETE: str = Field(default="tariff_price_delete")
     # chat_members
-    MEMBER_GET: str = Field(default="member_get")
+    MEMBER_BY_ID: str = Field(default="member_by_id")
     MEMBER_ADD: str = Field(default="member_add")
     MEMBER_PATCH: str = Field(default="member_patch")
     MEMBER_DELETE: str = Field(default="member_delete")
-    MEMBER_GET_ALL: str = Field(default="member_get_all")
+    MEMBER_ALL: str = Field(default="member_all")
     # parcered_chats
-    CHAT_GET: str = Field(default="chat_get")
+    CHAT_BY_ID: str = Field(default="chat_by_id")
     CHAT_ADD: str = Field(default="chat_add")
-    CHAT_GET_ALL: str = Field(default="chat_get_all")
+    CHAT_ALL: str = Field(default="chat_all")
     CHAT_DELETE: str = Field(default="chat_delete")
 
 

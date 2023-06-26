@@ -11,11 +11,8 @@ from server import app
 from services import Base
 from services.role.models import Role
 from services.user.models import User
-from services.payment.models import Payment
-from services.tariff.models import Tariff
 from services.user.utils.security import get_hash_password
 from settings import config
-
 
 engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 
@@ -99,8 +96,6 @@ async def admin_login(async_client, add_superuser):
 
 
 USER_EMAIL = "155@mail.ru"
-USER_NAME = "vasya"
-USER_SURNAME = "pupkin"
 USER_PASSWORD = "Hero1721%"
 
 
@@ -109,12 +104,7 @@ async def add_user(async_client, prepare_database):
     register_url = app.url_path_for(config.USER_REGISTER)
     await async_client.post(
         register_url,
-        json={
-            "email": USER_EMAIL,
-            "firstname": USER_NAME,
-            "lastname": USER_SURNAME,
-            "password": USER_PASSWORD,
-        },
+        json={"email": USER_EMAIL, "password": USER_PASSWORD},
     )
 
 

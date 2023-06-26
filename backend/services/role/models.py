@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
 from services import Base
-from services.role.schemas import RoleNameChoice, ActionChoice
+from services.role.schemas import ActionChoice, RoleNameChoice
 
 
 class Role(Base):

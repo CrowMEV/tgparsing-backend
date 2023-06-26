@@ -2,7 +2,7 @@ import decimal
 import enum
 from typing import Optional
 
-from pydantic import Field, EmailStr, BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 
 class PaymentChoice(enum.Enum):

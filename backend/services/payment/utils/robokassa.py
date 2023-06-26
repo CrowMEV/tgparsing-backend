@@ -1,8 +1,8 @@
 import hashlib
 from urllib import parse
-from settings import config
 
 from services.payment.schemas import PaymentCreate
+from settings import config
 
 
 def calculate_signature(*args) -> str:
