@@ -1,8 +1,8 @@
 import hashlib
 from urllib import parse
-from settings import config
 
 from services.payment.schemas import PaymentCreate
+from settings import config
 
 
 def calculate_signature(*args) -> str:
@@ -46,3 +46,13 @@ def generate_payment_link(
         "SignatureValue": signature,
     }
     return f"{payment_url}?{parse.urlencode(data)}"
+
+
+def check_result_payment(params, strict_check: bool = False) -> bool:
+    check_pass = (
+        config.RK_CHECK_PASS_2ND if strict_check else config.RK_CHECK_PASS_1ST
+    )
+    signature = calculate_signature(params.out_sum, params.inv_id, check_pass)
+    if signature.lower() == params.signature_value.lower():
+        return True
+    return False
