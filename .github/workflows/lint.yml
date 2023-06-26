@@ -33,7 +33,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
       - name: Linting with Mypy
-        run: pylint ./backend
+        run: mypy ./backend
       - name: Linting with Pylint
         run: pylint ./backend
       - name: Test with pytest
