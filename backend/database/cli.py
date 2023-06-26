@@ -1,7 +1,16 @@
+import json
+import sys
+
 import click
+from pydantic import ValidationError
+from sqlalchemy import and_, select
 from sqlalchemy.dialects.postgresql import insert
 
 from database.db_sync import Session
+from services.role.models import Role
+from services.user.models import User
+from services.user.schemas import UserCreate
+from services.user.utils.security import get_hash_password
 
 
 @click.group("db")
@@ -13,9 +22,6 @@ def db_group():
 @click.argument("path")
 def load_roles(path: str, db_session=Session):
     """Load roles to the "roles" table in the database"""
-    import json
-
-    from services.role.models import Role
 
     with open(path) as file:
         data: dict = json.load(file)
@@ -42,16 +48,6 @@ def add_admin(
     superuser: str,
 ):
     with Session() as session:
-        import sys
-        from passlib.context import CryptContext
-
-        from pydantic import ValidationError
-        from sqlalchemy import select, and_
-        from sqlalchemy.dialects.postgresql import insert
-
-        from services.user.models import User
-        from services.user.schemas import UserCreate
-
         stmt = select(User).where(and_(User.email == email))
         user = session.execute(stmt).first()
         if user:
@@ -63,12 +59,10 @@ def add_admin(
             "password": password,
         }
         try:
-            UserCreate(**prepared_data)
+            UserCreate.parse_obj(prepared_data)
         except ValidationError as err:
-            sys.exit(err)
-        hashed_password = CryptContext(
-            schemes=["bcrypt"], deprecated="auto"
-        ).hash(password)
+            sys.exit(str(err))
+        hashed_password = get_hash_password(password)
         prepared_data.pop("password")
         prepared_data.update(
             {
