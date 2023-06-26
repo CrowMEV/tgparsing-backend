@@ -50,7 +50,7 @@ user_router.add_api_route(
     dependencies=[fa.Depends(user_read)],
 )
 user_router.add_api_route(
-    path="/{id}",
+    path="/{id_row}",
     methods=["GET"],
     endpoint=views.get_user_by_id,
     name=config.USER_BY_ID,

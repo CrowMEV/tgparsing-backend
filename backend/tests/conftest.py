@@ -9,9 +9,7 @@ from httpx import AsyncClient
 from database.db_async import get_async_session
 from server import app
 from services import Base
-from services.payment.models import Payment
 from services.role.models import Role
-from services.tariff.models import Tariff
 from services.user.models import User
 from services.user.utils.security import get_hash_password
 from settings import config
@@ -24,6 +22,14 @@ async_test_session = sa_asyncio.async_sessionmaker(
 
 
 async def test_async_session() -> AsyncGenerator[
+    sa_asyncio.AsyncSession, None
+]:
+    async with async_test_session() as session:
+        yield session
+
+
+@pytest.fixture()
+async def session() -> AsyncGenerator[
     sa_asyncio.AsyncSession, None
 ]:
     async with async_test_session() as session:

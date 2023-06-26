@@ -12,8 +12,8 @@ class PaymentChoice(enum.Enum):
 
 
 class PaymentCreate(BaseModel):
-    amount: decimal.Decimal = Field(..., ge=0.01)
-    email: Optional[EmailStr]
+    amount: decimal.Decimal = Field(..., ge=1, decimal_places=2)
+    email: Optional[EmailStr] = Field(default="")
 
 
 class PaymentConfirm(BaseModel):

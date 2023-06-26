@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from services.payment import views
+from services.user.utils.permissions import payment_read
 from settings import config
 
 payment_router = APIRouter(prefix="/payment", tags=["Payment"])
@@ -12,7 +13,7 @@ payment_router.add_api_route(
     name=config.PAYMENT_ADD,
 )
 payment_router.add_api_route(
-    path="/",
+    path="/result",
     endpoint=views.check_responce,
     methods=["GET"],
     name=config.PAYMENT_CHK,
@@ -28,4 +29,11 @@ payment_router.add_api_route(
     endpoint=views.fail_payment,
     methods=["GET"],
     name=config.PAYMENT_FAIL,
+)
+payment_router.add_api_route(
+    path="/",
+    endpoint=views.get_payments,
+    methods=["GET"],
+    name=config.PAYMENTS_GET,
+    dependencies=[Depends(payment_read)],
 )

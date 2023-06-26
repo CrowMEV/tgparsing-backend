@@ -30,11 +30,11 @@ def decode_token(token: str) -> dict:
         data = jwt.decode(
             token, config.JWT_SECRET, algorithms=[config.JWT_ALGORITHM]
         )
-    except JWTError as err:
+    except JWTError:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_403_FORBIDDEN,
             detail="Неверный токен или он истек",
-        )
+        ) from None
     return data
 
 

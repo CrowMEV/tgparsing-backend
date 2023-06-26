@@ -67,10 +67,10 @@ async def create_user(
 
 
 async def get_user_by_id(
-    id: int,
+    id_row: int,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    user = await db_hand.get_current_by_id(session, id)
+    user = await db_hand.get_current_by_id(session, id_row)
     if not user:
         raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
     return user

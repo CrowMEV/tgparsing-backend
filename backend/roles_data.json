@@ -1,6 +1,7 @@
 [
   {
-    "name": "USER"
+    "name": "USER",
+    "payment_action": ["READ"]
   },
   {
     "name": "ACCOUNTANT",

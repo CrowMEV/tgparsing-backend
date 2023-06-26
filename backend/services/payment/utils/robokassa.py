@@ -1,7 +1,6 @@
 import hashlib
 from urllib import parse
 
-from services.payment.schemas import PaymentCreate
 from settings import config
 
 
@@ -11,8 +10,7 @@ def calculate_signature(*args) -> str:
 
 
 def generate_payment_link(
-    inv_id: int,
-    payment_data: PaymentCreate,
+    data: dict,
 ) -> str:
     """URL for redirection of the customer to the service."""
     check_login = config.RK_CHECK_LOGIN
@@ -22,6 +20,9 @@ def generate_payment_link(
     tax = config.RK_TAX
     order_name = config.RK_REPLENISHMENT_NAME
     quantity = 1
+    amount = data["amount"]
+    inv_id = data["inv_id"]
+    email = data["email"]
 
     receipt = {
         "sno": tax_system,
@@ -29,19 +30,19 @@ def generate_payment_link(
             {
                 "name": order_name,
                 "quantity": quantity,
-                "sum": float(payment_data.amount),
+                "sum": float(amount),
                 "tax": tax,
             }
         ],
     }
     signature = calculate_signature(
-        check_login, payment_data.amount, inv_id, receipt, check_pass
+        check_login, amount, inv_id, receipt, check_pass
     )
     data = {
         "MerchantLogin": check_login,
-        "OutSum": payment_data.amount,
+        "OutSum": amount,
         "InvId": inv_id,
-        "Email": payment_data.email or "",
+        "Email": email,
         "Receipt": receipt,
         "SignatureValue": signature,
     }
