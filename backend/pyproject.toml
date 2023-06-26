@@ -1,6 +1,12 @@
 # black
 [tool.black]
 line-length = 79
+extend-exclude = "migrations/"
+
+# isort
+[tool.isort]
+profile = "black"
+extend_skip_glob = "migrations"
 
 # pytest
 [tool.pytest.ini_options]
@@ -14,7 +20,8 @@ filterwarnings = [
     "ignore:pkg_resources is deprecated as an API:DeprecationWarning"
 ]
 
-# pytest-pytest_alembic
-pytest_alembic_tests_path = "tests/pytest_alembic"
-#pytest_alembic_exclude = "test_alembic.py"
-#pytest_alembic_tests_path = "tests/pytest_alembic"
+# mypy
+[tool.mypy]
+exclude = ["migrations/"]
+
+

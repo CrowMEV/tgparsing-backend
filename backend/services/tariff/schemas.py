@@ -34,7 +34,7 @@ class TariffLimitPostModel(BaseModel):
 
 
 class TariffLimitPatchModel(BaseModel):
-    tariff: Optional[int]
+    tariff: int
     limitation: Optional[TariffLimitChoices]
     price: Optional[int]
 

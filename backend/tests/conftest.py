@@ -1,20 +1,18 @@
 import asyncio
 import json
+from typing import AsyncGenerator
 
 import pytest
 import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
-from passlib.context import CryptContext
 
 from database.db_async import get_async_session
 from server import app
 from services import Base
 from services.role.models import Role
 from services.user.models import User
-from services.payment.models import Payment
-from services.tariff.models import Tariff
+from services.user.utils.security import get_hash_password
 from settings import config
-
 
 engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 
@@ -23,7 +21,9 @@ async_test_session = sa_asyncio.async_sessionmaker(
 )
 
 
-async def test_async_session() -> sa_asyncio.AsyncSession:
+async def test_async_session() -> AsyncGenerator[
+    sa_asyncio.AsyncSession, None
+]:
     async with async_test_session() as session:
         yield session
 
@@ -44,7 +44,7 @@ async def prepare_database(event_loop):
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     with open("roles_data.json") as file:
-        data: dict = json.load(file)
+        data = json.load(file)
     async with async_test_session() as session:
         for item_data in data:
             role = Role(**item_data)
@@ -61,21 +61,19 @@ async def async_client():
         yield client
 
 
-admin_pass = "AFFdmin1%"
-admin_hashed_password = CryptContext(
-    schemes=["bcrypt"], deprecated="auto"
-).hash(admin_pass)
-admin_email = "admin@mail.ru"
+SUPERUSER_PASS = "AFFdmin1%"
+SUPERUSER_HASHED_PASSWORD = get_hash_password(SUPERUSER_PASS)
+SUPERUSER_EMAIL = "admin@mail.ru"
 
 
 @pytest.fixture(autouse=True, scope="session")
-async def add_admin(async_client, prepare_database):
+async def add_superuser(async_client, prepare_database):
     async with async_test_session() as session:
         user = User(
-            email=admin_email,
-            hashed_password=admin_hashed_password,
-            firstname="admin",
-            lastname="admin",
+            email=SUPERUSER_EMAIL,
+            hashed_password=SUPERUSER_HASHED_PASSWORD,
+            firstname="superuser",
+            lastname="superuser",
             role_name="ADMIN",
             is_superuser=True,
             is_staff=True,
@@ -85,43 +83,38 @@ async def add_admin(async_client, prepare_database):
 
 
 @pytest.fixture(scope="function")
-async def admin_login(async_client, add_admin):
-    login_url: str = app.url_path_for(config.USER_LOGIN)
-    await async_client.post(
+async def admin_login(async_client, add_superuser):
+    login_url = app.url_path_for(config.USER_LOGIN)
+    response = await async_client.post(
         login_url,
         json={
-            "email": admin_email,
-            "password": admin_pass,
+            "email": SUPERUSER_EMAIL,
+            "password": SUPERUSER_PASS,
         },
     )
+    return response.json()
 
 
-user_email = "155@mail.ru"
-user_name = "vasya"
-user_surname = "pupkin"
-user_password = "Hero1721%"
+USER_EMAIL = "155@mail.ru"
+USER_PASSWORD = "Hero1721%"
 
 
 @pytest.fixture(autouse=True, scope="session")
 async def add_user(async_client, prepare_database):
+    register_url = app.url_path_for(config.USER_REGISTER)
     await async_client.post(
-        "/user/register",
-        json={
-            "email": user_email,
-            "firstname": user_name,
-            "lastname": user_surname,
-            "password": user_password,
-        },
+        register_url,
+        json={"email": USER_EMAIL, "password": USER_PASSWORD},
     )
 
 
 @pytest.fixture(scope="function")
 async def user_login(async_client, add_user):
-    login_url: str = app.url_path_for(config.USER_LOGIN)
+    login_url = app.url_path_for(config.USER_LOGIN)
     await async_client.post(
         login_url,
         json={
-            "email": user_email,
-            "password": user_password,
+            "email": USER_EMAIL,
+            "password": USER_PASSWORD,
         },
     )

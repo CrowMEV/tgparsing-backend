@@ -1,4 +1,5 @@
 import os
+from typing import Literal, Optional
 
 from pydantic import BaseSettings, Field
 
@@ -14,16 +15,22 @@ class Config(BaseSettings):
     DEBUG: bool = Field(default=True)
 
     # fastapi app
-    IS_VERIFIED: bool = Field(default=False)
+    APP_NAME: str = "TgParsing"
+    SECRET: str = Field(default="secret")
     DB_ECHO: bool = Field(default=True)
 
     # cookie
+    COOKIE_NAME: str = Field(default="TgParsing")
     COOKIE_SECURE: bool = Field(default=False)
     COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
-    SAME_SITE: str = Field(default="lax")
+    COOKIE_HTTPONLY: bool = Field(default=False)
+    COOKIE_SAME_SITE: Optional[Literal["lax", "strict", "none"]] = Field(
+        default="lax"
+    )
 
-    # verify token
-    TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
+    # jwt
+    JWT_ALGORITHM = "HS256"
+    JWT_TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings
     IS_ACTIVE: bool = Field(default=True)
@@ -77,15 +84,13 @@ class Config(BaseSettings):
     FASTAPI_SECRET: str = Field(default="fastapi_secret")
 
     # static
-    BASE_DIR: str = os.getcwd()
-    STATIC_DIR: str = "static"
-    AVATARS_FOLDER: str = "users_avatars"
-    BASE_AVATAR_NAME: str = "base_avatar.png"
+    STATIC_DIR: str = Field(default="static")
+    AVATARS_FOLDER: str = Field(default="users_avatars")
+    BASE_AVATAR_NAME: str = Field(default="base_avatar.png")
 
     @property
     def base_avatar_url(self) -> str:
         return os.path.join(
-            # self.BASE_DIR,
             self.STATIC_DIR,
             self.AVATARS_FOLDER,
             self.BASE_AVATAR_NAME,
@@ -93,32 +98,43 @@ class Config(BaseSettings):
 
     # url names
     # user
-    USER_REGISTER: str = "user_register"
-    USER_LOGIN: str = "user_login"
-    USER_LOGOUT: str = "user_logout"
-    USER_PATCH: str = "user_patch"
-    USER_REFRESH_TOKEN: str = "user_refresh_token"
-    USER_ALL: str = "user_all"
-    USER_BY_ID: str = "user_by_id"
+    USER_REGISTER: str = Field(default="user_register")
+    USER_LOGIN: str = Field(default="user_login")
+    USER_LOGOUT: str = Field(default="user_logout")
+    USER_PATCH: str = Field(default="user_patch")
+    USER_REFRESH_TOKEN: str = Field(default="user_refresh_token")
+    USER_ALL: str = Field(default="user_all")
+    USER_BY_ID: str = Field(default="user_by_id")
+    USER_DELETE: str = Field(default="user_delete")
     # role
-    ROLE_GET: str = "role_get"
-    ROLE_ADD: str = "role_add"
-    ROLE_DELETE: str = "role_delete"
-    ROLE_PATCH: str = "role_patch"
-    ROLE_GET_ALL: str = "role_get_all"
+    ROLE_GET: str = Field(default="role_get")
+    ROLE_ADD: str = Field(default="role_add")
+    ROLE_DELETE: str = Field(default="role_delete")
+    ROLE_PATCH: str = Field(default="role_patch")
+    ROLE_GET_ALL: str = Field(default="role_get_all")
+    # payment
+    PAYMENT_ADD: str = Field(default="payment_get_link")
+    # robokassa settings
+    RK_CHECK_LOGIN: str = Field(default="")
+    RK_PAYMENT_URL: str = Field(default="")
+    RK_CHECK_PASS_1ST: str = Field(default="")
+    RK_CHECK_PASS_2ND: str = Field(default="")
+    RK_TAX_SYSTEM: str = Field(default="")
+    RK_REPLENISHMENT_NAME: str = Field(default="")
+    RK_TAX: str = Field(default="")
     # tariffs
-    TARIFF_GET: str = "tariff_get"
-    TARIFF_ADD: str = "tariff_add"
-    TARIFF_PATCH: str = "tariff_patch"
-    TARIFF_DELETE: str = "tariff_delete"
-    TARIFF_GET_ALL: str = "tariff_get_all"
+    TARIFF_GET: str = Field(default="tariff_get")
+    TARIFF_ADD: str = Field(default="tariff_add")
+    TARIFF_PATCH: str = Field(default="tariff_patch")
+    TARIFF_DELETE: str = Field(default="tariff_delete")
+    TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     # tariff_prices
-    TARIFF_PRICE_GET: str = "tariff_price_get"
-    TARIFF_PRICE_ADD: str = "tariff_price_add"
-    TARIFF_PRICE_PATCH: str = "tariff_price_patch"
-    TARIFF_PRICES_GET: str = "tariff_prices_get"
-    TARIFF_PRICE_GET_ALL: str = "tariff_price_get_all"
-    TARIFF_PRICE_DELETE: str = "tariff_price_delete"
+    TARIFF_PRICE_GET: str = Field(default="tariff_price_get")
+    TARIFF_PRICE_ADD: str = Field(default="tariff_price_add")
+    TARIFF_PRICE_PATCH: str = Field(default="tariff_price_patch")
+    TARIFF_PRICES_GET: str = Field(default="tariff_prices_get")
+    TARIFF_PRICE_GET_ALL: str = Field(default="tariff_price_get_all")
+    TARIFF_PRICE_DELETE: str = Field(default="tariff_price_delete")
 
 
 config = Config()

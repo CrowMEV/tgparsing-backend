@@ -127,7 +127,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-venv-tgparsing/
 
 # Spyder project settings
 .spyderproject
@@ -162,7 +161,6 @@ cython_debug/
 .vscode/
 tgparsing-front/
 db_data/
-requirements-old.txt
 
 # media files
 backend/static/users_avatars/*
