@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from services.tariff import views
-from services.tariff.schemas import TariffResponse, TariffLimitResponse
+from services.tariff.schemas import TariffLimitResponse, TariffResponse
 from services.user.utils.permissions import is_superuser
 
 # from services.user.utils.permissions import is_superuser

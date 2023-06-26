@@ -9,7 +9,6 @@ from services.tariff.routes import tariff_router
 from services.user.routes import user_router
 from settings import config
 
-
 app = FastAPI(title=config.APP_NAME)
 
 app.add_middleware(

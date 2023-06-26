@@ -1,7 +1,7 @@
 from typing import Optional
 
 from fastapi import Form, UploadFile
-from pydantic import EmailStr, BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from services.role.schemas import RoleResponse
 
@@ -17,8 +17,8 @@ class SuccessResponse(BaseModel):
 
 class UserRead(BaseModel):
     id: int
-    firstname: str
-    lastname: str
+    firstname: str | None
+    lastname: str | None
     email: EmailStr
     is_staff: bool
     is_active: bool = True
@@ -32,8 +32,6 @@ class UserRead(BaseModel):
 
 
 class UserCreate(BaseModel):
-    firstname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-ЯёЁ]+$")
-    lastname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-ЯёЁ]+$")
     email: EmailStr
     hashed_password: str = Field(
         ...,

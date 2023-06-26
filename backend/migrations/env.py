@@ -1,12 +1,12 @@
 from logging.config import fileConfig
 
-import services.role.models as role_models
-import services.tariff.models as tariff_models
-import services.user.models as user_models
-import services.payment.models as payment_models
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import services.payment.models as payment_models
+import services.role.models as role_models
+import services.tariff.models as tariff_models
+import services.user.models as user_models
 from services import Base
 from settings import config as app_config
 

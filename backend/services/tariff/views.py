@@ -3,10 +3,10 @@ from typing import Any
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.db_async import get_async_session
 import services.tariff.db_handlers as db_hand
-from services.tariff.models import Tariff, TariffLimitPrice
 import services.tariff.schemas as tariff_schemas
+from database.db_async import get_async_session
+from services.tariff.models import Tariff, TariffLimitPrice
 
 
 async def get_tariff_list_view(
@@ -21,7 +21,7 @@ async def get_tariff_view(
 ) -> Any:
     tariff: Tariff | None = await db_hand.get_tariff_by_id(session, tariff_id)
     if not tariff:
-        raise HTTPException(status_code=404, detail="Tariff not found")
+        raise HTTPException(status_code=404, detail="Тариф не найден")
     return tariff
 
 
@@ -34,7 +34,7 @@ async def create_tariff_view(
     )
     if check_tariff:
         raise HTTPException(
-            status_code=400, detail="tariff name must be unique"
+            status_code=400, detail="Имя тарифа должно быть уникальным"
         )
     tariff: Tariff = await db_hand.create_tariff(session, tariff_schema.dict())
     return tariff
@@ -86,7 +86,7 @@ async def get_tariff_price_view(
         await db_hand.get_tariff_price_by_id(session, tariff_price_id)
     )
     if not tariff_price:
-        raise HTTPException(status_code=404, detail="Tariff price not found")
+        raise HTTPException(status_code=404, detail="Прайс тарифа не найден")
     return tariff_price
 
 
@@ -98,7 +98,7 @@ async def create_tariff_price_view(
         session, tariff_price_schema.tariff
     )
     if not tariff:
-        raise HTTPException(status_code=404, detail="tariff not found")
+        raise HTTPException(status_code=404, detail="Тариф не найден")
     tariff_price: TariffLimitPrice = await db_hand.create_tariff_price(
         session, tariff_price_schema.dict()
     )
@@ -114,12 +114,12 @@ async def change_tariff_price_view(
         await db_hand.get_tariff_price_by_id(session, tariff_price_id)
     )
     if not check_tariff_price:
-        raise HTTPException(status_code=404, detail="Tariff price not found")
+        raise HTTPException(status_code=404, detail="Прайс тарифа не найден")
     check_tariff = await db_hand.get_tariff_by_id(
         session, tariff_price_schema.tariff
     )
     if not check_tariff:
-        raise HTTPException(status_code=404, detail="Tariff not found")
+        raise HTTPException(status_code=404, detail="Тариф не найден")
     patch_data: dict = {
         key: value
         for key, value in tariff_price_schema.dict().items()

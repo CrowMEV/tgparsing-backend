@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 
-from settings import config
 from services.payment import views
-
+from settings import config
 
 payment_router = APIRouter(prefix="/payment", tags=["Payment"])
 

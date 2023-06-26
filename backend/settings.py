@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 from pydantic import BaseSettings, Field
 
