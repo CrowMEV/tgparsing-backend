@@ -127,7 +127,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-venv-tgparsing/
 
 # Spyder project settings
 .spyderproject

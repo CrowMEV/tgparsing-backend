@@ -9,9 +9,7 @@ from httpx import AsyncClient
 from database.db_async import get_async_session
 from server import app
 from services import Base
-from services.payment.models import Payment
 from services.role.models import Role
-from services.tariff.models import Tariff
 from services.user.models import User
 from services.user.utils.security import get_hash_password
 from settings import config
