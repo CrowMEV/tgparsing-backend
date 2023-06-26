@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from services.role import views
 import services.role.schemas as role_schemas
+from services.role import views
 from services.user.utils.permissions import is_superuser
 from settings import config
-
 
 role_router = APIRouter(prefix="/role", tags=["Role"])
 

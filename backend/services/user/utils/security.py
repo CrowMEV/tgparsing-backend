@@ -3,14 +3,13 @@ from datetime import datetime, timedelta
 
 import fastapi as fa
 from fastapi.responses import JSONResponse
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from services.user.models import User
 from services.user.schemas import UserRead
 from services.user.utils.cookie import set_cookie
 from settings import config
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -34,7 +33,7 @@ def decode_token(token: str) -> dict:
     except JWTError as err:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_403_FORBIDDEN,
-            detail="Wrong token or it has expired",
+            detail="Неверный токен или он истек",
         )
     return data
 

@@ -3,9 +3,9 @@ from typing import Any
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.db_async import get_async_session
 import services.role.db_handlers as db_hand
 import services.role.schemas as role_schemas
+from database.db_async import get_async_session
 
 
 async def get_roles(

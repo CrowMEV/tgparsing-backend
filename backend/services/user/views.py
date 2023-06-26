@@ -11,7 +11,7 @@ from services.user import db_handlers as db_hand
 from services.user import schemas as u_schema
 from services.user.dependencies import get_current_user
 from services.user.models import User
-from services.user.utils import security, cookie
+from services.user.utils import cookie, security
 from settings import config
 
 
@@ -25,7 +25,7 @@ async def login(
     ):
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Invalid authentication credentials",
+            detail="Неверный логин или пароль",
         )
     form.password = user.hashed_password
     response = security.login(user, form.dict())
@@ -34,7 +34,7 @@ async def login(
 
 async def logout() -> fa.Response:
     response = JSONResponse(
-        status_code=fa.status.HTTP_200_OK, content={"detail": "Success"}
+        status_code=fa.status.HTTP_200_OK, content={"detail": "Успешно"}
     )
     cookie.drop_cookie(response)
     return response
@@ -56,13 +56,13 @@ async def create_user(
     if exist_user:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="User with such email already exists",
+            detail="Пользователь с такой почтой уже существует",
         )
     user.hashed_password = security.get_hash_password(user.hashed_password)
     await db_hand.add_user(session, user.dict())
     return JSONResponse(
         status_code=fa.status.HTTP_201_CREATED,
-        content={"detail": "User has been created successfully"},
+        content={"detail": "Пользователь создан успешно"},
     )
 
 
