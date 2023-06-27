@@ -1,44 +1,58 @@
-from typing import Optional
+from datetime import date
+from typing import List, Optional
 
 from pydantic import BaseModel
 
 
+class Parser(BaseModel):
+    api_id: int
+    api_hash: str
+    session_string: str
+
+
+class ParserBySubscribes(Parser):
+    chats: List[str]
+
+
+class ParserByPeriod(ParserBySubscribes):
+    period_from: date
+    period_to: date
+
+
+class ParserPrivateChanels(ParserBySubscribes):
+    limit: int
+
+
+class ParserByGeo(Parser):
+    lat: float
+    lng: float
+    accuracy_radius: int = 500
+
+
 class ChatMember(BaseModel):
     tguser_id: int
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
     username: str
-    chat_names: list[str]
+
+
+class ChatMemberRead(ChatMember):
+
+    class Config:
+        orm_mode = True
 
 
 class ParseredChat(BaseModel):
     chat_id: int
     name: str
-
-
-class ChatMemberRead(ChatMember):
-    firstname: str
-    lastname: str
-
-    class Config:
-        orm_mode = True
+    description: Optional[str] = None
 
 
 class ParseredChatRead(ParseredChat):
-    title: str
-
     class Config:
         orm_mode = True
 
 
-class ChatMemberCreate(ChatMember):
-    firstname: Optional[str]
-    lastname: Optional[str]
-
-    class Config:
-        orm_mode = True
-
-
-class ParseredChatCreate(ParseredChat):
-    title: Optional[str]
-
-    class Config:
-        orm_mode = True
+class ChatInMember(BaseModel):
+    chat_member_name: str
+    parsered_chat_name: str

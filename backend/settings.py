@@ -114,6 +114,10 @@ class Config(BaseSettings):
     ROLE_GET_ALL: str = Field(default="role_get_all")
     # payment
     PAYMENT_ADD: str = Field(default="payment_get_link")
+    PAYMENT_CHK: str = Field(default="payment_check_responce")
+    PAYMENT_UPD: str = Field(default="payment_confirm")
+    PAYMENT_FAIL: str = Field(default="payment_fail")
+    PAYMENTS_GET: str = Field(default="payments_get")
     # robokassa settings
     RK_CHECK_LOGIN: str = Field(default="")
     RK_PAYMENT_URL: str = Field(default="")
@@ -122,19 +126,24 @@ class Config(BaseSettings):
     RK_TAX_SYSTEM: str = Field(default="")
     RK_REPLENISHMENT_NAME: str = Field(default="")
     RK_TAX: str = Field(default="")
+    RK_BAD_SIGNATURE: str = Field(default="error: bad signature")
     # tariffs
+    TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     TARIFF_GET: str = Field(default="tariff_get")
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
-    TARIFF_GET_ALL: str = Field(default="tariff_get_all")
-    # tariff_prices
-    TARIFF_PRICE_GET: str = Field(default="tariff_price_get")
-    TARIFF_PRICE_ADD: str = Field(default="tariff_price_add")
-    TARIFF_PRICE_PATCH: str = Field(default="tariff_price_patch")
-    TARIFF_PRICES_GET: str = Field(default="tariff_prices_get")
-    TARIFF_PRICE_GET_ALL: str = Field(default="tariff_price_get_all")
-    TARIFF_PRICE_DELETE: str = Field(default="tariff_price_delete")
+    # benefits
+    BENEFIT_GET_ALL: str = Field(default="benefit_get_all")
+    BENEFIT_GET: str = Field(default="benefit_get")
+    BENEFIT_ADD: str = Field(default="benefit_add")
+    BENEFIT_PATCH: str = Field(default="benefit_patch")
+    BENEFIT_DELETE: str = Field(default="benefit_delete")
+    # tariff benefits
+    TARIFF_BENEFIT_GET_ALL: str = Field(default="tariff_benefit_get_all")
+    TARIFF_BENEFIT_GET: str = Field(default="tariff_benefit_get")
+    TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
+    TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # chat_members
     MEMBER_BY_ID: str = Field(default="member_by_id")
     MEMBER_ADD: str = Field(default="member_add")
@@ -146,6 +155,8 @@ class Config(BaseSettings):
     CHAT_ADD: str = Field(default="chat_add")
     CHAT_ALL: str = Field(default="chat_all")
     CHAT_DELETE: str = Field(default="chat_delete")
+    CHAT_IN_MEMBER_ADD: str = Field(default="chat_in_member_add")
+    CHATS_MEMBER_GET_ALL: str = Field(default="chats_in_member_get")
 
 
 config = Config()

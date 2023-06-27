@@ -1,4 +1,3 @@
-import enum
 from typing import Optional
 
 from pydantic import BaseModel
@@ -6,12 +5,16 @@ from pydantic import BaseModel
 
 class TariffPostModel(BaseModel):
     name: str
-    description: dict
+    description: str
+    limitation_days: int
+    price: int
 
 
 class TariffPatchModel(BaseModel):
     name: Optional[str]
-    description: Optional[dict]
+    description: Optional[str]
+    limitation_days: Optional[int]
+    price: Optional[int]
 
 
 class TariffResponse(TariffPostModel):
@@ -21,25 +24,23 @@ class TariffResponse(TariffPostModel):
         orm_mode: bool = True
 
 
-class TariffLimitChoices(enum.Enum):
-    DAY: str = "day"
-    WEEK: str = "week"
-    MONTH: str = "month"
+class BenefitRequest(BaseModel):
+    name: str
 
 
-class TariffLimitPostModel(BaseModel):
-    tariff: int
-    limitation: TariffLimitChoices
-    price: int
+class BenefitResponse(BenefitRequest):
+    id: int
+
+    class Config:
+        orm_mode: bool = True
 
 
-class TariffLimitPatchModel(BaseModel):
-    tariff: int
-    limitation: Optional[TariffLimitChoices]
-    price: Optional[int]
+class TariffBenefitCreate(BaseModel):
+    tariff_id: int
+    benefit_id: int
 
 
-class TariffLimitResponse(TariffLimitPostModel):
+class TariffBenefitResponse(TariffBenefitCreate):
     id: int
 
     class Config:

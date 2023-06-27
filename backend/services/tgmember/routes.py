@@ -26,10 +26,10 @@ tgmember_router.add_api_route(
 
 tgmember_router.add_api_route(
     path="/",
-    endpoint=tgm_views.create_members,
+    endpoint=tgm_views.create_member,
     methods=["POST"],
     name=config.MEMBER_ADD,
-    response_model=tgm_schemas.ChatMemberCreate,
+    response_model=tgm_schemas.ChatMember,
 )
 
 tgmember_router.add_api_route(
@@ -53,10 +53,18 @@ chat_router.add_api_route(
 
 chat_router.add_api_route(
     path="/{id_row}",
-    endpoint=tgm_views.get_chats,
+    endpoint=tgm_views.get_chat_by_id,
     methods=["GET"],
     name=config.CHAT_BY_ID,
     response_model=tgm_schemas.ParseredChatRead,
+)
+
+chat_router.add_api_route(
+    path="/",
+    endpoint=tgm_views.create_chat,
+    methods=["POST"],
+    name=config.MEMBER_ADD,
+    response_model=tgm_schemas.ChatMember,
 )
 
 chat_router.add_api_route(
@@ -67,3 +75,23 @@ chat_router.add_api_route(
 )
 
 tgmember_router.include_router(chat_router)
+
+chatinmember_router = fa.APIRouter(
+    prefix="/chatsinmembers", tags=["Parsered chats in members"]
+)
+chatinmember_router.add_api_route(
+    path="/",
+    endpoint=tgm_views.create_chat_in_member,
+    methods=["POST"],
+    name=config.CHAT_IN_MEMBER_ADD,
+)
+
+chatinmember_router.add_api_route(
+    path="/{member_username}",
+    endpoint=tgm_views.get_chats_in_member,
+    methods=["GET"],
+    name=config.CHATS_MEMBER_GET_ALL,
+)
+
+
+tgmember_router.include_router(chatinmember_router)

@@ -2,10 +2,11 @@ from typing import Any
 
 import fastapi as fa
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import JSONResponse
 
 import services.tgmember.db_handlers as db_hand
+import services.tgmember.schemas as tgm_schemas
 from database.db_async import get_async_session
-from services.tgmember.utils import parsing_invoke as p_inv
 
 
 async def get_members(
@@ -28,7 +29,26 @@ async def delete_member(
     id_row: int, session: AsyncSession = fa.Depends(get_async_session)
 ) -> Any:
     await db_hand.delete_member(session, id_row)
-    return {"detail": "Пользователь успешно удален"}
+    return {"detail": "Запись успешно удалена"}
+
+
+async def create_member(
+    member: tgm_schemas.ChatMember,
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    exist_member = await db_hand.get_member_by_username(
+        session, member.username
+    )
+    if exist_member:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Участник уже записан"
+        )
+    await db_hand.create_member(session, member.dict())
+    return JSONResponse(
+        status_code=fa.status.HTTP_201_CREATED,
+        content={"detail": "Запись успешно добавлена"},
+    )
 
 
 async def get_chats(
@@ -51,38 +71,78 @@ async def delete_chat(
     id_row: int, session: AsyncSession = fa.Depends(get_async_session)
 ) -> Any:
     await db_hand.delete_chat(session, id_row)
-    return {"detail": "Чат успешно удален"}
+    return {"detail": "Запись успешно удалена"}
 
 
-async def create_members(
-    api_id: int,
-    api_hash: str,
-    session_string: str,
-    parsered_chats: list = fa.Query(),
+async def create_chat(
+    chat: tgm_schemas.ParseredChat,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    for chat in parsered_chats:
-        members = p_inv.start_parser_by_subscribes(
-            chat, api_id, api_hash, session_string
+    exist_chat = await db_hand.get_chat_by_name(session, chat.name)
+    if exist_chat:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Чат уже есть"
         )
-        chat_info = p_inv.info_chat(chat, api_id, api_hash, session_string)
-        check_chat = await db_hand.get_chat_by_id(
-            session, chat_info["chat_id"]
+    await db_hand.create_chat(session, chat.dict())
+    return JSONResponse(
+        status_code=fa.status.HTTP_201_CREATED,
+        content={"detail": "Запись успешно добавлена"},
+    )
+
+
+async def get_chats_in_member(
+    member_username: str,
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    exist_member = await db_hand.get_member_by_username(
+        session,  member_username,
+    )
+    if not exist_member:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_404_NOT_FOUND,
+            detail="Участник не найден"
         )
-        if check_chat:
-            raise fa.HTTPException(status_code=fa.status.HTTP_400_BAD_REQUEST)
-        await db_hand.create_chat(session, chat_info)
-        for member in members:
-            check_member = await db_hand.get_member_by_id(
-                session, member["tguser_id"]
-            )
-            if check_member:
-                member_chats = check_member.chats
-                member_chats.append(chat)
-                patch_data = {"chats": member_chats}
-                await db_hand.update_member(
-                    session, check_member.tguser_id, patch_data
-                )
-            member["chats"] = list(chat)
-            await db_hand.create_member(session, member)
-    return {"detail": "Парсинг чатов выполнен успешно"}
+    chats_in_member = await db_hand.get_chats_in_member(
+        session, member_username
+    )
+    return chats_in_member
+
+
+async def create_chat_in_member(
+    chat_in_member: tgm_schemas.ChatInMember,
+    session: AsyncSession = fa.Depends(get_async_session)
+) -> Any:
+    exist_member = await db_hand.get_member_by_username(
+        session, chat_in_member.chat_member_name,
+    )
+    exist_chat = await db_hand.get_chat_by_name(
+        session, chat_in_member.parsered_chat_name
+    )
+    exist_chat_in_member = await db_hand.get_chat_in_member(
+        session,
+        chat_in_member.chat_member_name,
+        chat_in_member.parsered_chat_name
+    )
+    if not exist_member:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_404_NOT_FOUND,
+            detail="Участник не найден"
+        )
+    if not exist_chat:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_404_NOT_FOUND,
+            detail="Чат не найден"
+        )
+    if exist_chat_in_member:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Чат уже есть у участника"
+        )
+    await db_hand.create_chat_in_member(
+        session, chat_in_member.dict()
+    )
+    return JSONResponse(
+        status_code=fa.status.HTTP_201_CREATED,
+        content={"detail": "Чат успешно добавлен к участнику"},
+    )

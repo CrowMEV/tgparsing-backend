@@ -6,133 +6,169 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import services.tariff.db_handlers as db_hand
 import services.tariff.schemas as tariff_schemas
 from database.db_async import get_async_session
-from services.tariff.models import Tariff, TariffLimitPrice
 
 
-async def get_tariff_list_view(
+async def get_tariff_list(
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
     tariffs = await db_hand.get_tariffs(session)
     return tariffs
 
 
-async def get_tariff_view(
-    tariff_id: int, session: AsyncSession = Depends(get_async_session)
+async def get_tariff(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
 ) -> Any:
-    tariff: Tariff | None = await db_hand.get_tariff_by_id(session, tariff_id)
+    tariff = await db_hand.get_tariff_by_id(session, id_row)
     if not tariff:
         raise HTTPException(status_code=404, detail="Тариф не найден")
     return tariff
 
 
-async def create_tariff_view(
+async def create_tariff(
     tariff_schema: tariff_schemas.TariffPostModel,
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
-    check_tariff: Tariff | None = await db_hand.get_tariff_by_name(
+    check_tariff = await db_hand.get_tariff_by_name(
         session, tariff_schema.name
     )
     if check_tariff:
         raise HTTPException(
-            status_code=400, detail="Имя тарифа должно быть уникальным"
+            status_code=400, detail="Имя тарифа должна быть уникальным"
         )
-    tariff: Tariff = await db_hand.create_tariff(session, tariff_schema.dict())
+    tariff = await db_hand.create_tariff(session, tariff_schema.dict())
     return tariff
 
 
-async def change_tariff_view(
-    tariff_id: int,
+async def change_tariff(
+    id_row: int,
     tariff_schema: tariff_schemas.TariffPatchModel,
     session: AsyncSession = Depends(get_async_session),
 ):
-    check_tariff = await db_hand.get_tariff_by_id(session, tariff_id)
+    check_tariff = await db_hand.get_tariff_by_id(session, id_row)
     if not check_tariff:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Тариф не найден")
     patch_data = {
         key: value for key, value in tariff_schema.dict().items() if value
     }
-    changed_tariff = await db_hand.change_tariff(
-        session, tariff_id, patch_data
-    )
+    changed_tariff = await db_hand.change_tariff(session, id_row, patch_data)
     return changed_tariff
 
 
-async def delete_tariff_view(
-    tariff_id: int, session: AsyncSession = Depends(get_async_session)
+async def delete_tariff(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
 ) -> Any:
-    await db_hand.delete_tariff_by_id(session, tariff_id)
-    return {"detail": "success"}
-
-
-# Tariff prices
-async def tariff_prices_list_view(
-    session: AsyncSession = Depends(get_async_session),
-) -> Any:
-    prices = await db_hand.tariff_prices_list(session)
-    return prices
-
-
-async def get_tariff_prices_view(
-    tariff_id: int, session: AsyncSession = Depends(get_async_session)
-) -> Any:
-    prices = await db_hand.get_tariff_prices(session, tariff_id)
-    return prices
-
-
-async def get_tariff_price_view(
-    tariff_price_id: int, session: AsyncSession = Depends(get_async_session)
-) -> Any:
-    tariff_price: TariffLimitPrice | None = (
-        await db_hand.get_tariff_price_by_id(session, tariff_price_id)
-    )
-    if not tariff_price:
-        raise HTTPException(status_code=404, detail="Прайс тарифа не найден")
-    return tariff_price
-
-
-async def create_tariff_price_view(
-    tariff_price_schema: tariff_schemas.TariffLimitPostModel,
-    session: AsyncSession = Depends(get_async_session),
-) -> Any:
-    tariff: Tariff | None = await db_hand.get_tariff_by_id(
-        session, tariff_price_schema.tariff
-    )
-    if not tariff:
+    check_tariff = await db_hand.get_tariff_by_id(session, id_row)
+    if not check_tariff:
         raise HTTPException(status_code=404, detail="Тариф не найден")
-    tariff_price: TariffLimitPrice = await db_hand.create_tariff_price(
-        session, tariff_price_schema.dict()
-    )
-    return tariff_price
+    await db_hand.delete_tariff_benefits(session, id_row)
+    await db_hand.delete_tariff_by_id(session, id_row)
+    return {"detail": "Тариф успешно удалён"}
 
 
-async def change_tariff_price_view(
-    tariff_price_id: int,
-    tariff_price_schema: tariff_schemas.TariffLimitPatchModel,
+# benefits
+async def benefits_list(
     session: AsyncSession = Depends(get_async_session),
-):
-    check_tariff_price: TariffLimitPrice | None = (
-        await db_hand.get_tariff_price_by_id(session, tariff_price_id)
+) -> Any:
+    benefits = await db_hand.get_benefits(session)
+    return benefits
+
+
+async def benefit_get(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
+) -> Any:
+    benefit = await db_hand.get_benefit_by_id(session, id_row)
+    if not benefit:
+        raise HTTPException(status_code=404, detail="Преимущество не найдено")
+    return benefit
+
+
+async def benefit_create(
+    benefit_schema: tariff_schemas.BenefitRequest,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    check_benefit = await db_hand.get_benefit_by_name(
+        session, benefit_schema.name
     )
-    if not check_tariff_price:
-        raise HTTPException(status_code=404, detail="Прайс тарифа не найден")
+    if check_benefit:
+        raise HTTPException(
+            status_code=400, detail="Преимущество уже существует"
+        )
+    benefit = await db_hand.create_benefit(session, benefit_schema.dict())
+    return benefit
+
+
+async def benefit_update(
+    id_row: int,
+    benefit_schema: tariff_schemas.BenefitRequest,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    check_benefit = await db_hand.get_benefit_by_id(session, id_row)
+    if not check_benefit:
+        raise HTTPException(status_code=404, detail="Преимущество не найдено")
+    update_data = {
+        key: value for key, value in benefit_schema.dict().items() if value
+    }
+    benefit = await db_hand.change_benefit(session, id_row, update_data)
+    return benefit
+
+
+async def benefit_delete(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
+) -> Any:
+    check_benefit = await db_hand.get_benefit_by_id(session, id_row)
+    if not check_benefit:
+        raise HTTPException(status_code=404, detail="Преимущество не найдено")
+    await db_hand.delete_benefit_by_id(session, id_row)
+    return {"detail": "Преимущество успешно удалено"}
+
+
+# tariff benefits
+async def get_tariff_benefits(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
+) -> Any:
+    check_tariff = await db_hand.get_tariff_by_id(session, id_row)
+    if not check_tariff:
+        raise HTTPException(status_code=404, detail="Тариф не найден")
+    benefits = await db_hand.tariff_benefits(session, id_row)
+    return benefits
+
+
+async def add_benefit_tariff(
+    tariff_benefit_schema: tariff_schemas.TariffBenefitCreate,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
     check_tariff = await db_hand.get_tariff_by_id(
-        session, tariff_price_schema.tariff
+        session, tariff_benefit_schema.tariff_id
     )
     if not check_tariff:
         raise HTTPException(status_code=404, detail="Тариф не найден")
-    patch_data: dict = {
-        key: value
-        for key, value in tariff_price_schema.dict().items()
-        if value is not None
-    }
-    changed_tariff_price = await db_hand.change_tariff_price(
-        session, tariff_price_id, patch_data
+    check_benefit = await db_hand.get_benefit_by_id(
+        session, tariff_benefit_schema.benefit_id
     )
-    return changed_tariff_price
+    if not check_benefit:
+        raise HTTPException(status_code=404, detail="Преимущество не найдено")
+    check_tariff_benefit = await db_hand.get_tariff_benefit(
+        session,
+        tariff_benefit_schema.tariff_id,
+        tariff_benefit_schema.benefit_id,
+    )
+    if check_tariff_benefit:
+        raise HTTPException(
+            status_code=400, detail="Преимущество уже связано на тариф"
+        )
+    tariff_benefit = await db_hand.create_tariff_benefit(
+        session, tariff_benefit_schema.dict()
+    )
+    return tariff_benefit
 
 
-async def delete_tariff_price_view(
-    tariff_price_id: int, session: AsyncSession = Depends(get_async_session)
+async def delete_benefit_tariff(
+    id_row: int, session: AsyncSession = Depends(get_async_session)
 ) -> Any:
-    await db_hand.delete_tariff_price(session, tariff_price_id)
-    return {"detail": "success"}
+    tariff_benefit = await db_hand.get_tariff_benefit_by_id(session, id_row)
+    if not tariff_benefit:
+        raise HTTPException(
+            status_code=404, detail="Преимущество не связано на тариф"
+        )
+    await db_hand.delete_tariff_benefit(session, id_row)
+    return {"detail": "Преимущество успешно отвязано"}
