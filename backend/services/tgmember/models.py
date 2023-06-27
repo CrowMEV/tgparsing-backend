@@ -10,8 +10,8 @@ class ChatMember(Base):
         sa.UniqueConstraint("username", name="tgusername_unique"),
     )
     tguser_id: Mapped[int] = mapped_column(primary_key=True)
-    firstname: Mapped[str]
-    lastname: Mapped[str]
+    firstname: Mapped[str] = mapped_column(nullable=True)
+    lastname: Mapped[str] = mapped_column(nullable=True)
     username: Mapped[str]
     chat_names: Mapped[list["ParseredChat"]] = mapped_column(
         sa.ForeignKey("parsered_chats.name")
@@ -23,8 +23,10 @@ class ChatMember(Base):
 
 class ParseredChat(Base):
     __tablename__ = "parsered_chats"
-    __table_args__ = (sa.UniqueConstraint("name", name="chatname_unique"),)
+    __table_args__ = (
+        sa.UniqueConstraint("name", name="chatname_unique"),
+    )
     chat_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    title: Mapped[str]
+    title: Mapped[str] = mapped_column(nullable=True)
     chat_member: Mapped[ChatMember] = relationship(back_populates="chats")

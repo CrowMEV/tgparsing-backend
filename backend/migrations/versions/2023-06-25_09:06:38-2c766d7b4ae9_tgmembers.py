@@ -1,7 +1,7 @@
 """tgmembers
 
 Revision ID: 2c766d7b4ae9
-Revises: 9d0d330eaebf
+Revises: 280610ccc91c
 Create Date: 2023-06-25 09:06:38.046858
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '2c766d7b4ae9'
-down_revision = '9d0d330eaebf'
+down_revision = '280610ccc91c'
 branch_labels = None
 depends_on = None
 

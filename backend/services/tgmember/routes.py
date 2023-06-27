@@ -53,7 +53,7 @@ chat_router.add_api_route(
 
 chat_router.add_api_route(
     path="/{id_row}",
-    endpoint=tgm_views.get_chats,
+    endpoint=tgm_views.get_chat_by_id,
     methods=["GET"],
     name=config.CHAT_BY_ID,
     response_model=tgm_schemas.ParseredChatRead,
