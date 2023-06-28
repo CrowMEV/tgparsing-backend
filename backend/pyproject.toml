@@ -23,5 +23,3 @@ filterwarnings = [
 # mypy
 [tool.mypy]
 exclude = ["migrations/"]
-
-

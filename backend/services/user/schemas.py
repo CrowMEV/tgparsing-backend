@@ -20,6 +20,7 @@ class UserRead(BaseModel):
     firstname: str | None
     lastname: str | None
     email: EmailStr
+    timezone: int
     is_staff: bool
     is_active: bool = True
     is_superuser: bool = False
@@ -39,11 +40,13 @@ class UserCreate(BaseModel):
         min_length=8,
         regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
     )
+    timezone: Optional[int] = Field(default=0, ge=-12, le=12)
 
 
 class UserPatch(BaseModel):
     firstname: Optional[str]
     lastname: Optional[str]
+    timezone: Optional[int]
     hashed_password: Optional[str]
     avatar_url: Optional[UploadFile]
 
@@ -51,22 +54,24 @@ class UserPatch(BaseModel):
     def as_form(
         cls,
         firstname: Optional[str] = Form(
-            "", min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
+            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
         lastname: Optional[str] = Form(
-            "", min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
+            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
+        timezone: Optional[int] = Form(default=None, ge=-12, le=12),
         hashed_password: Optional[str] = Form(
-            "",
+            default=None,
             min_length=8,
             regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
             alias="password",
         ),
-        avatar_url: Optional[UploadFile] = Form(None, alias="picture"),
+        avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
     ):
         return cls(
             firstname=firstname,
             lastname=lastname,
+            timezone=timezone,
             hashed_password=hashed_password,
             avatar_url=avatar_url,
         )

@@ -20,6 +20,11 @@ class User(Base):
         sa.String(length=320), unique=True, index=True
     )
     hashed_password: Mapped[str] = mapped_column(sa.String(length=1024))
+    timezone: Mapped[int] = mapped_column(
+        sa.SMALLINT,
+        default=0,
+        server_default="0",
+    )
     avatar_url: Mapped[str] = mapped_column(
         default=config.base_avatar_url,
         server_default=config.base_avatar_url,
