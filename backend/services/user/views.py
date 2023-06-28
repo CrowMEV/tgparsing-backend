@@ -103,6 +103,11 @@ async def patch_current_user(
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]
         )
-    data = {key: value for key, value in data.items() if value}
+    data = {key: value for key, value in data.items() if value is not None}
+    if not data:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Нет данных для изменений",
+        )
     user = await db_hand.update_user(session, current_user.id, data)
     return user
