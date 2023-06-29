@@ -13,11 +13,10 @@ async def add_payment(session: AsyncSession, data: dict) -> Payment:
     return payment
 
 
-async def upd_payment(session: AsyncSession, id_row) -> Payment | None:
-    data = {"status": True}
+async def upd_payment(session: AsyncSession, id_row: int) -> Payment | None:
     stmt = (
         sa.update(Payment)
-        .values(data)
+        .values({"status": True})
         .returning(Payment)
         .where(Payment.id == id_row)
     )

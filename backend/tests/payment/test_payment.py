@@ -1,3 +1,4 @@
+import json
 import random
 from urllib import parse
 from urllib.parse import parse_qs, urlparse
@@ -16,6 +17,7 @@ class TestPayment:
     payment_url: str = app.url_path_for(config.PAYMENT_ADD)
     payment_chk: str = app.url_path_for(config.PAYMENT_CHK)
     payment_upd: str = app.url_path_for(config.PAYMENT_UPD)
+    payments_get: str = app.url_path_for(config.PAYMENTS_GET)
 
     payment_data = [
         # wrong data
@@ -104,3 +106,32 @@ class TestPayment:
         payment = result.scalars().first()
 
         assert payment.status is True
+
+    async def get_payments(self, session):
+        stmt = sa.select(Payment)
+        result = await session.execute(stmt)
+        payments = result.scalars().fetchall()
+
+        return len(payments)
+
+    async def test_get_payments_by_admin(
+        self, session, async_client, admin_login
+    ):
+        response = await async_client.get(
+            self.payments_get,
+        )
+        row = response.content.decode()
+        payments = json.loads(row)
+
+        assert len(payments) == await self.get_payments(session)
+
+    async def test_get_payments_by_user(
+        self, session, async_client, user_login
+    ):
+        response = await async_client.get(
+            self.payments_get,
+        )
+        row = response.content.decode()
+        payments = json.loads(row)
+
+        assert len(payments) == await self.get_payments(session) - 1
