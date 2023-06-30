@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, status
 
-from services.user.dependencies import get_current_user
-
 from services.role.schemas import ActionChoice
+from services.user.dependencies import get_current_user
 
 
 async def is_superuser(user=Depends(get_current_user)) -> None:

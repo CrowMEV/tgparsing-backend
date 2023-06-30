@@ -74,7 +74,7 @@ async def get_payments(
     user=fa.Depends(get_current_user),
 ) -> Any:
     if user.role.name == RoleNameChoice.USER:
-        payments = await db_hand.get_payments_by_user_id(session, user.id)
+        payments = await db_hand.get_payments(session, user.id)
     else:
         payments = await db_hand.get_payments(session)
     return payments

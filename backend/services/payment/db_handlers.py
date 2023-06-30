@@ -26,23 +26,12 @@ async def upd_payment(session: AsyncSession, id_row: int) -> Payment | None:
     return payment
 
 
-def payments_stmt():
-    stmt = sa.select(Payment)
-    return stmt
-
-
-async def get_payments(session: AsyncSession) -> Sequence[Payment]:
-    stmt = payments_stmt()
-    result = await session.execute(stmt)
-    payments = result.scalars().fetchall()
-    return payments
-
-
-async def get_payments_by_user_id(
-    session: AsyncSession, user_id: int
+async def get_payments(
+    session: AsyncSession, user_id: int | None = None
 ) -> Sequence[Payment]:
-    stmt = payments_stmt()
-    stmt = stmt.where(Payment.user == user_id)
+    stmt = sa.select(Payment)
+    if user_id:
+        stmt = stmt.where(Payment.user == user_id)
     result = await session.execute(stmt)
     payments = result.scalars().fetchall()
     return payments
