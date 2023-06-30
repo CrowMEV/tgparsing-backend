@@ -1,8 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
-from services.tariff.schemas import TariffLimitChoices
 
 
 class Tariff(Base):
@@ -10,13 +9,32 @@ class Tariff(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    description: Mapped[dict] = mapped_column(sa.JSON)
+    description: Mapped[str]
+    limitation_days: Mapped[int]
+    price: Mapped[int]
+
+    benefits: Mapped[list["TariffBenefit"]] = relationship(
+        back_populates="tariff"
+    )
 
 
-class TariffLimitPrice(Base):
-    __tablename__ = "tariff_price"
+class Benefit(Base):
+    __tablename__ = "benefits"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    tariff: Mapped[int] = mapped_column(sa.ForeignKey("tariffs.id"))
-    limitation: Mapped[TariffLimitChoices]
-    price: Mapped[int]
+    name: Mapped[str] = mapped_column(unique=True)
+
+    tariffs: Mapped[list["TariffBenefit"]] = relationship(
+        back_populates="benefit"
+    )
+
+
+class TariffBenefit(Base):
+    __tablename__ = "tariff_benefits"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tariff_id: Mapped[int] = mapped_column(sa.ForeignKey("tariffs.id"))
+    benefit_id: Mapped[int] = mapped_column(sa.ForeignKey("benefits.id"))
+
+    tariff: Mapped["Tariff"] = relationship(back_populates="benefits")
+    benefit: Mapped["Benefit"] = relationship(back_populates="tariffs")
