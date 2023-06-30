@@ -6,9 +6,11 @@ import pytest
 import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
 
+import services.payment.schemas as payment_schemas
 from database.db_async import get_async_session
 from server import app
 from services import Base
+from services.payment.models import Payment
 from services.role.models import Role
 from services.user.models import User
 from services.user.utils.security import get_hash_password
@@ -24,6 +26,12 @@ async_test_session = sa_asyncio.async_sessionmaker(
 async def test_async_session() -> AsyncGenerator[
     sa_asyncio.AsyncSession, None
 ]:
+    async with async_test_session() as session:
+        yield session
+
+
+@pytest.fixture()
+async def get_session() -> AsyncGenerator[sa_asyncio.AsyncSession, None]:
     async with async_test_session() as session:
         yield session
 
@@ -118,3 +126,15 @@ async def user_login(async_client, add_user):
             "password": USER_PASSWORD,
         },
     )
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_payments(async_client, add_superuser):
+    async with async_test_session() as session:
+        payment = Payment(
+            user=1,
+            amount=1,
+            action=payment_schemas.PaymentChoice.DEBIT,
+        )
+        session.add(payment)
+        await session.commit()
