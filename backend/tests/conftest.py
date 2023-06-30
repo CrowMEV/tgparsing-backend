@@ -31,7 +31,7 @@ async def test_async_session() -> AsyncGenerator[
 
 
 @pytest.fixture()
-async def session() -> AsyncGenerator[sa_asyncio.AsyncSession, None]:
+async def get_session() -> AsyncGenerator[sa_asyncio.AsyncSession, None]:
     async with async_test_session() as session:
         yield session
 

@@ -79,7 +79,7 @@ class TestPayment:
         assert response.status_code == 200
         assert msg in response.content.decode()
 
-    async def test_confirm_payment(self, session, async_client):
+    async def test_confirm_payment(self, get_session, async_client):
         amount = round(random.uniform(1, 100000), 2)
 
         url = await async_client.post(
@@ -102,7 +102,7 @@ class TestPayment:
         await async_client.get(self.payment_upd, params=params)
 
         stmt = sa.select(Payment).where(Payment.id == inv_id)
-        result = await session.execute(stmt)
+        result = await get_session.execute(stmt)
         payment = result.scalars().first()
 
         assert payment.status is True
@@ -115,7 +115,7 @@ class TestPayment:
         return len(payments)
 
     async def test_get_payments_by_admin(
-        self, session, async_client, admin_login
+        self, get_session, async_client, admin_login
     ):
         response = await async_client.get(
             self.payments_get,
@@ -123,10 +123,10 @@ class TestPayment:
         row = response.content.decode()
         payments = json.loads(row)
 
-        assert len(payments) == await self.get_payments(session)
+        assert len(payments) == await self.get_payments(get_session)
 
     async def test_get_payments_by_user(
-        self, session, async_client, user_login
+        self, get_session, async_client, user_login
     ):
         response = await async_client.get(
             self.payments_get,
@@ -134,4 +134,4 @@ class TestPayment:
         row = response.content.decode()
         payments = json.loads(row)
 
-        assert len(payments) == await self.get_payments(session) - 1
+        assert len(payments) == await self.get_payments(get_session) - 1
