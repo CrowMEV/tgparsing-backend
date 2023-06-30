@@ -31,6 +31,24 @@ alembic upgrade head
 ```bash
 ./manage.py db load-roles roles_data.json
 ```
+### Установка pre-commit hooks
+Без виртуального окружения в общесистемные библиотеки
+```bash
+pip install -U pre-commit
+```
+В виртуальном окржение python
+```bash
+pip install pre-commit
+```
+Установка хуков
+```bash
+pre-commit install
+```
+Для того чтобы прогнать тест по всему коду, а не только по коммиту
+```bash
+pre-commit run --all-files
+```
+
 ### Запуск тестов
 ```bash
 pytest

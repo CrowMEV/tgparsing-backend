@@ -1,9 +1,7 @@
-from typing import Optional, TypeVar
+from typing import Optional
 
 from fastapi import Form, UploadFile
-from fastapi_users.schemas import CreateUpdateDictModel
-from pydantic import EmailStr, BaseModel, Field
-from fastapi_users import schemas
+from pydantic import BaseModel, EmailStr, Field
 
 from services.role.schemas import RoleResponse
 
@@ -17,12 +15,16 @@ class SuccessResponse(BaseModel):
     status: str
 
 
-class UserRead(schemas.BaseUser):
+class UserRead(BaseModel):
     id: int
-    firstname: str
-    lastname: str
+    firstname: str | None
+    lastname: str | None
     email: EmailStr
+    timezone: int
     is_staff: bool
+    is_active: bool = True
+    is_superuser: bool = False
+    is_verified: bool = False
     avatar_url: str
     role: RoleResponse
 
@@ -30,55 +32,46 @@ class UserRead(schemas.BaseUser):
         orm_mode = True
 
 
-class UserCreate(CreateUpdateDictModel):
-    firstname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
-    lastname: str = Field(..., min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$")
+class UserCreate(BaseModel):
     email: EmailStr
-    password: str = Field(
+    hashed_password: str = Field(
         ...,
+        alias="password",
         min_length=8,
-        regex=r""
-        r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
-        r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
-        r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
     )
+    timezone: Optional[int] = Field(default=0, ge=-12, le=12)
 
 
-class UserPatch(CreateUpdateDictModel):
+class UserPatch(BaseModel):
     firstname: Optional[str]
     lastname: Optional[str]
-    password: Optional[str]
+    timezone: Optional[int]
+    hashed_password: Optional[str]
     avatar_url: Optional[UploadFile]
 
     @classmethod
     def as_form(
         cls,
         firstname: Optional[str] = Form(
-            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
+            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
         lastname: Optional[str] = Form(
-            "", min_length=1, regex="^[a-zA-Zа-яА-яёЁ]+$"
+            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
-        password: Optional[str] = Form(
-            "",
+        timezone: Optional[int] = Form(default=None, ge=-12, le=12),
+        hashed_password: Optional[str] = Form(
+            default=None,
             min_length=8,
-            regex=r""
-            r"((\d|\w)*[A-Z]+(\d|\w)*[0-9]+(\d|\w)*|"
-            r"(\d|\w)*[0-9]+(\d|\w)*[A-Z]+(\d|\w)*)"
-            r"[!\"`\'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+",
+            regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
+            alias="password",
         ),
-        avatar_url: Optional[UploadFile] = Form(None, alias="picture"),
+        avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
     ):
         return cls(
             firstname=firstname,
             lastname=lastname,
-            password=password,
+            timezone=timezone,
+            hashed_password=hashed_password,
             avatar_url=avatar_url,
         )
-
-
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
-
-
-UP = TypeVar("UP", bound=UserPatch)

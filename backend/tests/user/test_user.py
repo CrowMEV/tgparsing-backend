@@ -5,60 +5,33 @@ from settings import config
 
 
 class TestUser:
-    # TODO: После переопределения роута регистрации раскомментировать строку
-    #       ниже и изменить роут в тесте регистрации
-    # register_url: str = app.url_path_for(config.USER_REGISTER)
+    register_url: str = app.url_path_for(config.USER_REGISTER)
     login_url: str = app.url_path_for(config.USER_LOGIN)
     logout_url: str = app.url_path_for(config.USER_LOGOUT)
     patch_url: str = app.url_path_for(config.USER_PATCH)
 
     register_data = [
         # wrong email
-        ("@mail.ru", "Igor", "Pupkin", "123", 422),
-        ("1@", "Igor", "Pupkin", "123", 422),
-        ("1@mail", "Igor", "Pupkin", "123", 422),
-        ("1@mail.", "Igor", "Pupkin", "123", 422),
-        ("1@.ru", "Igor", "Pupkin", "123", 422),
-        # wrong firstname
-        ("1@mail.ru", "", "Pupkin", "123", 422),
-        ("1@mail.ru", " ", "Pupkin", "123", 422),
-        ("1@mail.ru", " Igor", "Pupkin", "123", 422),
-        ("1@mail.ru", "&Igor", "Pupkin", "123", 422),
-        ("1@mail.ru", "1Igor", "Pupkin", "123", 422),
-        ("1@mail.ru", "Igor1", "Pupkin", "123", 422),
-        ("1@mail.ru", "Igor ", "Pupkin", "123", 422),
-        ("1@mail.ru", "Igor%", "Pupkin", "123", 422),
-        # wrong lastname
-        ("1@mail.ru", "Igor", "", "123", 422),
-        ("1@mail.ru", "Igor", " ", "123", 422),
-        ("1@mail.ru", "Igor", " Pupkin", "123", 422),
-        ("1@mail.ru", "Igor", "1Pupkin", "123", 422),
-        ("1@mail.ru", "Igor", "%Pupkin", "123", 422),
-        ("1@mail.ru", "Igor", "Pupkin ", "123", 422),
-        ("1@mail.ru", "Igor", "Pupkin1", "123", 422),
-        ("1@mail.ru", "Igor", "Pupkin%", "123", 422),
+        ("@mail.ru", "123", 422),
+        ("1@", "123", 422),
+        ("1@mail", "123", 422),
+        ("1@mail.", "123", 422),
+        ("1@.ru", "123", 422),
         # wrong password
-        ("1@mail.ru", "Igor", "Pupkin", "", 422),
-        ("1@mail.ru", "Igor", "Pupkin", "1michail#", 422),
-        ("1@mail.ru", "Igor", "Pupkin", "Michail#", 422),
-        ("1@mail.ru", "Igor", "Pupkin", "1Michail", 422),
-        ("1@mail.ru", "Igor", "Pupkin", "1michail#", 422),
+        ("1@mail.ru", "", 422),
+        ("1@mail.ru", "1michail#", 422),
+        ("1@mail.ru", "Michail#", 422),
+        ("1@mail.ru", "1Michail", 422),
+        ("1@mail.ru", "1michail#", 422),
         # correct data
-        ("1@mail.ru", "Igor", "Pupkin", "1Michail#", 201),
+        ("1@mail.ru", "1Michail#", 201),
     ]
 
-    @pytest.mark.parametrize("email,name,surname,password,code", register_data)
-    async def test_user_register(
-        self, async_client, email, name, surname, password, code
-    ):
+    @pytest.mark.parametrize("email,password,code", register_data)
+    async def test_user_register(self, async_client, email, password, code):
         response = await async_client.post(
-            "/user/register",
-            json={
-                "email": email,
-                "firstname": name,
-                "lastname": surname,
-                "password": password,
-            },
+            self.register_url,
+            json={"email": email, "password": password},
         )
 
         assert response.status_code == code

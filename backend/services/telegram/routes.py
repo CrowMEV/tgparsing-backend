@@ -1,54 +1,52 @@
 import typing
 
-from fastapi import APIRouter
+import fastapi as fa
 
-from services.telegram import views
-from settings import config
 import services.telegram.schemas as tg_schemas
+from services.telegram import views
+from services.user.utils import permissions as perms
+from settings import config
+from utils.responses import HTTP_201
 
 
-router = APIRouter(prefix="/telegram", tags=["TgAccount"])
-
-
-router.add_api_route(
-    path="/{id_account}",
-    endpoint=views.get_tgaccount,
-    methods=["GET"],
-    name=config.ACCOUNT_GET,
-    response_model=tg_schemas.TgAccountRead
+tg_router = fa.APIRouter(
+    prefix="/telegram",
+    tags=["TgAccount"],
+    dependencies=[fa.Depends(perms.is_admin), fa.Depends(perms.is_superuser)],
 )
 
-
-router.add_api_route(
+tg_router.add_api_route(
     path="/",
-    endpoint=views.get_tgaccounts,
+    endpoint=views.get_accounts,
     methods=["GET"],
-    name=config.ACCOUNTS_GET,
+    name=config.TG_GET_ALL,
     response_model=typing.List[tg_schemas.TgAccountRead],
 )
-
-
-router.add_api_route(
+tg_router.add_api_route(
     path="/",
     endpoint=views.create_tgaccount,
     methods=["POST"],
-    name=config.ACCOUNT_ADD,
+    name=config.TG_CREATE,
+    status_code=201,
+    responses={**HTTP_201},  # type: ignore
+)
+tg_router.add_api_route(
+    path="/{id_row}",
+    endpoint=views.get_tgaccount_by_id,
+    methods=["GET"],
+    name=config.TG_GET,
     response_model=tg_schemas.TgAccountRead,
 )
-
-
-router.add_api_route(
-    path="/{id_account}",
+tg_router.add_api_route(
+    path="/{id_row}",
     endpoint=views.update_tgaccount,
     methods=["PATCH"],
-    name=config.ACCOUNT_UPDATE,
-    response_model=tg_schemas.TgAccountBase,
+    name=config.TG_UPDATE,
+    response_model=tg_schemas.TgAccountRead,
 )
-
-
-router.add_api_route(
-    path="/{id_account}",
+tg_router.add_api_route(
+    path="/{id_row}",
     endpoint=views.delete_tgaccount,
     methods=["DELETE"],
-    name=config.ACCOUNT_DELETE
+    name=config.TG_DELETE,
 )

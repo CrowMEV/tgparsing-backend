@@ -1,25 +1,20 @@
-from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.orm import relationship
 
-from services import Base
 import services.telegram.schemas as tg_schemas
+from services import Base
 
 
 class TgAccount(Base):
-    __tablename__ = 'tgacounts'
+    __tablename__ = "tgacounts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    api_id: Mapped[int]
-    api_hash: Mapped[str]
+    api_id: Mapped[int] = mapped_column(unique=True)
+    api_hash: Mapped[str] = mapped_column(sa.String(length=400))
     session_string: Mapped[str]
-    work: Mapped[tg_schemas.WorkChoice] = mapped_column(
+    work_status: Mapped[tg_schemas.WorkChoice] = mapped_column(
         default=tg_schemas.WorkChoice.FREE
     )
-    blocked: Mapped[tg_schemas.BlockChoice] = mapped_column(
-        default=tg_schemas.BlockChoice.UN_BLOCK
-    )
-    by_geo: Mapped[tg_schemas.GeoChoice] = mapped_column(
-        default=tg_schemas.GeoChoice.BY_GEO
+    block_status: Mapped[tg_schemas.BlockChoice] = mapped_column(
+        default=tg_schemas.BlockChoice.UNBLOCK
     )
