@@ -27,21 +27,6 @@ def upgrade() -> None:
     sa.Column('bot_action', postgresql.ARRAY(sa.Enum('READ', 'WRITE', 'DELETE', 'UPDATE', name='actionchoice')), server_default='{}', nullable=False),
     sa.PrimaryKeyConstraint('name', name=op.f('pk_roles'))
     )
-    op.create_table('tariffs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.JSON(), nullable=False),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_tariffs')),
-    sa.UniqueConstraint('name', name=op.f('uq_tariffs_name'))
-    )
-    op.create_table('tariff_price',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('tariff', sa.Integer(), nullable=False),
-    sa.Column('limitation', sa.Enum('DAY', 'WEEK', 'MONTH', name='tarifflimitchoices'), nullable=False),
-    sa.Column('price', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['tariff'], ['tariffs.id'], name=op.f('fk_tariff_price_tariff_tariffs')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_tariff_price'))
-    )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('firstname', sa.String(), nullable=False),
@@ -77,14 +62,11 @@ def downgrade() -> None:
     op.drop_table('payments')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
-    op.drop_table('tariff_price')
-    op.drop_table('tariffs')
     op.drop_table('roles')
     op.execute(
         "DROP TYPE "
             "rolenamechoice, "
             "actionchoice, "
-            "tarifflimitchoices, "
             "paymentchoice;"
     )
     # ### end Alembic commands ###

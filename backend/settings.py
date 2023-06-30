@@ -123,18 +123,22 @@ class Config(BaseSettings):
     RK_REPLENISHMENT_NAME: str = Field(default="")
     RK_TAX: str = Field(default="")
     # tariffs
+    TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     TARIFF_GET: str = Field(default="tariff_get")
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
-    TARIFF_GET_ALL: str = Field(default="tariff_get_all")
-    # tariff_prices
-    TARIFF_PRICE_GET: str = Field(default="tariff_price_get")
-    TARIFF_PRICE_ADD: str = Field(default="tariff_price_add")
-    TARIFF_PRICE_PATCH: str = Field(default="tariff_price_patch")
-    TARIFF_PRICES_GET: str = Field(default="tariff_prices_get")
-    TARIFF_PRICE_GET_ALL: str = Field(default="tariff_price_get_all")
-    TARIFF_PRICE_DELETE: str = Field(default="tariff_price_delete")
+    # benefits
+    BENEFIT_GET_ALL: str = Field(default="benefit_get_all")
+    BENEFIT_GET: str = Field(default="benefit_get")
+    BENEFIT_ADD: str = Field(default="benefit_add")
+    BENEFIT_PATCH: str = Field(default="benefit_patch")
+    BENEFIT_DELETE: str = Field(default="benefit_delete")
+    # tariff benefits
+    TARIFF_BENEFIT_GET_ALL: str = Field(default="tariff_benefit_get_all")
+    TARIFF_BENEFIT_GET: str = Field(default="tariff_benefit_get")
+    TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
+    TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
 
 
 config = Config()
