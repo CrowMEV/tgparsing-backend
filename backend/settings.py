@@ -145,11 +145,11 @@ class Config(BaseSettings):
     TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
     TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # telegram accounts
-    TG_GET_ALL: str = Field(default="tg_get_all")
-    TG_GET: str = Field(default="tg_get")
-    TG_CREATE: str = Field(default="tg_create")
-    TG_UPDATE: str = Field(default="tg_update")
-    TG_DELETE: str = Field(default="tg_delete")
+    TGACCOUNT_GET_ALL: str = Field(default="tgaccount_get_all")
+    TGACCOUNT_GET: str = Field(default="tgaccount_get")
+    TGACCOUNT_CREATE: str = Field(default="tgaccount_create")
+    TGACCOUNT_PATCH: str = Field(default="tgaccount_patch")
+    TGACCOUNT_DELETE: str = Field(default="tgaccount_delete")
 
 
 config = Config()
