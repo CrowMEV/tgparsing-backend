@@ -150,6 +150,17 @@ class Config(BaseSettings):
     TG_CREATE: str = Field(default="tg_create")
     TG_UPDATE: str = Field(default="tg_update")
     TG_DELETE: str = Field(default="tg_delete")
+    # chat_members
+    MEMBER_BY_ID: str = Field(default="member_by_id")
+    MEMBER_CREATE: str = Field(default="member_add")
+    MEMBER_PATCH: str = Field(default="member_patch")
+    MEMBER_DELETE: str = Field(default="member_delete")
+    MEMBER_GET_ALL: str = Field(default="member_all")
+    # parcered_chats
+    CHAT_BY_ID: str = Field(default="chat_by_id")
+    CHAT_CREATE: str = Field(default="chat_add")
+    CHAT_GET_ALL: str = Field(default="chat_all")
+    CHAT_DELETE: str = Field(default="chat_delete")
 
 
 config = Config()
