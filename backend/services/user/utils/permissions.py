@@ -12,6 +12,14 @@ async def is_superuser(user=Depends(get_current_user)) -> None:
         )
 
 
+async def is_admin(user=Depends(get_current_user)) -> None:
+    if not user.role.name.value == "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Запрещено",
+        )
+
+
 async def payment_read(user=Depends(get_current_user)) -> None:
     if user.is_superuser:
         return
@@ -25,7 +33,7 @@ async def payment_read(user=Depends(get_current_user)) -> None:
 
 
 async def user_read(user=Depends(get_current_user)) -> None:
-    if user.is_superuser or user.role.name.name == "ADMIN":
+    if user.is_superuser or user.role.name.value == "admin":
         return
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
