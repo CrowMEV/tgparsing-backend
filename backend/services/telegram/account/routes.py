@@ -2,8 +2,8 @@ import typing
 
 import fastapi as fa
 
-import services.telegram.schemas as tg_schemas
-from services.telegram import views
+import services.telegram.account.schemas as tg_schemas
+from services.telegram.account import views
 from services.user.utils import permissions as perms
 from settings import config
 from utils.responses import HTTP_201
