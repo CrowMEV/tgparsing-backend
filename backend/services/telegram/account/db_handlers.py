@@ -3,7 +3,7 @@ from typing import Sequence
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.telegram.models import TgAccount
+from services.telegram.account.models import TgAccount
 
 
 async def get_tgaccount_by_id(
