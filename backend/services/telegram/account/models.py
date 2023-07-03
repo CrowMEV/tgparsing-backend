@@ -18,3 +18,4 @@ class TgAccount(Base):
     block_status: Mapped[tg_schemas.BlockChoice] = mapped_column(
         default=tg_schemas.BlockChoice.UNBLOCK
     )
+    phone_number: Mapped[str]

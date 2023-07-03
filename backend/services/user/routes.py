@@ -6,8 +6,8 @@ from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
 from services.user.utils.permissions import user_read
-from utils.responses import HTTP_201, HTTP_401
 from settings import config
+from utils.responses import HTTP_201, HTTP_401
 
 user_router = fa.APIRouter(prefix="/user", tags=["User"])
 

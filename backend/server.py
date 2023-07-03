@@ -7,10 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from services.payment.routes import payment_router
 from services.role.routes import role_router
 from services.tariff.routes import benefits_router, tariff_router
+from services.telegram.account.ws import ws_router
 from services.telegram.tg_router import tg_router
 from services.user.routes import user_router
 from settings import config
-
 
 app = FastAPI(title=config.APP_NAME)
 
@@ -30,3 +30,4 @@ app.include_router(tariff_router)
 app.include_router(benefits_router)
 app.include_router(payment_router)
 app.include_router(tg_router)
+app.include_router(ws_router)
