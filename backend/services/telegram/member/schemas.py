@@ -41,7 +41,6 @@ class ChatMember(BaseModel):
 
 
 class ChatMemberRead(ChatMember):
-
     class Config:
         orm_mode = True
 

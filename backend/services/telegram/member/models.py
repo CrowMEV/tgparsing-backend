@@ -5,7 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
 
-
 chats_members = sa.Table(
     "chats_members",
     Base.metadata,
@@ -35,5 +34,5 @@ class Member(Base):
     username: Mapped[str] = mapped_column(unique=True, index=True)
     chats: Mapped[List["Chat"]] = relationship(
         secondary=chats_members,
-        back_populates="member",
+        back_populates="members",
     )

@@ -32,7 +32,7 @@ async def create_member(
     if exist_member:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Участник уже записан"
+            detail="Участник уже записан",
         )
     await db_hand.create_member(session, member.dict())
     return JSONResponse(
@@ -87,8 +87,7 @@ async def create_chat(
     exist_chat = await db_hand.get_chat_by_name(session, chat.name)
     if exist_chat:
         raise fa.HTTPException(
-            status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Чат уже есть"
+            status_code=fa.status.HTTP_400_BAD_REQUEST, detail="Чат уже есть"
         )
     await db_hand.create_chat(session, chat.dict())
     return JSONResponse(
@@ -102,12 +101,13 @@ async def get_chats_in_member(
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     exist_member = await db_hand.get_member_by_username(
-        session,  member_username,
+        session,
+        member_username,
     )
     if not exist_member:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_404_NOT_FOUND,
-            detail="Участник не найден"
+            detail="Участник не найден",
         )
     chats_in_member = await db_hand.get_chats_in_member(
         session, member_username
@@ -117,10 +117,11 @@ async def get_chats_in_member(
 
 async def create_chat_in_member(
     chat_in_member: schemas.ChatInMember,
-    session: AsyncSession = fa.Depends(get_async_session)
+    session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     exist_member = await db_hand.get_member_by_username(
-        session, chat_in_member.chat_member_name,
+        session,
+        chat_in_member.chat_member_name,
     )
     exist_chat = await db_hand.get_chat_by_name(
         session, chat_in_member.parsered_chat_name
@@ -128,26 +129,23 @@ async def create_chat_in_member(
     exist_chat_in_member = await db_hand.get_chat_in_member(
         session,
         chat_in_member.chat_member_name,
-        chat_in_member.parsered_chat_name
+        chat_in_member.parsered_chat_name,
     )
     if not exist_member:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_404_NOT_FOUND,
-            detail="Участник не найден"
+            detail="Участник не найден",
         )
     if not exist_chat:
         raise fa.HTTPException(
-            status_code=fa.status.HTTP_404_NOT_FOUND,
-            detail="Чат не найден"
+            status_code=fa.status.HTTP_404_NOT_FOUND, detail="Чат не найден"
         )
     if exist_chat_in_member:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Чат уже есть у участника"
+            detail="Чат уже есть у участника",
         )
-    await db_hand.create_chat_in_member(
-        session, chat_in_member.dict()
-    )
+    await db_hand.create_chat_in_member(session, chat_in_member.dict())
     return JSONResponse(
         status_code=fa.status.HTTP_201_CREATED,
         content={"detail": "Чат успешно добавлен к участнику"},
