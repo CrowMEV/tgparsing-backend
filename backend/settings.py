@@ -145,11 +145,22 @@ class Config(BaseSettings):
     TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
     TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # telegram accounts
-    TGACCOUNT_GET_ALL: str = Field(default="tgaccount_get_all")
-    TGACCOUNT_GET: str = Field(default="tgaccount_get")
-    TGACCOUNT_CREATE: str = Field(default="tgaccount_create")
-    TGACCOUNT_PATCH: str = Field(default="tgaccount_patch")
-    TGACCOUNT_DELETE: str = Field(default="tgaccount_delete")
+    TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
+    TGACCOUNT_GET: str = Field(default="tg_get")
+    TGACCOUNT_CREATE: str = Field(default="tg_create")
+    TGACCOUNT_PATCH: str = Field(default="tg_patch")
+    TGACCOUNT_DELETE: str = Field(default="tg_delete")
+    # chat_members
+    MEMBER_BY_ID: str = Field(default="member_by_id")
+    MEMBER_CREATE: str = Field(default="member_add")
+    MEMBER_PATCH: str = Field(default="member_patch")
+    MEMBER_DELETE: str = Field(default="member_delete")
+    MEMBER_GET_ALL: str = Field(default="member_all")
+    # parcered_chats
+    CHAT_BY_ID: str = Field(default="chat_by_id")
+    CHAT_CREATE: str = Field(default="chat_add")
+    CHAT_GET_ALL: str = Field(default="chat_all")
+    CHAT_DELETE: str = Field(default="chat_delete")
 
 
 config = Config()
