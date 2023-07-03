@@ -8,6 +8,7 @@ from services.user.utils import permissions as perms
 from settings import config
 from utils.responses import HTTP_201
 
+
 tgaccount_router = fa.APIRouter(
     prefix="/tgaccount",
     tags=["TgAccount"],

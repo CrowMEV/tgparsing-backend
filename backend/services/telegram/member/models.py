@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
 
+
 chats_members = sa.Table(
     "chats_members",
     Base.metadata,

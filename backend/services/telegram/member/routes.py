@@ -2,8 +2,10 @@ from typing import List
 
 import fastapi as fa
 
-from services.telegram.member import schemas, views
+from services.telegram.member import views
+from services.telegram.member import schemas
 from settings import config
+
 
 member_router = fa.APIRouter(prefix="/members", tags=["TG members"])
 
