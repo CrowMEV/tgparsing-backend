@@ -1,7 +1,7 @@
 import fastapi as fa
 
 from services.telegram.account.routes import tgaccount_router
-from services.telegram.member.routes import member_router, chat_router
+from services.telegram.member.routes import chat_router, member_router
 from services.user.utils import permissions as perms
 
 

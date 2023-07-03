@@ -3,7 +3,7 @@ from typing import Any, Sequence
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.telegram.member.models import Member, Chat, chats_members
+from services.telegram.member.models import Chat, Member, chats_members
 
 
 async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:
