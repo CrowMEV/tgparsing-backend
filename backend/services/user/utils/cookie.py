@@ -3,6 +3,7 @@ from fastapi.security import APIKeyCookie
 
 from settings import config
 
+
 api_key = APIKeyCookie(name=config.COOKIE_NAME, auto_error=False)
 
 
