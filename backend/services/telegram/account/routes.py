@@ -17,28 +17,28 @@ tgaccount_router.add_api_route(
     path="/",
     endpoint=views.get_accounts,
     methods=["GET"],
-    name=config.TG_GET_ALL,
+    name=config.TGACCOUNT_GET_ALL,
     response_model=typing.List[tg_schemas.TgAccountRead],
 )
 tgaccount_router.add_api_route(
     path="/{id_row}",
     endpoint=views.get_tgaccount_by_id,
     methods=["GET"],
-    name=config.TG_GET,
+    name=config.TGACCOUNT_GET,
     response_model=tg_schemas.TgAccountRead,
 )
 tgaccount_router.add_api_route(
     path="/{id_row}",
     endpoint=views.update_tgaccount,
     methods=["PATCH"],
-    name=config.TG_UPDATE,
+    name=config.TGACCOUNT_PATCH,
     response_model=tg_schemas.TgAccountRead,
 )
 tgaccount_router.add_api_route(
     path="/{id_row}",
     endpoint=views.delete_tgaccount,
     methods=["DELETE"],
-    name=config.TG_DELETE,
+    name=config.TGACCOUNT_DELETE,
 )
 
 # tgaccount_router.add_websocket_route(
