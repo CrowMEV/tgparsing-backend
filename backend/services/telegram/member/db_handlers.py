@@ -3,7 +3,7 @@ from typing import Any, Sequence
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.telegram.member.models import Chat, Member, chats_members
+from services.telegram.member.models import Chat, Member
 
 
 async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:
@@ -22,23 +22,22 @@ async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:
 #     result = await session.execute(stmt)
 #     member = result.scalars().first()
 #     return member
-#
-#
-# async def get_member_by_username(
-#     session: AsyncSession, member_username: str
-# ) -> Member | None:
-#     stmt = sa.select(Member).where(
-#         Member.username == member_username
-#     )
-#     result = await session.execute(stmt)
-#     member = result.scalars().first()
-#     return member
-#
-#
-# async def create_member(session: AsyncSession, data: dict) -> None:
-#     member = Member(**data)
-#     session.add(member)
-#     await session.commit()
+
+
+async def get_member_by_username(
+    session: AsyncSession, username: str
+) -> Member | None:
+    stmt = sa.select(Member).where(Member.username == username)
+    result = await session.execute(stmt)
+    member = result.scalars().first()
+    return member
+
+
+async def create_member(session: AsyncSession, data: dict) -> Member:
+    member = Member(**data)
+    session.add(member)
+    await session.commit()
+    return member
 #
 #
 # async def update_member(
@@ -76,27 +75,30 @@ async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:
 #     result = await session.execute(stmt)
 #     chat = result.scalars().first()
 #     return chat
-#
-#
-# async def get_chat_by_name(
-#     session: AsyncSession, chat_name: str
-# ) -> Chat | None:
-#     stmt = sa.select(Chat).where(Chat.name == chat_name)
-#     result = await session.execute(stmt)
-#     chat = result.scalars().first()
-#     return chat
-#
-#
-# async def create_chat(session: AsyncSession, data: dict) -> None:
-#     chat = Chat(**data)
-#     session.add(chat)
-#     await session.commit()
-#
-#
-# async def delete_chat(session: AsyncSession, chat_id: int) -> None:
-#     stmt = sa.delete(Chat).where(Chat.chat_id == chat_id)
-#     await session.execute(stmt)
-#     await session.commit()
+
+
+async def get_chat_by_username(
+    session: AsyncSession, username: str
+) -> Chat | None:
+    stmt = sa.select(Chat).where(Chat.username == username)
+    result = await session.execute(stmt)
+    chat = result.scalars().first()
+    return chat
+
+
+async def create_chat(session: AsyncSession, data: dict) -> Chat:
+    chat = Chat(**data)
+    session.add(chat)
+    await session.commit()
+    return chat
+
+
+async def delete_chat(session: AsyncSession, chat_id: int) -> None:
+    stmt = sa.delete(Chat).where(Chat.id == chat_id).returning(Chat)
+    result = await session.execute(stmt)
+    await session.commit()
+    chat = result.scalars().first()
+    return chat
 #
 #
 # async def get_chats_in_member(
