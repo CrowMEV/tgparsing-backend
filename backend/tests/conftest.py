@@ -15,6 +15,7 @@ from services.payment.models import Payment
 from services.role.models import Role
 from services.user.models import User
 from services.telegram.account.models import TgAccount
+from services.telegram.member.models import Member, Chat
 from services.user.utils.security import get_hash_password
 from settings import config
 
@@ -151,6 +152,32 @@ async def add_tgaccount(async_client, add_superuser):
             session_string="123session12345",
             work_status=tgaccount_schemas.WorkChoice.FREE,
             block_status=tgaccount_schemas.BlockChoice.BLOCK
+        )
+        session.add(account)
+        await session.commit()
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_tgmember(async_client, add_superuser):
+    async with async_test_session() as session:
+        account = Member(
+            user_id=123,
+            phone_number="+79997776644",
+            first_name="Valera",
+            last_name="Sutkin",
+            username="valeron133",
+        )
+        session.add(account)
+        await session.commit()
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_parceredchat(async_client, add_superuser):
+    async with async_test_session() as session:
+        account = Chat(
+            title="SAS!!!aSAS",
+            description="Lalala hey",
+            username="oldstars",
         )
         session.add(account)
         await session.commit()

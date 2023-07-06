@@ -19,6 +19,9 @@ class Config(BaseSettings):
     SECRET: str = Field(default="secret")
     DB_ECHO: bool = Field(default=True)
 
+    # parser server
+    PARSER_SERVER: str = Field(default="http://localhost:8001")
+
     # cookie
     COOKIE_NAME: str = Field(default="TgParsing")
     COOKIE_SECURE: bool = Field(default=False)
@@ -161,6 +164,8 @@ class Config(BaseSettings):
     CHAT_CREATE: str = Field(default="chat_add")
     CHAT_GET_ALL: str = Field(default="chat_all")
     CHAT_DELETE: str = Field(default="chat_delete")
+    # parser
+    PARSER_MEMBERS: str = Field(default="parser_members")
 
 
 config = Config()
