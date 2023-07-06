@@ -1,19 +1,15 @@
+import datetime
 import decimal
 import enum
 from typing import Optional
 
 from fastapi import Query
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
 class PaymentChoice(enum.Enum):
     DEBIT = "debit"
     CREDIT = "credit"
-
-
-class PaymentCreate(BaseModel):
-    amount: decimal.Decimal = Field(..., ge=1, decimal_places=2)
-    email: Optional[EmailStr] = Field(default="")
 
 
 class PaymentConfirm(BaseModel):
@@ -33,3 +29,11 @@ class PaymentConfirm(BaseModel):
             signature_value=signature_value,
             inv_id=inv_id,
         )
+
+
+class PaymentsGetAll(BaseModel):
+    status: Optional[bool] = Field(default=None)
+    user: Optional[int] = Field(default=None)
+    action: Optional[PaymentChoice] = Field(default=None)
+    period_start: Optional[datetime.date] = Field(default=None)
+    period_end: Optional[datetime.date] = Field(default=None)

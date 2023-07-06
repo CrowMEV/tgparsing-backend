@@ -2,7 +2,6 @@ import decimal
 from typing import Any
 
 import fastapi as fa
-from fastapi import Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
@@ -14,12 +13,13 @@ from services.payment.utils.robokassa import (
     generate_payment_link,
 )
 from services.role.schemas import RoleNameChoice
+from services.tariff.models import Tariff
 from services.user.dependencies import get_current_user
 from settings import config
 
 
 async def get_payment_link(
-    amount: decimal.Decimal = Body(..., ge=1, decimal_places=2, embed=True),
+    amount: decimal.Decimal = fa.Body(..., ge=1, decimal_places=2, embed=True),
     user=fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> str:
@@ -36,6 +36,21 @@ async def get_payment_link(
     }
     url = generate_payment_link(url_data)
     return url
+
+
+async def purchases_payment(
+    tarrif: Tariff,
+    user=fa.Depends(get_current_user),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> dict[str, str]:
+    payment_data = {
+        "user": user.id,
+        "amount": tarrif.price,
+        "action": payment_schemas.PaymentChoice.CREDIT,
+        "status": True,
+    }
+    await db_hand.add_payment(session, payment_data)
+    return {"detail": "Покупка совершена"}
 
 
 async def check_responce(
@@ -70,11 +85,16 @@ async def fail_payment() -> None:
 
 
 async def get_payments(
+    get_data: payment_schemas.PaymentsGetAll = fa.Depends(),
     session: AsyncSession = fa.Depends(get_async_session),
     user=fa.Depends(get_current_user),
 ) -> Any:
+    data = {
+        key: value
+        for key, value in get_data.dict().items()
+        if value is not None
+    }
     if user.role.name == RoleNameChoice.USER:
-        payments = await db_hand.get_payments(session, user.id)
-    else:
-        payments = await db_hand.get_payments(session)
+        data["user"] = user.id
+    payments = await db_hand.get_payments(session, data)
     return payments

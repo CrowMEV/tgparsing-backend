@@ -29,7 +29,7 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     response_model=TariffResponse,
-    dependencies=[Depends(is_superuser)],
+    # dependencies=[Depends(is_superuser)],
 )
 
 tariff_router.add_api_route(
@@ -55,6 +55,14 @@ tariff_router.add_api_route(
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
     dependencies=[Depends(is_superuser)],
+)
+
+
+tariff_router.add_api_route(
+    path="/{id_row}/buy",
+    endpoint=views.buy_tariff,
+    methods=["POST"],
+    name=config.TARIFF_BUY,
 )
 
 # benefits

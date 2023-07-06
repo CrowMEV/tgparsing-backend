@@ -133,6 +133,7 @@ class Config(BaseSettings):
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
+    TARIFF_BUY: str = Field(default="tariff_buy")
     # benefits
     BENEFIT_GET_ALL: str = Field(default="benefit_get_all")
     BENEFIT_GET: str = Field(default="benefit_get")
