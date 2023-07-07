@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./static:/app/static
+      - ./backend/static:/app/static
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)" #&& PathPrefix(/`api`)
