@@ -45,17 +45,18 @@ class ChatMemberRead(ChatMember):
         orm_mode = True
 
 
+<<<<<<< HEAD
 class ParseredChat(BaseModel):
     username: str
+=======
+class ParsedChat(BaseModel):
+    chat_id: int
+    name: str
+>>>>>>> back-bot
     description: Optional[str] = None
     title: Optional[str] = None
 
 
-class ParseredChatRead(ParseredChat):
+class ParsedChatRead(ParsedChat):
     class Config:
         orm_mode = True
-
-
-class ChatInMember(BaseModel):
-    chat_member_name: str
-    parsered_chat_name: str

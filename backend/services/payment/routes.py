@@ -4,6 +4,7 @@ from services.payment import views
 from services.user.utils.permissions import payment_read
 from settings import config
 
+
 payment_router = APIRouter(prefix="/payment", tags=["Payment"])
 
 payment_router.add_api_route(

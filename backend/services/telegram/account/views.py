@@ -35,7 +35,6 @@ async def get_tgaccount_by_id(
 
 
 async def create_tgaccount(
-    websocket: fa.WebSocket,
     data: tg_schemas.TgAccountCreate,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> fa.Response:

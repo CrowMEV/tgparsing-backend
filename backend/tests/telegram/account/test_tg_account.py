@@ -32,7 +32,7 @@ class TestTgaccount:
     async def test_tgaccount_get_by_admin(
         self, async_client, get_session, admin_login, id_row, code
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_GET, id_row=id_row)
+        url = app.url_path_for(config.TGACCOUNT_GET, id_row=id_row)
         response = await async_client.get(url)
 
         assert response.status_code == code
@@ -50,7 +50,7 @@ class TestTgaccount:
     async def test_tgaccount_patch_by_admin(
         self, async_client, get_session, admin_login, id_row, data, code
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_PATCH, id_row=id_row)
+        url = app.url_path_for(config.TGACCOUNT_PATCH, id_row=id_row)
         response = await async_client.patch(url, params=data)
 
         assert response.status_code == code
@@ -67,7 +67,7 @@ class TestTgaccount:
     async def test_tgaccount_delete_by_admin(
         self, async_client, get_session, admin_login, id_row, code
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_DELETE, id_row=id_row)
+        url = app.url_path_for(config.TGACCOUNT_DELETE, id_row=id_row)
         response = await async_client.delete(url)
 
         assert response.status_code == code
@@ -80,7 +80,7 @@ class TestTgaccount:
     async def test_tgaccount_get_by_user(
         self, async_client, get_session, user_login
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_GET, id_row=1)
+        url = app.url_path_for(config.TGACCOUNT_GET, id_row=1)
         response = await async_client.get(url)
 
         assert response.status_code == 403
@@ -88,7 +88,7 @@ class TestTgaccount:
     async def test_tgaccount_patch_by_user(
         self, async_client, get_session, user_login
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_PATCH, id_row=1)
+        url = app.url_path_for(config.TGACCOUNT_PATCH, id_row=1)
         response = await async_client.patch(url)
 
         assert response.status_code == 403
@@ -99,7 +99,7 @@ class TestTgaccount:
         get_session,
         user_login,
     ):
-        url: str = app.url_path_for(config.TGACCOUNT_DELETE, id_row=1)
+        url = app.url_path_for(config.TGACCOUNT_DELETE, id_row=1)
         response = await async_client.delete(url)
 
         assert response.status_code == 403
