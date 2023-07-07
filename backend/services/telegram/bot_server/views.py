@@ -1,9 +1,9 @@
 import fastapi as fa
+import httpx
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
-
 # from services.telegram.account import db_handlers as account_hand
 from services.telegram.bot_server.utils import do_request, get_session_string
 
