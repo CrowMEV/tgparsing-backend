@@ -28,5 +28,5 @@ class UserSubscribe(Base):
     tariff_options: Mapped[dict[str, Any]]
     start_date: Mapped[datetime]
 
-    user: Mapped["User"] = relationship(back_populates="user_subscribe")
-    tariff: Mapped["Tariff"] = relationship(back_populates="tariff_subscribes")
+    user: Mapped["User"] = relationship(backref="subscribes")
+    tariff: Mapped["Tariff"] = relationship(backref="users")
