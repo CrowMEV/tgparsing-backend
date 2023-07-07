@@ -1,5 +1,4 @@
 import fastapi as fa
-import httpx
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 

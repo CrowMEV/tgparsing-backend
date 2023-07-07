@@ -27,11 +27,16 @@ async def upd_payment(session: AsyncSession, id_row: int) -> Payment | None:
 
 
 async def get_payments(
-    session: AsyncSession, user_id: int | None = None
-) -> Sequence[Payment]:
+    session: AsyncSession,
+    data: dict,
+) -> Sequence[Payment] | None:
     stmt = sa.select(Payment)
-    if user_id:
-        stmt = stmt.where(Payment.user == user_id)
+    period_start = data.pop("period_start", None)
+    period_end = data.pop("period_end", None)
+    if period_start and period_end:
+        stmt = stmt.where(Payment.date.between(period_start, period_end))
+    for key, value in data.items():
+        stmt = stmt.where(getattr(Payment, key) == value)
     result = await session.execute(stmt)
     payments = result.scalars().fetchall()
     return payments

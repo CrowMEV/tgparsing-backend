@@ -70,11 +70,16 @@ async def fail_payment() -> None:
 
 
 async def get_payments(
+    get_data: payment_schemas.PaymentsGetAll = fa.Depends(),
     session: AsyncSession = fa.Depends(get_async_session),
     user=fa.Depends(get_current_user),
 ) -> Any:
+    data = {
+        key: value
+        for key, value in get_data.dict().items()
+        if value is not None
+    }
     if user.role.name == RoleNameChoice.USER:
-        payments = await db_hand.get_payments(session, user.id)
-    else:
-        payments = await db_hand.get_payments(session)
+        data["user"] = user.id
+    payments = await db_hand.get_payments(session, data)
     return payments
