@@ -4,15 +4,16 @@ import fastapi as fa
 
 import services.telegram.account.schemas as tg_schemas
 from services.telegram.account import views
-from services.telegram.account.ws import auth_account
 from services.user.utils import permissions as perms
 from settings import config
+
 
 tgaccount_router = fa.APIRouter(
     prefix="/tgaccount",
     tags=["TgAccount"],
     dependencies=[fa.Depends(perms.is_admin), fa.Depends(perms.is_superuser)],
 )
+
 tgaccount_router.add_api_route(
     path="/",
     endpoint=views.get_accounts,
@@ -40,8 +41,3 @@ tgaccount_router.add_api_route(
     methods=["DELETE"],
     name=config.TGACCOUNT_DELETE,
 )
-
-# tgaccount_router.add_websocket_route(
-#     path="/auth",
-#     endpoint=auth_account
-# )

@@ -5,6 +5,7 @@ import fastapi as fa
 from services.telegram.member import schemas, views
 from settings import config
 
+
 member_router = fa.APIRouter(prefix="/members", tags=["TG members"])
 
 member_router.add_api_route(
@@ -13,12 +14,6 @@ member_router.add_api_route(
     methods=["GET"],
     name=config.MEMBER_GET_ALL,
     response_model=List[schemas.ChatMemberRead],
-)
-member_router.add_api_route(
-    path="/",
-    endpoint=views.create_member,
-    methods=["POST"],
-    name=config.MEMBER_CREATE,
 )
 member_router.add_api_route(
     path="/{id_row}",
@@ -42,21 +37,14 @@ chat_router.add_api_route(
     endpoint=views.get_chats,
     methods=["GET"],
     name=config.CHAT_GET_ALL,
-    response_model=List[schemas.ParseredChatRead],
-)
-chat_router.add_api_route(
-    path="/",
-    endpoint=views.create_chat,
-    methods=["POST"],
-    name=config.MEMBER_CREATE,
-    response_model=schemas.ChatMember,
+    response_model=List[schemas.ParsedChatRead],
 )
 chat_router.add_api_route(
     path="/{id_row}",
     endpoint=views.get_chat_by_id,
     methods=["GET"],
     name=config.CHAT_BY_ID,
-    response_model=schemas.ParseredChatRead,
+    response_model=schemas.ParsedChatRead,
 )
 chat_router.add_api_route(
     path="/{id_row}",

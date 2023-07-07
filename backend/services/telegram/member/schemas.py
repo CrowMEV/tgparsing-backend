@@ -45,17 +45,12 @@ class ChatMemberRead(ChatMember):
         orm_mode = True
 
 
-class ParseredChat(BaseModel):
+class ParsedChat(BaseModel):
     chat_id: int
     name: str
     description: Optional[str] = None
 
 
-class ParseredChatRead(ParseredChat):
+class ParsedChatRead(ParsedChat):
     class Config:
         orm_mode = True
-
-
-class ChatInMember(BaseModel):
-    chat_member_name: str
-    parsered_chat_name: str
