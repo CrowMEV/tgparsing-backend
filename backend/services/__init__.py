@@ -1,4 +1,6 @@
-from sqlalchemy import MetaData
+from typing import Any
+
+from sqlalchemy import JSON, MetaData
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -13,3 +15,4 @@ class Base(DeclarativeBase):
             "pk": "pk_%(table_name)s",
         }
     )
+    type_annotation_map = {dict[str, Any]: JSON}
