@@ -1,7 +1,11 @@
-import sqlalchemy as sa
+from datetime import datetime
+from typing import Any
+
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
+from services.user.models import User
 
 
 class Tariff(Base):
@@ -12,29 +16,17 @@ class Tariff(Base):
     description: Mapped[str]
     limitation_days: Mapped[int]
     price: Mapped[int]
-
-    benefits: Mapped[list["TariffBenefit"]] = relationship(
-        back_populates="tariff"
-    )
+    options: Mapped[dict[str, Any]]
 
 
-class Benefit(Base):
-    __tablename__ = "benefits"
+class UserSubscribe(Base):
+    __tablename__ = "user_subscribe"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
+    tariff_id: Mapped[int] = mapped_column(ForeignKey("tariffs.id"))
+    tariff_options: Mapped[dict[str, Any]]
+    start_date: Mapped[datetime]
 
-    tariffs: Mapped[list["TariffBenefit"]] = relationship(
-        back_populates="benefit"
-    )
-
-
-class TariffBenefit(Base):
-    __tablename__ = "tariff_benefits"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    tariff_id: Mapped[int] = mapped_column(sa.ForeignKey("tariffs.id"))
-    benefit_id: Mapped[int] = mapped_column(sa.ForeignKey("benefits.id"))
-
-    tariff: Mapped["Tariff"] = relationship(back_populates="benefits")
-    benefit: Mapped["Benefit"] = relationship(back_populates="tariffs")
+    user: Mapped["User"] = relationship(back_populates="user_subscribe")
+    tariff: Mapped["Tariff"] = relationship(back_populates="tariff_subscribes")
