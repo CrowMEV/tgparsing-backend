@@ -19,6 +19,9 @@ class Config(BaseSettings):
     SECRET: str = Field(default="secret")
     DB_ECHO: bool = Field(default=True)
 
+    # parser server
+    PARSER_SERVER: str = Field(default="http://localhost:8001")
+
     # cookie
     COOKIE_NAME: str = Field(default="TgParsing")
     COOKIE_SECURE: bool = Field(default=False)
@@ -145,11 +148,24 @@ class Config(BaseSettings):
     TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
     TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # telegram accounts
-    TG_GET_ALL: str = Field(default="tg_get_all")
-    TG_GET: str = Field(default="tg_get")
-    TG_CREATE: str = Field(default="tg_create")
-    TG_UPDATE: str = Field(default="tg_update")
-    TG_DELETE: str = Field(default="tg_delete")
+    TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
+    TGACCOUNT_GET: str = Field(default="tg_get")
+    TGACCOUNT_CREATE: str = Field(default="tg_create")
+    TGACCOUNT_PATCH: str = Field(default="tg_patch")
+    TGACCOUNT_DELETE: str = Field(default="tg_delete")
+    # chat_members
+    MEMBER_BY_ID: str = Field(default="member_by_id")
+    MEMBER_CREATE: str = Field(default="member_add")
+    MEMBER_PATCH: str = Field(default="member_patch")
+    MEMBER_DELETE: str = Field(default="member_delete")
+    MEMBER_GET_ALL: str = Field(default="member_all")
+    # parcered_chats
+    CHAT_BY_ID: str = Field(default="chat_by_id")
+    CHAT_CREATE: str = Field(default="chat_add")
+    CHAT_GET_ALL: str = Field(default="chat_all")
+    CHAT_DELETE: str = Field(default="chat_delete")
+    # parser
+    PARSER_MEMBERS: str = Field(default="parser_members")
 
 
 config = Config()

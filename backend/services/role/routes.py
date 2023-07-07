@@ -5,6 +5,7 @@ from services.role import views
 from services.user.utils.permissions import is_superuser
 from settings import config
 
+
 role_router = APIRouter(prefix="/role", tags=["Role"])
 
 role_router.add_api_route(

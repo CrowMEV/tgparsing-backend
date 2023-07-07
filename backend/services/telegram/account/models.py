@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 
-import services.telegram.schemas as tg_schemas
+import services.telegram.account.schemas as tg_schemas
 from services import Base
 
 
@@ -18,3 +18,4 @@ class TgAccount(Base):
     block_status: Mapped[tg_schemas.BlockChoice] = mapped_column(
         default=tg_schemas.BlockChoice.UNBLOCK
     )
+    phone_number: Mapped[str]
