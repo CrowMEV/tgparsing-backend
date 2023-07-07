@@ -41,22 +41,21 @@ class ChatMember(BaseModel):
 
 
 class ChatMemberRead(ChatMember):
+    id: int
+
     class Config:
         orm_mode = True
 
 
-<<<<<<< HEAD
-class ParseredChat(BaseModel):
-    username: str
-=======
 class ParsedChat(BaseModel):
     chat_id: int
-    name: str
->>>>>>> back-bot
+    username: str
     description: Optional[str] = None
     title: Optional[str] = None
 
 
 class ParsedChatRead(ParsedChat):
+    id: int
+
     class Config:
         orm_mode = True
