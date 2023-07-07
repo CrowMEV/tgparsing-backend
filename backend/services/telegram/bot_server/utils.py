@@ -18,9 +18,7 @@ async def do_request(route, params):
     return resp.json()
 
 
-async def get_session_string(
-    session: AsyncSession, account_id: int
-) -> str:
+async def get_session_string(session: AsyncSession, account_id: int) -> str:
     account = await account_hand.get_tgaccount_by_id(session, account_id)
     if not account:
         raise fa.HTTPException(

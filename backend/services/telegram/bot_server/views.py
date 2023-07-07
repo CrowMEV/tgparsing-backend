@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db_async import get_async_session
+from services.telegram.bot_server import schemas as bot_sh
+
 # from services.telegram.account import db_handlers as account_hand
 from services.telegram.bot_server.utils import do_request, get_session_string
 
@@ -11,12 +13,14 @@ from services.telegram.bot_server.utils import do_request, get_session_string
 
 
 async def get_members(
-    parsed_chats: list = fa.Query(),
-    account_id: int = fa.Query(description="Идентификатор телеграм аккаунта"),
+    body_data: bot_sh.GetMembers,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> fa.Response:
-    session_string = await get_session_string(session, account_id)
-    params = {"session_string": session_string, "parsed_chats": parsed_chats}
+    session_string = await get_session_string(session, body_data.account_id)
+    params = {
+        "session_string": session_string,
+        "parsed_chats": body_data.parsed_chats,
+    }
     await do_request("/members", params)
     # save to database
     # for item in resp_data:
@@ -48,19 +52,32 @@ async def get_members(
     )
 
 
-async def get_members_by_geo(
-    latitude: float,
-    longitude: float,
-    account_id: int = fa.Query(description="Идентификатор телеграм аккаунта"),
-    accuracy_radius: int = fa.Query(description="In meters"),
+async def get_active_members(
+    body_data: bot_sh.GetActiveMembers,
     session: AsyncSession = fa.Depends(get_async_session),
 ):
-    session_string = await get_session_string(session, account_id)
+    session_string = await get_session_string(session, body_data.account_id)
     params = {
-        "account_id": account_id,
-        "latitude": latitude,
-        "longitude": longitude,
-        "accuracy_radius": accuracy_radius,
+        "session_string": session_string,
+        "parsed_chats": body_data.parsed_chats,
+    }
+    await do_request("/activemembers", params)
+    return JSONResponse(
+        status_code=fa.status.HTTP_200_OK,
+        content={"detail": "Парсинг завершен успешно"},
+    )
+
+
+async def get_members_by_geo(
+    body_data: bot_sh.GetByGeo,
+    session: AsyncSession = fa.Depends(get_async_session),
+):
+    session_string = await get_session_string(session, body_data.account_id)
+    params = {
+        "account_id": body_data.account_id,
+        "latitude": body_data.latitude,
+        "longitude": body_data.longitude,
+        "accuracy_radius": body_data.accuracy_radius,
         "session_string": session_string,
     }
     await do_request("/geomembers", params)
@@ -71,13 +88,12 @@ async def get_members_by_geo(
 
 
 async def get_chats_by_word(
-    query: str = fa.Query(description="Ключевое слово"),
-    account_id: int = fa.Query(description="Идентификатор телеграм аккаунта"),
+    body_data: bot_sh.GetChats,
     session: AsyncSession = fa.Depends(get_async_session),
 ):
-    session_string = await get_session_string(session, account_id)
+    session_string = await get_session_string(session, body_data.account_id)
     params = {
-        "query": query,
+        "query": body_data.query,
         "session_string": session_string,
     }
     await do_request("/chats", params)

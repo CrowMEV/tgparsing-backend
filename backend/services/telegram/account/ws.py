@@ -16,7 +16,8 @@ async def auth_account(
     api_id: int,
     api_hash: str,
     phone_number: str,
-    websocket: WebSocket, session: AsyncSession = fa.Depends(get_async_session)
+    websocket: WebSocket,
+    session: AsyncSession = fa.Depends(get_async_session),
 ):
     account = await db_hand.get_tgaccount_by_api_id(session, api_id)
     if account:
