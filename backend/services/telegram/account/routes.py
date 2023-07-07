@@ -9,11 +9,10 @@ from settings import config
 
 
 tgaccount_router = fa.APIRouter(
-    prefix="/tgaccount",
+    prefix="/telegram",
     tags=["TgAccount"],
     dependencies=[fa.Depends(perms.is_admin), fa.Depends(perms.is_superuser)],
 )
-
 tgaccount_router.add_api_route(
     path="/",
     endpoint=views.get_accounts,
