@@ -11,7 +11,6 @@ from services.telegram.routes import tg_router
 from services.user.routes import user_router
 from settings import config
 
-
 app = FastAPI(title=config.APP_NAME)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
