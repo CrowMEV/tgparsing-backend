@@ -163,8 +163,8 @@ tgparsing-front/
 db_data/
 
 # media files
-# backend/static/users_avatars/*
-# !base_avatar.png
+backend/static/users_avatars/*
+!base_avatar.png
 
 #SSL Cert
 **/acme.json

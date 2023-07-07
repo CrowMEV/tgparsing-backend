@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -8,6 +8,7 @@ class TariffPostModel(BaseModel):
     description: str
     limitation_days: int
     price: int
+    options: dict[str, Any]
 
 
 class TariffPatchModel(BaseModel):
@@ -15,32 +16,10 @@ class TariffPatchModel(BaseModel):
     description: Optional[str]
     limitation_days: Optional[int]
     price: Optional[int]
+    options: Optional[dict[str, Any]]
 
 
 class TariffResponse(TariffPostModel):
-    id: int
-
-    class Config:
-        orm_mode: bool = True
-
-
-class BenefitRequest(BaseModel):
-    name: str
-
-
-class BenefitResponse(BenefitRequest):
-    id: int
-
-    class Config:
-        orm_mode: bool = True
-
-
-class TariffBenefitCreate(BaseModel):
-    tariff_id: int
-    benefit_id: int
-
-
-class TariffBenefitResponse(TariffBenefitCreate):
     id: int
 
     class Config:
