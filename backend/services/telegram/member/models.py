@@ -18,6 +18,7 @@ class Chat(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    chat_id: Mapped[int] = mapped_column(sa.BIGINT)
     title: Mapped[str] = mapped_column(unique=True, index=True, default="")
     description: Mapped[str] = mapped_column(nullable=True, default="")
     username: Mapped[str] = mapped_column(index=True)

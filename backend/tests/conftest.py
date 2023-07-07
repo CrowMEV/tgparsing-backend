@@ -152,34 +152,28 @@ async def add_tgaccount(async_client, add_superuser):
             api_hash="123api12hash",
             phone_number="+79997776644",
             session_string="123session12345",
-            work_status=tgaccount_schemas.WorkChoice.FREE,
-            block_status=tgaccount_schemas.BlockChoice.BLOCK,
+            work_status="FREE",
+            block_status="BLOCK",
         )
         session.add(account)
         await session.commit()
 
 
 @pytest.fixture(autouse=True, scope="session")
-async def add_tgmember(async_client, add_superuser):
+async def add_tgmember_chat(async_client, add_superuser):
     async with async_test_session() as session:
-        account = Member(
+        member_chat = Member(
             user_id=123,
             phone_number="+79997776644",
             first_name="Valera",
             last_name="Sutkin",
             username="valeron133",
+            chats=[Chat(
+                chat_id=231,
+                title="SAS!!!aSAS",
+                description="Lalala hey",
+                username="oldstars",
+            )]
         )
-        session.add(account)
-        await session.commit()
-
-
-@pytest.fixture(autouse=True, scope="session")
-async def add_parceredchat(async_client, add_superuser):
-    async with async_test_session() as session:
-        account = Chat(
-            title="SAS!!!aSAS",
-            description="Lalala hey",
-            username="oldstars",
-        )
-        session.add(account)
+        session.add(member_chat)
         await session.commit()
