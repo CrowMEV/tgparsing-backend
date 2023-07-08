@@ -24,7 +24,8 @@ repos:
         args: 
           [
             "--profile=black",
-            "--line-length=79"
+            "--line-length=79",
+            "--lai=2"
           ]     
     
   - repo: local

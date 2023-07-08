@@ -11,6 +11,7 @@ from services.user.schemas import UserRead
 from services.user.utils.cookie import set_cookie
 from settings import config
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 

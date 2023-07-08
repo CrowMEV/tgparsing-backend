@@ -7,14 +7,17 @@ import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
 
 import services.payment.schemas as payment_schemas
+import services.telegram.account.schemas as tgaccount_schemas
 from database.db_async import get_async_session
 from server import app
 from services import Base
 from services.payment.models import Payment
 from services.role.models import Role
+from services.telegram.account.models import TgAccount
 from services.user.models import User
 from services.user.utils.security import get_hash_password
 from settings import config
+
 
 engine_test = sa_asyncio.create_async_engine(config.test_async_url, echo=True)
 
@@ -137,4 +140,19 @@ async def add_payments(async_client, add_superuser):
             action=payment_schemas.PaymentChoice.DEBIT,
         )
         session.add(payment)
+        await session.commit()
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_tgaccount(async_client, add_superuser):
+    async with async_test_session() as session:
+        account = TgAccount(
+            api_id=123,
+            api_hash="123api12hash",
+            phone_number="+79997776644",
+            session_string="123session12345",
+            work_status=tgaccount_schemas.WorkChoice.FREE,
+            block_status=tgaccount_schemas.BlockChoice.BLOCK,
+        )
+        session.add(account)
         await session.commit()
