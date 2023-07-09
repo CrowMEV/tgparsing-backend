@@ -5,7 +5,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
-from services.user.models import User
 
 
 class Tariff(Base):
@@ -26,7 +25,6 @@ class UserSubscribe(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
     tariff_id: Mapped[int] = mapped_column(ForeignKey("tariffs.id"))
     tariff_options: Mapped[dict[str, Any]]
-    start_date: Mapped[datetime]
+    end_date: Mapped[datetime]
 
-    user: Mapped["User"] = relationship(backref="subscribes")
     tariff: Mapped["Tariff"] = relationship(backref="users")

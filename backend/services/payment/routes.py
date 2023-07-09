@@ -38,3 +38,9 @@ payment_router.add_api_route(
     methods=["GET"],
     name=config.PAYMENT_FAIL,
 )
+payment_router.add_api_route(
+    path="/buy",
+    endpoint=views.buy_tariff,
+    methods=["POST"],
+    name=config.PAYMENT_BUY_TARIFF,
+)

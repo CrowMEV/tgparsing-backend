@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from services import Base
 from services.role.models import Role
 from services.role.schemas import RoleNameChoice
+from services.tariff.models import UserSubscribe
 from settings import config
 
 
@@ -46,5 +47,8 @@ class User(Base):
         sa.ForeignKey("roles.name"),
         default=RoleNameChoice.USER,
         server_default=RoleNameChoice.USER.name,
+    )
+    subscribe: Mapped[UserSubscribe] = relationship(
+        backref="user", uselist=False, lazy="joined"
     )
     role = relationship(Role, backref="users", lazy="joined")

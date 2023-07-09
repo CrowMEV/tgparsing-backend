@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Any
 
 from fastapi import Depends, HTTPException
@@ -6,8 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import services.tariff.db_handlers as db_hand
 import services.tariff.schemas as tariff_schemas
 from database.db_async import get_async_session
-from services.payment.utils.balance import is_purchasable
-from services.payment.views import purchases_payment
+from services.tariff.models import Tariff
 from services.user.dependencies import get_current_user
 
 
@@ -69,18 +69,19 @@ async def delete_tariff(
     return {"detail": "Тариф успешно удалён"}
 
 
-async def buy_tariff(
-    id_row: int,
+async def add_or_change_subscribe(
+    tariff: Tariff,
     session: AsyncSession = Depends(get_async_session),
     user=Depends(get_current_user),
-) -> Any:
-    tariff = await db_hand.get_tariff_by_id(session, id_row)
-    if not tariff:
-        raise HTTPException(status_code=404, detail="Тариф не найден")
-    check_data = {
-        "user": user.id,
-        "price": tariff.price,
+) -> None:
+    data = {
+        "tariff_id": tariff.id,
+        "tariff_options": tariff.options,
+        "end_date": datetime.now() + timedelta(tariff.limitation_days),
     }
-    if not await is_purchasable(session, check_data):
-        return {"detail": "Не хватает доступных средств"}
-    return await purchases_payment(tariff, user, session)
+    if user.subscribe:
+        data["id"] = user.subscribe.id
+        await db_hand.change_subscribe(session, data)
+        return None
+    data["user_id"] = user.id
+    await db_hand.add_subscribe(session, data)

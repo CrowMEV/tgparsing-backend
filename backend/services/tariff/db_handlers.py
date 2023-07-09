@@ -3,7 +3,7 @@ from typing import Sequence
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.tariff.models import Tariff
+from services.tariff.models import Tariff, UserSubscribe
 
 
 async def get_tariffs(session: AsyncSession) -> Sequence[Tariff]:
@@ -57,3 +57,25 @@ async def delete_tariff_by_id(session: AsyncSession, tariff_id: int) -> None:
     stmt = sa.delete(Tariff).where(Tariff.id == tariff_id)
     await session.execute(stmt)
     await session.commit()
+
+
+async def add_subscribe(session: AsyncSession, data: dict) -> UserSubscribe:
+    subscribe = UserSubscribe(**data)
+    session.add(subscribe)
+    await session.commit()
+    return subscribe
+
+
+async def change_subscribe(
+    session: AsyncSession, data: dict
+) -> UserSubscribe | None:
+    stmt = (
+        sa.update(UserSubscribe)
+        .values(**data)
+        .returning(UserSubscribe)
+        .where(UserSubscribe.id == data["id"])
+    )
+    result = await session.execute(stmt)
+    payment = result.scalars().first()
+    await session.commit()
+    return payment

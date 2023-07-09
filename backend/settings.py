@@ -121,6 +121,7 @@ class Config(BaseSettings):
     PAYMENT_UPD: str = Field(default="payment_confirm")
     PAYMENT_FAIL: str = Field(default="payment_fail")
     PAYMENTS_GET: str = Field(default="payments_get")
+    PAYMENT_BUY_TARIFF: str = Field(default="payments_buy_tariff")
     # robokassa settings
     RK_CHECK_LOGIN: str = Field(default="")
     RK_PAYMENT_URL: str = Field(default="")
@@ -136,18 +137,6 @@ class Config(BaseSettings):
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
-    TARIFF_BUY: str = Field(default="tariff_buy")
-    # benefits
-    BENEFIT_GET_ALL: str = Field(default="benefit_get_all")
-    BENEFIT_GET: str = Field(default="benefit_get")
-    BENEFIT_ADD: str = Field(default="benefit_add")
-    BENEFIT_PATCH: str = Field(default="benefit_patch")
-    BENEFIT_DELETE: str = Field(default="benefit_delete")
-    # tariff benefits
-    TARIFF_BENEFIT_GET_ALL: str = Field(default="tariff_benefit_get_all")
-    TARIFF_BENEFIT_GET: str = Field(default="tariff_benefit_get")
-    TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
-    TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")
