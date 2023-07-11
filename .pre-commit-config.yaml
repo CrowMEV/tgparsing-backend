@@ -25,7 +25,7 @@ repos:
           [
             "--profile=black",
             "--line-length=79",
-            "--lines_after_imports=2"
+            "--lai=2"
           ]     
     
   - repo: local
