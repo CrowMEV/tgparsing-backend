@@ -34,23 +34,28 @@ class ParserByGeo(Parser):
 
 
 class ChatMember(BaseModel):
-    tguser_id: int
+    user_id: int
     firstname: Optional[str] = None
     lastname: Optional[str] = None
     username: str
 
 
 class ChatMemberRead(ChatMember):
+    id: int
+
     class Config:
         orm_mode = True
 
 
 class ParsedChat(BaseModel):
     chat_id: int
-    name: str
+    username: str
     description: Optional[str] = None
+    title: Optional[str] = None
 
 
 class ParsedChatRead(ParsedChat):
+    id: int
+
     class Config:
         orm_mode = True
