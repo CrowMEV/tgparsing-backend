@@ -65,3 +65,9 @@ user_router.add_api_route(
     response_model=user_schemas.UserRead,
     dependencies=[fa.Depends(user_read)],
 )
+user_router.add_api_route(
+    path="/pass",
+    methods=["POST"],
+    endpoint=views.check_password,
+    name=config.USER_CHECK_PASSWORD,
+)
