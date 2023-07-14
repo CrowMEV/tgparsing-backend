@@ -9,14 +9,14 @@ import services.payment.db_handlers as db_hand
 import services.payment.schemas as payment_schemas
 import services.tariff.db_handlers as tariff_db_hand
 from database.db_async import get_async_session
-from services.payment.utils.balance import is_purchasable
+from services.payment.utils.balance import calculate_balance
+from services.payment.utils.purchase import make_purchase
 from services.payment.utils.robokassa import (
     check_result_payment,
     generate_payment_link,
 )
 from services.role.schemas import RoleNameChoice
-from services.tariff.models import Tariff
-from services.tariff.views import add_or_change_subscribe
+from services.tariff.utils.subscribe import add_subscribe, change_subscribe
 from services.user.dependencies import get_current_user
 from settings import config
 
@@ -39,21 +39,6 @@ async def get_payment_link(
     }
     url = generate_payment_link(url_data)
     return url
-
-
-async def purchases_payment(
-    tarrif: Tariff,
-    session: AsyncSession = fa.Depends(get_async_session),
-    user=fa.Depends(get_current_user),
-) -> dict[str, str]:
-    payment_data = {
-        "user": user.id,
-        "amount": tarrif.price,
-        "action": payment_schemas.PaymentChoice.CREDIT,
-        "status": True,
-    }
-    await db_hand.add_payment(session, payment_data)
-    return {"detail": "Покупка совершена"}
 
 
 async def check_responce(
@@ -104,24 +89,26 @@ async def get_payments(
 
 
 async def buy_tariff(
-    schemas: payment_schemas.PaymentTariffBuy,
+    tariff_id: int,
     session: AsyncSession = fa.Depends(get_async_session),
     user=fa.Depends(get_current_user),
 ) -> Any:
-    if user.subscribe:
-        change_action = schemas.dict().get("change_action")
-        if not change_action:
-            return {"detail": "У вас уже есть действующий тарифный план"}
-        if user.subscribe.tariff_id == schemas.tariff_id:
-            return {"detail": "У вас уже есть данный тарифный план"}
-    tariff = await tariff_db_hand.get_tariff_by_id(session, schemas.tariff_id)
+    tariff = await tariff_db_hand.get_tariff_by_id(session, tariff_id)
     if not tariff:
         raise fa.HTTPException(status_code=404, detail="Тариф не найден")
-    check_data = {
+    balance = await calculate_balance(session, user.id) or 0
+    if balance < tariff.price:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Не хватает доступных средств",
+        )
+    if user.subscribe:
+        await change_subscribe(tariff, session, user)
+    else:
+        await add_subscribe(tariff, session, user)
+    purchase_data = {
+        "total": balance,
+        "amount": -tariff.price,
         "user": user.id,
-        "price": tariff.price,
     }
-    if not await is_purchasable(session, check_data):
-        return {"detail": "Не хватает доступных средств"}
-    await add_or_change_subscribe(tariff, session, user)
-    return await purchases_payment(tariff, session, user)
+    return await make_purchase(purchase_data, session)

@@ -1,8 +1,8 @@
 """change usersubscribe.end_date
 
-Revision ID: e958ff6b7228
-Revises: 196f435444ec
-Create Date: 2023-07-11 15:46:57.405767
+Revision ID: f8dca75be520
+Revises: 213c83c48549
+Create Date: 2023-07-14 16:11:49.564919
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'e958ff6b7228'
-down_revision = '196f435444ec'
+revision = 'f8dca75be520'
+down_revision = '213c83c48549'
 branch_labels = None
 depends_on = None
 

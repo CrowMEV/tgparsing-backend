@@ -49,6 +49,7 @@ class UserPatch(BaseModel):
     timezone: Optional[int]
     hashed_password: Optional[str]
     avatar_url: Optional[UploadFile]
+    email: Optional[EmailStr]
 
     @classmethod
     def as_form(
@@ -67,6 +68,7 @@ class UserPatch(BaseModel):
             alias="password",
         ),
         avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
+        email: Optional[EmailStr] = Form(default=None)
     ):
         return cls(
             firstname=firstname,
@@ -74,4 +76,5 @@ class UserPatch(BaseModel):
             timezone=timezone,
             hashed_password=hashed_password,
             avatar_url=avatar_url,
+            email=email,
         )

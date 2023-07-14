@@ -1,3 +1,4 @@
+import decimal
 from typing import Sequence
 
 import sqlalchemy as sa
@@ -13,12 +14,14 @@ async def add_payment(session: AsyncSession, data: dict) -> Payment:
     return payment
 
 
-async def upd_payment(session: AsyncSession, id_row: int) -> Payment | None:
+async def upd_payment(
+    session: AsyncSession, payment_id: int
+) -> Payment | None:
     stmt = (
         sa.update(Payment)
         .values({"status": True})
         .returning(Payment)
-        .where(Payment.id == id_row)
+        .where(Payment.id == payment_id)
     )
     result = await session.execute(stmt)
     payment = result.scalars().first()
@@ -40,3 +43,14 @@ async def get_payments(
     result = await session.execute(stmt)
     payments = result.scalars().fetchall()
     return payments
+
+
+async def get_balance(
+    session: AsyncSession,
+    user_id: int,
+) -> decimal.Decimal:
+    stmt = sa.select(sa.func.sum(Payment.amount)).where(
+        Payment.status == sa.true(), Payment.user == user_id
+    )
+    balance = await session.execute(stmt)
+    return balance.scalars().first() or decimal.Decimal(0)

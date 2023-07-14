@@ -156,6 +156,7 @@ class Config(BaseSettings):
     CHAT_DELETE: str = Field(default="chat_delete")
     # parser
     PARSER_MEMBERS: str = Field(default="parser_members")
+    PARSER_ACTIVE_MEMBERS: str = Field(default="parser_active_members")
 
 
 config = Config()

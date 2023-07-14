@@ -26,7 +26,7 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     response_model=TariffResponse,
-    dependencies=[Depends(is_superuser)],
+    # dependencies=[Depends(is_superuser)],
 )
 
 tariff_router.add_api_route(
