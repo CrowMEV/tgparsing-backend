@@ -111,3 +111,18 @@ async def patch_current_user(
         )
     user = await db_hand.update_user(session, current_user.id, data)
     return user
+
+
+async def check_password(
+    password: str = fa.Body(..., embed=True),
+    user=fa.Depends(get_current_user),
+) -> JSONResponse:
+    if not security.validate_password(password, user.hashed_password):
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Неверный пароль",
+        )
+    return JSONResponse(
+        status_code=fa.status.HTTP_200_OK,
+        content={"detail": "Успешно"},
+    )
