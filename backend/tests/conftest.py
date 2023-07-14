@@ -7,13 +7,13 @@ import sqlalchemy.ext.asyncio as sa_asyncio
 from httpx import AsyncClient
 
 import services.payment.schemas as payment_schemas
-import services.telegram.account.schemas as tgaccount_schemas
 from database.db_async import get_async_session
 from server import app
 from services import Base
 from services.payment.models import Payment
 from services.role.models import Role
 from services.telegram.account.models import TgAccount
+from services.telegram.member.models import Member, Chat
 from services.user.models import User
 from services.user.utils.security import get_hash_password
 from settings import config
@@ -151,8 +151,30 @@ async def add_tgaccount(async_client, add_superuser):
             api_hash="123api12hash",
             phone_number="+79997776644",
             session_string="123session12345",
-            work_status=tgaccount_schemas.WorkChoice.FREE,
-            block_status=tgaccount_schemas.BlockChoice.BLOCK,
+            work_status="FREE",
+            block_status="BLOCK",
         )
         session.add(account)
+        await session.commit()
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_tgmember_chat(async_client, add_superuser):
+    async with async_test_session() as session:
+        member_chat = Member(
+            user_id=123,
+            phone_number="+79997776644",
+            first_name="Valera",
+            last_name="Sutkin",
+            username="valeron133",
+            chats=[
+                Chat(
+                    chat_id=231,
+                    title="SAS!!!aSAS",
+                    description="Lalala hey",
+                    username="oldstars",
+                )
+            ],
+        )
+        session.add(member_chat)
         await session.commit()
