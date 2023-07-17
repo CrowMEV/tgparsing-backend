@@ -165,6 +165,8 @@ db_data/
 # media files
 backend/static/users_avatars/*
 !base_avatar.png
+backend/files/*
+!backend/files/__init__.py
 
 #SSL Cert
 **/acme.json
