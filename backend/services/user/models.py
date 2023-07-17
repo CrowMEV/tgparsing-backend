@@ -1,9 +1,11 @@
+import decimal
 from datetime import datetime
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services import Base
+from services.payment.models import Payment
 from services.role.models import Role
 from services.role.schemas import RoleNameChoice
 from services.tariff.models import UserSubscribe
@@ -52,3 +54,10 @@ class User(Base):
         backref="user", uselist=False, lazy="joined"
     )
     role = relationship(Role, backref="users", lazy="joined")
+    balance: Mapped[decimal.Decimal] = mapped_column(
+        default=0,
+        onupdate=sa.select(sa.func.sum(Payment.amount)).where(
+            Payment.status == sa.true()
+        ),
+    )
+    # balance: Mapped[decimal.Decimal] = mapped_column(server_onupdate=)

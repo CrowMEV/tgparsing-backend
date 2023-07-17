@@ -8,8 +8,8 @@ from starlette.responses import JSONResponse
 import services.payment.db_handlers as db_hand
 import services.payment.schemas as payment_schemas
 import services.tariff.db_handlers as tariff_db_hand
+import services.user.db_handlers as user_db_hand
 from database.db_async import get_async_session
-from services.payment.utils.balance import calculate_balance
 from services.payment.utils.purchase import make_purchase
 from services.payment.utils.robokassa import (
     check_result_payment,
@@ -65,7 +65,9 @@ async def confirm_payment(
 ) -> None:
     check_result = check_result_payment(schema)
     if check_result:
-        await db_hand.upd_payment(session, schema.inv_id)
+        payment = await db_hand.upd_payment(session, schema.inv_id)
+        user = payment.user
+        await user_db_hand.update_user(session, user, {})
 
 
 async def fail_payment() -> None:
@@ -96,8 +98,7 @@ async def buy_tariff(
     tariff = await tariff_db_hand.get_tariff_by_id(session, tariff_id)
     if not tariff:
         raise fa.HTTPException(status_code=404, detail="Тариф не найден")
-    balance = await calculate_balance(session, user.id) or 0
-    if balance < tariff.price:
+    if user.balance < tariff.price:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Не хватает доступных средств",
@@ -107,7 +108,6 @@ async def buy_tariff(
     else:
         await add_subscribe(tariff, session, user)
     purchase_data = {
-        "total": balance,
         "amount": -tariff.price,
         "user": user.id,
     }

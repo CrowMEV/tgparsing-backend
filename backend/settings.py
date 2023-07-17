@@ -109,6 +109,8 @@ class Config(BaseSettings):
     USER_ALL: str = Field(default="user_all")
     USER_BY_ID: str = Field(default="user_by_id")
     USER_DELETE: str = Field(default="user_delete")
+    USER_GET_MY_BALANCE: str = Field(default="get_my_balance")
+    USER_CHECK_PASSWORD: str = Field(default="check_password")
     # role
     ROLE_GET: str = Field(default="role_get")
     ROLE_ADD: str = Field(default="role_add")

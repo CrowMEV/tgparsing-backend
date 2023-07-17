@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,7 +16,6 @@ async def add_subscribe(
         "user_id": user.id,
         "tariff_id": tariff.id,
         "tariff_options": tariff.options,
-        "end_date": datetime.now() + timedelta(tariff.limitation_days),
     }
     await db_hand.add_subscribe(session, data)
 
@@ -32,6 +29,5 @@ async def change_subscribe(
         "id": user.subscribe.id,
         "tariff_id": tariff.id,
         "tariff_options": tariff.options,
-        "end_date": datetime.now() + timedelta(tariff.limitation_days),
     }
     await db_hand.change_subscribe(session, data)

@@ -17,4 +17,3 @@ class Payment(Base):
     amount: Mapped[decimal.Decimal]
     date: Mapped[datetime] = mapped_column(default=datetime.utcnow())
     status: Mapped[bool] = mapped_column(default=False)
-    total: Mapped[decimal.Decimal]
