@@ -13,4 +13,3 @@ SQLAlchemy==2.0.15
 TgCrypto==1.2.5
 uvicorn==0.22.0
 websockets==11.0.3
-click==8.1.5
