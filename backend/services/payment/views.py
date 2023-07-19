@@ -1,4 +1,5 @@
 import decimal
+from datetime import datetime, timedelta
 from typing import Any
 
 import fastapi as fa
@@ -10,13 +11,11 @@ import services.payment.schemas as payment_schemas
 import services.tariff.db_handlers as tariff_db_hand
 import services.user.db_handlers as user_db_hand
 from database.db_async import get_async_session
-from services.payment.utils.purchase import make_purchase
 from services.payment.utils.robokassa import (
     check_result_payment,
     generate_payment_link,
 )
 from services.role.schemas import RoleNameChoice
-from services.tariff.utils.subscribe import add_subscribe, change_subscribe
 from services.user.dependencies import get_current_user
 from settings import config
 
@@ -103,12 +102,23 @@ async def buy_tariff(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Не хватает доступных средств",
         )
-    if user.subscribe:
-        await change_subscribe(tariff, session, user)
-    else:
-        await add_subscribe(tariff, session, user)
-    purchase_data = {
-        "amount": -tariff.price,
-        "user": user.id,
+    subscribe_data = {
+        "tariff_id": tariff.id,
+        "end_date": datetime.utcnow() + timedelta(tariff.limitation_days),
+        "tariff_options": tariff.options,
     }
-    return await make_purchase(purchase_data, session)
+    if user.subscribe:
+        subscribe_data["id"] = user.subscribe.id
+        await tariff_db_hand.change_subscribe(session, subscribe_data)
+    else:
+        subscribe_data["user_id"] = user.id
+        await tariff_db_hand.add_subscribe(session, subscribe_data)
+    payment_data = {
+        "user": user.id,
+        "amount": -tariff.price,
+        "action": payment_schemas.PaymentChoice.CREDIT,
+        "status": True,
+    }
+    await db_hand.add_payment(session, payment_data)
+    await user_db_hand.update_user(session, user.id, {})
+    return {"detail": "Покупка совершена"}

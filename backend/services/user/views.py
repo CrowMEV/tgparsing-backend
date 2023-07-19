@@ -126,15 +126,3 @@ async def check_password(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Успешно"},
     )
-
-
-#
-# async def get_my_balance(
-#     session: AsyncSession = fa.Depends(get_async_session),
-#     user=fa.Depends(get_current_user),
-# ) -> JSONResponse:
-#     balance = await payment_db_hand.get_balance_by_user_id(session, user.id)
-#     return JSONResponse(
-#         status_code=fa.status.HTTP_200_OK,
-#         content={"balance": float(balance)},
-#     )

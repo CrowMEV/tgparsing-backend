@@ -13,7 +13,7 @@ from services import Base
 from services.payment.models import Payment
 from services.role.models import Role
 from services.telegram.account.models import TgAccount
-from services.telegram.member.models import Member, Chat
+from services.telegram.member.models import Chat, Member
 from services.user.models import User
 from services.user.utils.security import get_hash_password
 from settings import config

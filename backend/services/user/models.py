@@ -56,8 +56,9 @@ class User(Base):
     role = relationship(Role, backref="users", lazy="joined")
     balance: Mapped[decimal.Decimal] = mapped_column(
         default=0,
-        onupdate=sa.select(sa.func.sum(Payment.amount)).where(
+        onupdate=sa.select(
+            sa.func.sum(Payment.amount)
+        ).where(  # pylint: disable
             Payment.status == sa.true()
         ),
     )
-    # balance: Mapped[decimal.Decimal] = mapped_column(server_onupdate=)

@@ -45,7 +45,6 @@ def generate_payment_link(
         "Email": email,
         "Receipt": receipt,
         "SignatureValue": signature,
-        # "IsTest": 1,
     }
     return f"{payment_url}?{parse.urlencode(data)}"
 

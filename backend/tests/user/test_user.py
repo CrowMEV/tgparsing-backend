@@ -91,8 +91,10 @@ class TestUser:
         self, async_client, name, surname, password, email, code
     ):
         params = {
-            "firstname": name, "lastname": surname,
-            "password": password, "email": email
+            "firstname": name,
+            "lastname": surname,
+            "password": password,
+            "email": email,
         }
         params = {key: value for key, value in params.items() if value}
         response = await async_client.patch(self.patch_url, data=params)
