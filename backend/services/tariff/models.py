@@ -13,7 +13,7 @@ class Tariff(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[str]
-    limitation_days: Mapped[int]
+    tariff_options: Mapped[dict[str, Any]]
     price: Mapped[int]
     options: Mapped[dict[str, Any]]
 

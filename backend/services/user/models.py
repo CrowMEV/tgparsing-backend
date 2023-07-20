@@ -57,8 +57,6 @@ class User(Base):
     balance: Mapped[decimal.Decimal] = mapped_column(
         default=0,
         onupdate=sa.select(
-            sa.func.sum(Payment.amount)
-        ).where(  # pylint: disable
-            Payment.status == sa.true()
-        ),
+            sa.func.sum(Payment.amount)  # pylint: disable=E1102
+        ).where(Payment.status == sa.true()),
     )

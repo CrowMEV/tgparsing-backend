@@ -13,7 +13,9 @@ async def add_payment(session: AsyncSession, data: dict) -> Payment:
     return payment
 
 
-async def upd_payment(session: AsyncSession, payment_id: int) -> Payment:
+async def upd_payment(
+    session: AsyncSession, payment_id: int
+) -> Payment | None:
     stmt = (
         sa.update(Payment)
         .values({"status": True})
@@ -21,7 +23,7 @@ async def upd_payment(session: AsyncSession, payment_id: int) -> Payment:
         .where(Payment.id == payment_id)
     )
     result = await session.execute(stmt)
-    payment = result.scalars().one()
+    payment = result.scalars().first()
     await session.commit()
     return payment
 
