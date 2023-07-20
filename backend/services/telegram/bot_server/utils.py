@@ -95,6 +95,7 @@ async def check_task_exists(
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Задание с таким именем уже существует",
+        )
 
 
 async def check_folder(name: str) -> str:
