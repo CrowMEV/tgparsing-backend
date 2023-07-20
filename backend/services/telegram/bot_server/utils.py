@@ -1,5 +1,4 @@
 import csv
-import fnmatch
 import os.path
 import time
 from datetime import datetime
@@ -34,7 +33,7 @@ async def get_parser_data(session: AsyncSession) -> dict:
             session, {"work_status": "FREE"}
         )
         if not accounts:
-            time.sleep(1)
+            time.sleep(5)
             continue
         account = accounts[0]
         lock_name = f"lock:tgaccount_{account.api_id}"
@@ -82,6 +81,21 @@ async def end_parser(
     lock_inst.release()
 
 
+async def check_task_exists(
+        session: AsyncSession,
+        title: str,
+        user_id: int,
+):
+    task = await task_hand.get_task_by_filter(
+        session, {"title": title, "user_id": user_id}
+    )
+    if task:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Задание с таким именем уже существует"
+        )
+
+
 async def check_folder(name: str) -> str:
     dir_url = os.path.join(config.files_dir_url, name)
     if not os.path.isdir(dir_url):
@@ -89,17 +103,9 @@ async def check_folder(name: str) -> str:
     return dir_url
 
 
-async def check_file(dir_name: str, filename: str) -> None:
-    dir_url = await check_folder(dir_name)
-    if fnmatch.filter(os.listdir(dir_url), f"{filename}*"):
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Имя занято",
-        )
-
-
 async def write_data_to_file(data: dict, dir_name: str, filename: str) -> None:
-    file_url = os.path.join(config.files_dir_url, dir_name, filename)
+    dir_url = await check_folder(dir_name)
+    file_url = os.path.join(dir_url, filename)
     with open(f"{file_url}.csv", "w", encoding="utf-8") as file:
         writer = csv.writer(file, delimiter=";")
         writer.writerow(
@@ -158,11 +164,42 @@ async def get_members(
         )
 
 
+async def get_active_members(
+    task_id: int,
+    parsed_chats: list,
+    from_date: str,
+    to_date: str,
+    dir_name: str,
+    filename: str,
+):
+    async with async_session() as session:
+        time_start = datetime.utcnow()
+        parser_data = await get_parser_data(session)
+        params = {
+            "session_string": parser_data["session_string"],
+            "parsed_chats": parsed_chats,
+            "from_date": from_date,
+            "to_date": to_date,
+        }
+        result = await do_request("/activemembers", params)
+        await write_data_to_file(
+            data=result, dir_name=dir_name, filename=filename
+        )
+        await end_parser(
+            session=session,
+            time_start=time_start,
+            task_id=task_id,
+            id_account=parser_data["tg_account_id"],
+            lock_inst=parser_data["lock_inst"],
+        )
+
+
 async def do_parsing(
     parsing_task: str,
     data: dict,
 ):
     functions = {
         "get_members": get_members,
+        "get_active_members": get_active_members,
     }
     await functions[parsing_task](**data)

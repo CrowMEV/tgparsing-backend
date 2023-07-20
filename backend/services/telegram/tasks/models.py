@@ -23,7 +23,7 @@ class Task(Base):
     job_finish: Mapped[datetime] = mapped_column(
         nullable=True,
     )
-    title: Mapped[str]
+    title: Mapped[str] = mapped_column(index=True)
     operation: Mapped[schemas.OperationChoice] = mapped_column(
         default=schemas.OperationChoice.PARSING,
         server_default=schemas.OperationChoice.PARSING.name,

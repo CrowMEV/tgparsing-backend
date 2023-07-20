@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 from typing import List
 
 from pydantic import BaseModel, Field, validator
@@ -20,14 +20,14 @@ class GetMembers(BaseModel):
     groups_count: int = Field(default=1)
 
     @validator("parsed_chats", pre=True)
-    def check_chats(self, value):
+    def check_chats(cls, value):  # pylint: disable=E0213
         new_value = []
         for item in value:
             new_value.append(item.split("/")[-1])
         return new_value
 
     @validator("groups_count")
-    def check_groups_count(self, value, values):
+    def check_groups_count(cls, value, values):  # pylint: disable=E0213
         if value > len(values["parsed_chats"]):
             raise ValueError(
                 "Количество групп не должно превышать "
@@ -36,11 +36,21 @@ class GetMembers(BaseModel):
         return value
 
 
-class GetActiveMembers(GetMembers):
-    from_date: datetime = Field(
-        default=datetime.now().replace(microsecond=0) - timedelta(days=1)
+class GetActiveMembers(BaseModel):
+    task_name: str
+    parsed_chats: List[str] = Field(
+        min_items=1,
+        max_items=5,
+        unique_items=True,
+        description="Чаты для парсинга",
     )
-    to_date: datetime = Field(default=datetime.now().replace(microsecond=0))
+    from_date: datetime.date
+    to_date: datetime.date
+
+    @validator("from_date", "to_date" )
+    def check_date(cls, value):  # pylint: disable=E0213
+        return str(value)
+
 
 
 class GetByGeo(BaseModel):

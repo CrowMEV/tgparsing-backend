@@ -24,3 +24,10 @@ async def update_task(
     task = result.scalars().first()
     await session.commit()
     return task
+
+
+async def get_task_by_filter(session: AsyncSession, data: dict) -> Task | None:
+    stmt = (sa.select(Task).filter_by(**data))
+    result = await session.execute(stmt)
+    task = result.scalars().first()
+    return task
