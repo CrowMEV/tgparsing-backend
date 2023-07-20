@@ -18,14 +18,16 @@ async def get_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
-    await utils.check_file(
-        dir_name=current_user.email,
-        filename=body_data.task_name,
+    await utils.check_task_exists(
+        session=session,
+        title=body_data.task_name,
+        user_id=current_user.id,
     )
+    data = body_data.dict()
     task = await task_hand.create_task(
         session,
         {
-            "title": body_data.task_name,
+            "title": data.pop("task_name"),
             "user_id": current_user.id,
         },
     )
@@ -33,10 +35,9 @@ async def get_members(
         "get_members",
         {
             "task_id": task.id,
-            "parsed_chats": body_data.parsed_chats,
-            "groups_count": body_data.groups_count,
             "dir_name": current_user.email,
             "filename": body_data.task_name,
+            **data,
         },
     )
     return JSONResponse(
@@ -50,21 +51,28 @@ async def get_active_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
-    await utils.check_file(
-        dir_name=current_user.email,
-        filename=body_data.task_name,
+    await utils.check_task_exists(
+        session=session,
+        title=body_data.task_name,
+        user_id=current_user.id,
     )
-    time_start = datetime.now()
-    session_string = await utils.get_parser_data(session)
-    params = {
-        "session_string": session_string,
-        "parsed_chats": body_data.parsed_chats,
-    }
-    result = await utils.do_request("/activemembers", params)
-    await utils.write_data_to_file(
-        data=result, dir_name=current_user.email, filename=body_data.task_name
+    data = body_data.dict()
+    task = await task_hand.create_task(
+        session,
+        {
+            "title": data.pop("task_name"),
+            "user_id": current_user.id,
+        },
     )
-    total_time = datetime.now() - time_start  # pylint: disable=W0612
+    start_parsing.delay(
+        "get_active_members",
+        {
+            "task_id": task.id,
+            "dir_name": current_user.email,
+            "filename": body_data.task_name,
+            **data,
+        },
+    )
     return JSONResponse(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Парсинг запущен"},
@@ -76,9 +84,10 @@ async def get_members_by_geo(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ):
-    await utils.check_file(
-        dir_name=current_user.email,
-        filename=body_data.task_name,
+    await utils.check_task_exists(
+        session=session,
+        title=body_data.task_name,
+        user_id=current_user.id,
     )
     time_start = datetime.now()
     session_string = await utils.get_parser_data(session)
@@ -104,9 +113,10 @@ async def get_chats_by_word(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ):
-    await utils.check_file(
-        dir_name=current_user.email,
-        filename=body_data.task_name,
+    await utils.check_task_exists(
+        session=session,
+        title=body_data.task_name,
+        user_id=current_user.id,
     )
     time_start = datetime.now()
     session_string = await utils.get_parser_data(session)
