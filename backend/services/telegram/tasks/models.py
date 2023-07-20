@@ -40,3 +40,4 @@ class Task(Base):
         backref="tasks",
         lazy="joined",
     )
+    file_url: Mapped[str] = mapped_column(default="")
