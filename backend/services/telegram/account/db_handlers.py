@@ -29,7 +29,7 @@ async def get_tgaccounts(
 ) -> Sequence[TgAccount] | None:
     stmt = sa.select(TgAccount)
     if data:
-        stmt = stmt.where(**data)
+        stmt = stmt.filter_by(**data)
     result = await session.execute(stmt)
     accounts = result.scalars().fetchall()
     return accounts

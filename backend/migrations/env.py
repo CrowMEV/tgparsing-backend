@@ -8,6 +8,7 @@ import services.role.models as role_models
 import services.tariff.models as tariff_models
 import services.telegram.account.models as account_models
 import services.telegram.member.models as tgmember_models
+import services.telegram.tasks.models as tasks_models
 import services.user.models as user_models
 from services import Base
 from settings import config as app_config
