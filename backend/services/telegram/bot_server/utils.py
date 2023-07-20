@@ -95,7 +95,6 @@ async def check_task_exists(
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Задание с таким именем уже существует",
-        )
 
 
 async def check_folder(name: str) -> str:
@@ -203,6 +202,36 @@ async def get_active_members(
             task_id=task_id,
             work_status=work_status,
             file_url=file_url,
+            id_account=parser_data["tg_account_id"],
+            lock_inst=parser_data["lock_inst"],
+        )
+
+
+async def get_active_members(
+    task_id: int,
+    parsed_chats: list,
+    from_date: str,
+    to_date: str,
+    dir_name: str,
+    filename: str,
+):
+    async with async_session() as session:
+        time_start = datetime.utcnow()
+        parser_data = await get_parser_data(session)
+        params = {
+            "session_string": parser_data["session_string"],
+            "parsed_chats": parsed_chats,
+            "from_date": from_date,
+            "to_date": to_date,
+        }
+        result = await do_request("/activemembers", params)
+        await write_data_to_file(
+            data=result, dir_name=dir_name, filename=filename
+        )
+        await end_parser(
+            session=session,
+            time_start=time_start,
+            task_id=task_id,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )
