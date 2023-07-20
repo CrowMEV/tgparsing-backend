@@ -112,7 +112,7 @@ class Config(BaseSettings):
     FILES_DIR: str = Field(default="files")
 
     @property
-    def files_dir_url(self):
+    def abs_files_dir_url(self):
         return os.path.join(
             os.getcwd(),
             self.FILES_DIR,
