@@ -45,7 +45,15 @@ class Config(BaseSettings):
     JWT_TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings
-    IS_ACTIVE: bool = Field(default=True)
+    IS_ACTIVE: bool = Field(default=False)
+
+    # email verify
+    EMAIL_HOST: str = Field(default="smtp.gmail.com")
+    EMAIL_PORT: int = Field(default=587)
+    EMAIL_USERNAME: str = Field(default="")
+    EMAIL_PASSWORD: str = Field(default="")
+    EMAIL_FROM: str = Field(default="")
+    EMAIL_SUBJECT: str = Field(default="Verification email TiGParsing")
 
     # db
     DB_USER: str = Field(default="tg_db")
@@ -127,8 +135,9 @@ class Config(BaseSettings):
     USER_REFRESH_TOKEN: str = Field(default="user_refresh_token")
     USER_ALL: str = Field(default="user_all")
     USER_BY_ID: str = Field(default="user_by_id")
-    USER_DELETE: str = Field(default="user_delete")
+    USER_DELETE_NON_ACTIVE: str = Field(default="user_delete_non_active")
     USER_CHECK_PASSWORD: str = Field(default="check_password")
+    USER_VERIFY: str = Field(default="user_verify")
     # role
     ROLE_GET: str = Field(default="role_get")
     ROLE_ADD: str = Field(default="role_add")
