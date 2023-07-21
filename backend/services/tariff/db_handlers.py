@@ -79,3 +79,11 @@ async def change_subscribe(
     payment = result.scalars().first()
     await session.commit()
     return payment
+
+
+async def delete_subscribe_by_id(
+    session: AsyncSession, subscribe_id: int
+) -> None:
+    stmt = sa.delete(UserSubscribe).where(Tariff.id == subscribe_id)
+    await session.execute(stmt)
+    await session.commit()

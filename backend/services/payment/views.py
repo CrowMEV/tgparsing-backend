@@ -1,5 +1,4 @@
 import decimal
-from datetime import datetime, timedelta
 from typing import Any
 
 import fastapi as fa
@@ -16,6 +15,7 @@ from services.payment.utils.robokassa import (
     generate_payment_link,
 )
 from services.role.schemas import RoleNameChoice
+from services.tariff.utils.subscribe import get_end_date_of_subscribe
 from services.user.dependencies import get_current_user
 from settings import config
 
@@ -65,8 +65,8 @@ async def confirm_payment(
     check_result = check_result_payment(schema)
     if check_result:
         payment = await db_hand.upd_payment(session, schema.inv_id)
-        user = payment.user
-        await user_db_hand.update_user(session, user, {})
+        if payment:
+            await user_db_hand.update_user(session, payment.user, {})
 
 
 async def fail_payment() -> None:
@@ -90,11 +90,13 @@ async def get_payments(
 
 
 async def buy_tariff(
-    tariff_id: int,
+    subscribe_schema: payment_schemas.AddSubscribe,
     session: AsyncSession = fa.Depends(get_async_session),
     user=fa.Depends(get_current_user),
 ) -> Any:
-    tariff = await tariff_db_hand.get_tariff_by_id(session, tariff_id)
+    tariff = await tariff_db_hand.get_tariff_by_id(
+        session, subscribe_schema.tariff_id
+    )
     if not tariff:
         raise fa.HTTPException(status_code=404, detail="Тариф не найден")
     if user.balance < tariff.price:
@@ -102,10 +104,12 @@ async def buy_tariff(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Не хватает доступных средств",
         )
+    end_date = get_end_date_of_subscribe(tariff.period)
     subscribe_data = {
         "tariff_id": tariff.id,
-        "end_date": datetime.utcnow() + timedelta(tariff.limitation_days),
-        "tariff_options": tariff.options,
+        "end_date": end_date,
+        "options": tariff.options,
+        "autopay": subscribe_schema.autopay,
     }
     if user.subscribe:
         subscribe_data["id"] = user.subscribe.id

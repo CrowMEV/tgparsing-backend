@@ -19,6 +19,15 @@ class Config(BaseSettings):
     SECRET: str = Field(default="secret")
     DB_ECHO: bool = Field(default=True)
 
+    # redis
+    REDIS_HOST: str = Field(default="localhost")
+    REDIS_PORT: int = Field(default=6379)
+    REDIS_DB: int = Field(default=0)
+
+    # celery
+    BROKER_HOST: str = Field(default="localhost")
+    BROKER_PORT: int = Field(default=6379)
+
     # parser server
     PARSER_SERVER: str = Field(default="http://localhost:8001")
 
@@ -99,6 +108,16 @@ class Config(BaseSettings):
             self.BASE_AVATAR_NAME,
         )
 
+    # files
+    FILES_DIR: str = Field(default="files")
+
+    @property
+    def files_dir_url(self):
+        return os.path.join(
+            os.getcwd(),
+            self.FILES_DIR,
+        )
+
     # url names
     # user
     USER_REGISTER: str = Field(default="user_register")
@@ -139,6 +158,7 @@ class Config(BaseSettings):
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
+    SUBSCRIBE_UNSUBSCRIBE: str = Field(default="subscribe_unsubscribe")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")

@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import services.tariff.db_handlers as db_hand
 import services.tariff.schemas as tariff_schemas
 from database.db_async import get_async_session
+from services.user.dependencies import get_current_user
+from services.user.models import User
 
 
 async def get_tariff_list(
@@ -64,3 +66,20 @@ async def delete_tariff(
         raise HTTPException(status_code=404, detail="Тариф не найден")
     await db_hand.delete_tariff_by_id(session, id_row)
     return {"detail": "Тариф успешно удалён"}
+
+
+async def unsubscribe(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    if user.subscribe:
+        data = {
+            "id": user.subscribe.id,
+            "autopay": False,
+        }
+        await db_hand.change_subscribe(session, data)
+        return {
+            "detail": "Автоплатёж отключен.\
+             По истечении срока подписка закончится"
+        }
+    raise HTTPException(status_code=404, detail="Нет активной подписки")

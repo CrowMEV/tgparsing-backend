@@ -33,7 +33,7 @@ class TestTgmember:
     async def test_delete_tgmember_by_user(
         self, async_client, user_login, id_row, code
     ):
-        url: str = app.url_path_for(config.MEMBER_DELETE, id_row=id_row)
+        url = app.url_path_for(config.MEMBER_DELETE, id_row=id_row)
         response = await async_client.get(url)
 
         assert response.status_code == code
@@ -62,7 +62,7 @@ class TestChat:
     async def test_get_chat_by_user(
         self, async_client, user_login, id_row, code
     ):
-        url: str = app.url_path_for(config.CHAT_BY_ID, id_row=id_row)
+        url = app.url_path_for(config.CHAT_BY_ID, id_row=id_row)
         response = await async_client.get(url)
 
         assert response.status_code == code
@@ -71,7 +71,7 @@ class TestChat:
     async def test_delete_chat_by_user(
         self, async_client, user_login, id_row, code
     ):
-        url: str = app.url_path_for(config.MEMBER_DELETE, id_row=id_row)
+        url = app.url_path_for(config.MEMBER_DELETE, id_row=id_row)
         response = await async_client.get(url)
 
         assert response.status_code == code

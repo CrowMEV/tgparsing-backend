@@ -5,6 +5,7 @@ from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr, Field
 
 from services.role.schemas import RoleResponse
+from services.tariff.schemas import SubscribeResponse
 
 
 class UserLogin(BaseModel):
@@ -29,6 +30,7 @@ class UserRead(BaseModel):
     avatar_url: str
     role: RoleResponse
     balance: decimal.Decimal
+    subscribe: SubscribeResponse | None
 
     class Config:
         orm_mode = True

@@ -37,3 +37,8 @@ class PaymentsGetAll(BaseModel):
     action: Optional[PaymentChoice] = Field(default=None)
     period_start: Optional[datetime.date] = Field(default=None)
     period_end: Optional[datetime.date] = Field(default=None)
+
+
+class AddSubscribe(BaseModel):
+    tariff_id: int
+    autopay: Optional[bool] = Field(default=False)
