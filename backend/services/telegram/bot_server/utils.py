@@ -1,6 +1,6 @@
+import asyncio
 import csv
 import os.path
-import time
 from datetime import datetime
 
 import fastapi as fa
@@ -11,20 +11,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.db_async import async_session
 from services.telegram.account import db_handlers as account_hand
 from services.telegram.tasks import db_handlers as task_hand
+from services.telegram.tasks.schemas import WorkStatusChoice
 from settings import config
 from utils.redis.redis_app import redis_client
 
 
-async def do_request(route, params):
+async def do_request(route, params: dict):
     with httpx.Client() as client:
         resp = client.post(
             timeout=None, url=f"{config.PARSER_SERVER}{route}", json=params
         )
     if resp.status_code != 200:
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_400_BAD_REQUEST, detail=resp.text
-        )
-    return resp.json()
+        return WorkStatusChoice.FAILED, None
+    return WorkStatusChoice.SUCCESS, resp.json()
 
 
 async def get_parser_data(session: AsyncSession) -> dict:
@@ -33,13 +32,13 @@ async def get_parser_data(session: AsyncSession) -> dict:
             session, {"work_status": "FREE"}
         )
         if not accounts:
-            time.sleep(5)
+            await asyncio.sleep(5)
             continue
         account = accounts[0]
         lock_name = f"lock:tgaccount_{account.api_id}"
         lock_inst = redis_client.lock(name=lock_name, blocking=False)
         if not lock_inst.acquire(blocking=False):
-            time.sleep(5)
+            await asyncio.sleep(5)
             continue
         await account_hand.update_tgaccount(
             session=session,
@@ -57,6 +56,8 @@ async def end_parser(
     session: AsyncSession,
     time_start: datetime,
     task_id: int,
+    work_status: WorkStatusChoice,
+    file_url: str,
     id_account: int,
     lock_inst: Lock,
 ):
@@ -68,9 +69,10 @@ async def end_parser(
         session,
         task_id,
         {
-            "work_status": "IN_WAITING",
             "job_finish": job_finish,
             "time_work": time_work.time(),
+            "file_url": file_url,
+            "work_status": work_status,
         },
     )
     await account_hand.update_tgaccount(
@@ -97,16 +99,17 @@ async def check_task_exists(
 
 
 async def check_folder(name: str) -> str:
-    dir_url = os.path.join(config.files_dir_url, name)
+    dir_url = os.path.join(config.abs_files_dir_url, name)
     if not os.path.isdir(dir_url):
         os.mkdir(dir_url)
     return dir_url
 
 
-async def write_data_to_file(data: dict, dir_name: str, filename: str) -> None:
+async def write_data_to_file(data: dict, dir_name: str, filename: str) -> str:
     dir_url = await check_folder(dir_name)
-    file_url = os.path.join(dir_url, filename)
-    with open(f"{file_url}.csv", "w", encoding="utf-8") as file:
+    new_filename = f"{filename}.csv"
+    abs_file_url = os.path.join(dir_url, new_filename)
+    with open(abs_file_url, "w", encoding="utf-8") as file:
         writer = csv.writer(file, delimiter=";")
         writer.writerow(
             [
@@ -134,6 +137,9 @@ async def write_data_to_file(data: dict, dir_name: str, filename: str) -> None:
                     ", ".join(groups),
                 ]
             )
+    return os.path.join(
+        config.STATIC_DIR, config.FILES_DIR, dir_name, new_filename
+    )
 
 
 async def get_members(
@@ -151,14 +157,18 @@ async def get_members(
             "parsed_chats": parsed_chats,
             "groups_count": groups_count,
         }
-        result = await do_request("/members", params)
-        await write_data_to_file(
-            data=result, dir_name=dir_name, filename=filename
-        )
+        work_status, result = await do_request("/members", params)
+        file_url = ""
+        if result:
+            file_url = await write_data_to_file(
+                data=result, dir_name=dir_name, filename=filename
+            )
         await end_parser(
             session=session,
             time_start=time_start,
             task_id=task_id,
+            work_status=work_status,
+            file_url=file_url,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )
@@ -181,14 +191,18 @@ async def get_active_members(
             "from_date": from_date,
             "to_date": to_date,
         }
-        result = await do_request("/activemembers", params)
-        await write_data_to_file(
-            data=result, dir_name=dir_name, filename=filename
-        )
+        work_status, result = await do_request("/activemembers", params)
+        file_url = ""
+        if result:
+            await write_data_to_file(
+                data=result, dir_name=dir_name, filename=filename
+            )
         await end_parser(
             session=session,
             time_start=time_start,
             task_id=task_id,
+            work_status=work_status,
+            file_url=file_url,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )

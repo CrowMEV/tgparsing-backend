@@ -106,16 +106,15 @@ async def buy_tariff(
         )
     end_date = get_end_date_of_subscribe(tariff.period)
     subscribe_data = {
+        "user_id": user.id,
         "tariff_id": tariff.id,
         "end_date": end_date,
         "options": tariff.options,
         "autopay": subscribe_schema.autopay,
     }
     if user.subscribe:
-        subscribe_data["id"] = user.subscribe.id
         await tariff_db_hand.change_subscribe(session, subscribe_data)
     else:
-        subscribe_data["user_id"] = user.id
         await tariff_db_hand.add_subscribe(session, subscribe_data)
     payment_data = {
         "user": user.id,

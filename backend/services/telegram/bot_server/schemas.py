@@ -1,4 +1,4 @@
-import datetime
+from datetime import date, datetime
 from typing import List
 
 from pydantic import BaseModel, Field, validator
@@ -44,13 +44,18 @@ class GetActiveMembers(BaseModel):
         unique_items=True,
         description="Чаты для парсинга",
     )
-    from_date: datetime.date
-    to_date: datetime.date
+    from_date: date
+    to_date: date
 
-    @validator("from_date", "to_date" )
-    def check_date(cls, value):  # pylint: disable=E0213
-        return str(value)
+    @validator("from_date")
+    def change_from_date(cls, value):  # pylint: disable=E0213
+        return str(datetime.combine(value, datetime.min.time()))
 
+    @validator("to_date")
+    def change_to_date(cls, value):  # pylint: disable=E0213
+        return str(
+            datetime.combine(value, datetime.max.time().replace(microsecond=0))
+        )
 
 
 class GetByGeo(BaseModel):

@@ -69,11 +69,12 @@ async def add_subscribe(session: AsyncSession, data: dict) -> UserSubscribe:
 async def change_subscribe(
     session: AsyncSession, data: dict
 ) -> UserSubscribe | None:
+    user_id = data.pop("user_id")
     stmt = (
         sa.update(UserSubscribe)
         .values(**data)
         .returning(UserSubscribe)
-        .where(UserSubscribe.id == data["id"])
+        .where(UserSubscribe.user_id == user_id)
     )
     result = await session.execute(stmt)
     payment = result.scalars().first()

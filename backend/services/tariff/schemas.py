@@ -27,7 +27,7 @@ class TariffPatchModel(BaseModel):
     description: Optional[str]
     period: str = Field(
         ...,
-        regex=r"^([1-5] days|[1-4] weeks|[1-6] months|[1-5] years)$",
+        regex=r"^([1-5] days|[1-2] weeks|[1-6] months|[1-5] years)$",
     )
     price: Optional[int]
     options: Optional[dict[str, Any]]

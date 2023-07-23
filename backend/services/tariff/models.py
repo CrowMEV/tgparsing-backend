@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from services import Base
@@ -13,7 +13,7 @@ class Tariff(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[str]
-    period: Mapped[str]
+    period: Mapped[str] = mapped_column(String(10))
     options: Mapped[dict[str, Any]]
     price: Mapped[int]
 
@@ -27,4 +27,3 @@ class UserSubscribe(Base):
     options: Mapped[dict[str, Any]]
     end_date: Mapped[datetime]
     autopay: Mapped[bool] = mapped_column(default=False)
-    # tariff: Mapped["Tariff"] = relationship(backref="users")
