@@ -120,7 +120,7 @@ async def check_password(
     if not security.validate_password(password, user.hashed_password):
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Не верный пароль",
+            detail="Неверный пароль",
         )
     return JSONResponse(
         status_code=fa.status.HTTP_200_OK,
