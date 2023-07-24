@@ -3,24 +3,28 @@ version: "3.9"
 services:
   backend:
     build: ./backend
+    container_name: backend
     depends_on:
       postgresql:
         condition: service_healthy
+    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"
     restart: always
     env_file:
       - .env
     volumes:
       - ./backend/static:/app/static
+       -./backend/:/app/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)" #&& PathPrefix(/`api`)
+      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)"
       - "traefik.http.routers.tgparsing1.entrypoints=websecure"
       - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
       - "traefik.http.services.tgparsing-service1.loadbalancer.server.port=8000"
-
+      
   postgresql:
     image: postgres:15-alpine
+    container_name: postgresql
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -36,6 +40,7 @@ services:
 
   frontend:
     build: ./tgparsing-front
+    container_name: frontend
     depends_on:
       - backend
     restart: always
@@ -65,3 +70,29 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
       - ./traefik_config/:/etc/traefik
+      
+  redis:
+    image: redis:6.0.20-alpine
+    container_name: redis
+
+  celery_worker:
+    build: ./backend
+    container_name: celery_worker
+    depends_on:
+      - redis
+    volumes:
+        - ./backend/:/app/
+    command: celery -A utils.celery.celery_app worker -l DEBUG
+    env_file:
+      - .env
+    
+  celery_beat:
+    build: ./backend
+    container_name: celery_beat
+    depends_on:
+      - celery_worker
+    command: celery -A utils.celery.celery_app beat -l DEBUG
+    volumes:
+        - ./backend/:/app/
+    env_file:
+      - .env
