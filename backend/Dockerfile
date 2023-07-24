@@ -8,7 +8,3 @@ ENV PYTHONBUFFERED 1
 COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
-
-CMD alembic upgrade head && \
-    uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && \
-    gunicorn -k uvicorn.workers.UvicornWorker

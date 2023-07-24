@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List
 
-from pydantic import BaseModel, Field, validator, root_validator
+from pydantic import BaseModel, Field, validator
 
 
 class GetChats(BaseModel):
@@ -65,7 +65,7 @@ class GetActiveMembers(BaseModel):
         )
 
     @validator("activity")
-    def check_values(cls, value): # pylint: disable=E0213
+    def check_values(cls, value):  # pylint: disable=E0213
         data = value.dict()
         new_data = {key: value for key, value in data.items() if value}
         if new_data:
