@@ -73,7 +73,7 @@ user_router.add_api_route(
 )
 
 user_router.add_api_route(
-    path="/{token}",
+    path="/verify/",
     methods=["PATCH"],
     endpoint=views.verify_user,
     name=config.USER_VERIFY,

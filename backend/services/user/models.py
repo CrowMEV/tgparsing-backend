@@ -20,6 +20,7 @@ class User(Base):
         sa.String(length=320), unique=True, index=True
     )
     hashed_password: Mapped[str] = mapped_column(sa.String(length=1024))
+    phone_number: Mapped[str] = mapped_column(nullable=True, unique=True)
     timezone: Mapped[int] = mapped_column(
         sa.SMALLINT,
         default=0,
