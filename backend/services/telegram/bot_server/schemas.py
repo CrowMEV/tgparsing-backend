@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, root_validator
 
 
 class GetChats(BaseModel):
@@ -36,6 +36,11 @@ class GetMembers(BaseModel):
         return value
 
 
+class Activity(BaseModel):
+    comments: bool = Field(default=False)
+    reposts: bool = Field(default=False)
+
+
 class GetActiveMembers(BaseModel):
     task_name: str
     parsed_chats: List[str] = Field(
@@ -46,6 +51,8 @@ class GetActiveMembers(BaseModel):
     )
     from_date: date
     to_date: date
+    activity_count: int = Field(default=1, ge=1)
+    activity: Activity
 
     @validator("from_date")
     def change_from_date(cls, value):  # pylint: disable=E0213
@@ -55,6 +62,16 @@ class GetActiveMembers(BaseModel):
     def change_to_date(cls, value):  # pylint: disable=E0213
         return str(
             datetime.combine(value, datetime.max.time().replace(microsecond=0))
+        )
+
+    @validator("activity")
+    def check_values(cls, value): # pylint: disable=E0213
+        data = value.dict()
+        new_data = {key: value for key, value in data.items() if value}
+        if new_data:
+            return value
+        raise ValueError(
+            "Activity должно содержать как минимум один ключ с значением True"
         )
 
 
