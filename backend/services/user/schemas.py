@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, UploadFile
@@ -28,6 +29,7 @@ class UserRead(BaseModel):
     avatar_url: str
     role: RoleResponse
     phone_number: str | None
+    created_at: datetime
 
     class Config:
         orm_mode = True
