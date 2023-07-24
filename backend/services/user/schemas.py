@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, UploadFile
@@ -27,6 +28,8 @@ class UserRead(BaseModel):
     is_verified: bool = False
     avatar_url: str
     role: RoleResponse
+    phone_number: str | None
+    created_at: datetime
 
     class Config:
         orm_mode = True
@@ -50,6 +53,7 @@ class UserPatch(BaseModel):
     hashed_password: Optional[str]
     avatar_url: Optional[UploadFile]
     email: Optional[EmailStr]
+    phone_number: Optional[str]
 
     @classmethod
     def as_form(
@@ -69,6 +73,11 @@ class UserPatch(BaseModel):
         ),
         avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
         email: Optional[EmailStr] = Form(default=None),
+        phone_number: Optional[str] = Form(
+            default=None,
+            min_length=8,
+            regex=r"^\+[0-9+][0-9()-]{4,14}\d$",
+        ),
     ):
         return cls(
             firstname=firstname,
@@ -77,4 +86,5 @@ class UserPatch(BaseModel):
             hashed_password=hashed_password,
             avatar_url=avatar_url,
             email=email,
+            phone_number=phone_number,
         )
