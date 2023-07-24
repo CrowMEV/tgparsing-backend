@@ -61,7 +61,17 @@ async def create_user(
         )
     user.hashed_password = security.get_hash_password(user.hashed_password)
     await db_hand.add_user(session, user.dict())
-    return await email.send_mail(request, user.email, session)
+    token_date = {
+        "email": user.email,
+        "password": user.hashed_password
+    }
+    token = security.create_token(token_date)
+    url = request.url_for(config.USER_VERIFY).include_query_params(token=token)
+    await email.send_mail(user.email, url)
+    return JSONResponse(
+        status_code=fa.status.HTTP_201_CREATED,
+        content={"detail": "Пользователь создан успешно"},
+    )
 
 
 async def verify_user(
@@ -136,7 +146,7 @@ async def check_password(
     if not security.validate_password(password, user.hashed_password):
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Не верный пароль",
+            detail="Неверный пароль",
         )
     return JSONResponse(
         status_code=fa.status.HTTP_200_OK,
@@ -147,12 +157,7 @@ async def check_password(
 async def delete_non_active_users(
     session: AsyncSession = fa.Depends(get_async_session)
 ) -> fa.Response:
-    users = await db_hand.get_users_by_active(session)
-    if not users:
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_400_BAD_REQUEST,
-            detail="Неактивированные пользователи отсутствуют",
-        )
+    await db_hand.delete_non_active_user(session)
     return JSONResponse(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Неактивирированные пользователи успешно удалены"},

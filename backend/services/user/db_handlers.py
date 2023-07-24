@@ -29,13 +29,6 @@ async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
     return user
 
 
-async def get_users_by_active(session: AsyncSession) -> Sequence[User] | None:
-    stmt = sa.select(User).where(User.is_active.is_(False))
-    result = await session.execute(stmt)
-    users = result.scalars().fetchall()
-    return users
-
-
 async def add_user(session: AsyncSession, data: dict) -> None:
     user = User(**data)
     session.add(user)

@@ -53,8 +53,7 @@ class Config(BaseSettings):
     EMAIL_USERNAME: str = Field(default="")
     EMAIL_PASSWORD: str = Field(default="")
     EMAIL_FROM: str = Field(default="")
-    EMAIL_SUBJECT: str = Field(default="Verification email TiGParsing")
-
+    EMAIL_SUBJECT: str = Field(default="Verification email TGParsing")
     # db
     DB_USER: str = Field(default="tg_db")
     DB_PASSWORD: str = Field(default="tg_db")
