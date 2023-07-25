@@ -78,8 +78,12 @@ class TestUser:
         ("Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
         ("Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
         (
-            "Igor", "Pupkin", "123",
-            "+8888 8888 77775566", "igor@pupkin.com", 422
+            "Igor",
+            "Pupkin",
+            "123",
+            "+8888 8888 77775566",
+            "igor@pupkin.com",
+            422,
         ),
         ("Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
         ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
@@ -94,8 +98,12 @@ class TestUser:
         ("", "", "HEro2023#", "", "", 200),
         ("", "", "", "+37(787)5675656", "", 200),
         (
-            "Masha", "Zacharova", "sAlenow2023#",
-            "+79998886655", "igor@pupkin.com", 200
+            "Masha",
+            "Zacharova",
+            "sAlenow2023#",
+            "+79998886655",
+            "igor@pupkin.com",
+            200,
         ),
     ]
 
@@ -106,9 +114,11 @@ class TestUser:
         self, async_client, name, surname, password, phone_number, email, code
     ):
         params = {
-            "firstname": name, "lastname": surname,
-            "password": password, "phone_number": phone_number,
-            "email": email
+            "firstname": name,
+            "lastname": surname,
+            "password": password,
+            "phone_number": phone_number,
+            "email": email,
         }
         params = {key: value for key, value in params.items() if value}
         response = await async_client.patch(self.patch_url, data=params)
