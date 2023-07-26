@@ -26,7 +26,19 @@ repos:
             "--profile=black",
             "--line-length=79",
             "--lai=2"
-          ]     
+          ]
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        exclude: migrations/
+        args:
+          [
+          "--disable=C0114,C0115,C0116"
+          ]
     
   - repo: local
     hooks:
@@ -41,12 +53,12 @@ repos:
           "--exclude=migrations"
         ]
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
-        exclude: migrations/
-        args: 
-          [
-          "--max-line-length=79"
-          ]
+  # - repo: https://github.com/PyCQA/flake8
+  #   rev: 6.0.0
+  #   hooks:
+  #     - id: flake8
+  #       exclude: migrations/
+  #       args: 
+  #         [
+  #         "--max-line-length=79"
+  #         ]
