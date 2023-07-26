@@ -10,7 +10,7 @@ class Config(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-    WORK_DIR: Path = Path(__file__).parent
+    BASE_DIR: Path = Path(__file__).parent
     # run server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
