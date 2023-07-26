@@ -3,11 +3,10 @@ import json
 from typing import AsyncGenerator
 
 import pytest
-import sqlalchemy.ext.asyncio as sa_asyncio
-from httpx import AsyncClient
-
 import services.payment.schemas as payment_schemas
+import sqlalchemy.ext.asyncio as sa_asyncio
 from database.db_async import get_async_session
+from httpx import AsyncClient
 from server import app
 from services import Base
 from services.payment.models import Payment
@@ -52,9 +51,10 @@ def event_loop():
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database(event_loop):
+    json_file = config.WORK_DIR / "roles_data.json"
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    with open("roles_data.json") as file:
+    with json_file.open() as file:
         data = json.load(file)
     async with async_test_session() as session:
         for item_data in data:

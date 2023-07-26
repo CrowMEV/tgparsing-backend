@@ -2,15 +2,14 @@ import json
 import sys
 
 import click
-from pydantic import ValidationError
-from sqlalchemy import and_, select
-from sqlalchemy.dialects.postgresql import insert
-
 from database.db_sync import Session
+from pydantic import ValidationError
 from services.role.models import Role
 from services.user.models import User
 from services.user.schemas import UserCreate
 from services.user.utils.security import get_hash_password
+from sqlalchemy import and_, select
+from sqlalchemy.dialects.postgresql import insert
 
 
 @click.group("db")
@@ -71,7 +70,7 @@ def add_admin(
                 "role_name": role.upper(),
             }
         )
-        stmt = insert(User).values(**prepared_data)
+        stmt = insert(User).values(**prepared_data)  # type: ignore
         session.execute(stmt)
         session.commit()
         print("The admin was created successfully")

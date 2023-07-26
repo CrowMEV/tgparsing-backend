@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   backend:
-    build: ./backend
+    build: ./
     depends_on:
       postgresql:
         condition: service_healthy

@@ -1,10 +1,8 @@
 import os
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from services.payment.routes import payment_router
 from services.role.routes import role_router
 from services.tariff.routes import benefits_router, tariff_router
@@ -18,7 +16,7 @@ app = FastAPI(title=config.APP_NAME)
 
 app.mount(
     "/static",
-    StaticFiles(directory=Path(__file__).parent / "static"),
+    StaticFiles(directory=config.WORK_DIR / "static"),
     name="static",
 )
 
