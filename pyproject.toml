@@ -81,9 +81,3 @@ load-plugins = ["pylint_pytest"]
 max-args = 8
 max-line-length = 79
 disable = ["C0114", "C0115", "C0116", "W1514", "W3101", "R0903"]
-
-
-
-
-    
-

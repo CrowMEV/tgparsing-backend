@@ -1,7 +1,6 @@
 import typing
 
 import fastapi as fa
-
 import services.telegram.account.schemas as tg_schemas
 from services.telegram.account import views
 from services.user.utils import permissions as perms
@@ -9,7 +8,7 @@ from settings import config
 
 
 tgaccount_router = fa.APIRouter(
-    prefix="/telegram",
+    prefix="/tgaccount",
     tags=["TgAccount"],
     dependencies=[fa.Depends(perms.is_admin), fa.Depends(perms.is_superuser)],
 )
