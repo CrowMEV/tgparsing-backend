@@ -3,7 +3,6 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from services.payment.routes import payment_router
 from services.role.routes import role_router
 from services.tariff.routes import benefits_router, tariff_router
@@ -15,7 +14,11 @@ from settings import config
 
 app = FastAPI(title=config.APP_NAME)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory=config.BASE_DIR / "static"),
+    name="static",
+)
 
 app.add_middleware(
     CORSMiddleware,

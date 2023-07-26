@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic import BaseSettings, Field
@@ -9,6 +10,7 @@ class Config(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
+    BASE_DIR: Path = Path(__file__).parent
     # run server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
@@ -48,11 +50,11 @@ class Config(BaseSettings):
     IS_ACTIVE: bool = Field(default=False)
 
     # email verify
-    EMAIL_HOST: str = Field(default="smtp.gmail.com")
-    EMAIL_PORT: int = Field(default=587)
-    EMAIL_USERNAME: str = Field(default="")
+    EMAIL_HOST: str = Field(default="smtp.beget.com")
+    EMAIL_PORT: int = Field(default=2525)
+    EMAIL_USERNAME: str = Field(default="info@tgparsing.ru")
     EMAIL_PASSWORD: str = Field(default="")
-    EMAIL_FROM: str = Field(default="")
+    EMAIL_FROM: str = Field(default="info@tgparsing.ru")
     EMAIL_SUBJECT: str = Field(default="Verification email TGParsing")
     # db
     DB_USER: str = Field(default="tg_db")
@@ -197,4 +199,5 @@ class Config(BaseSettings):
     PARSER_ACTIVE_MEMBERS: str = Field(default="parser_active_members")
 
 
+config = Config()
 config = Config()

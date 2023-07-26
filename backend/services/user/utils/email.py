@@ -2,6 +2,7 @@ from email import message as em
 from typing import Any
 
 import aiosmtplib as asmp
+from aiosmtplib.errors import SMTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.user import db_handlers as db_hand
@@ -27,7 +28,7 @@ async def send_mail(email, url) -> Any:
             message, hostname=host, port=port,
             username=username, password=password)
         return {"detail": "Письмо успешно отправлено"}
-    except (ConnectionError, TimeoutError):
+    except SMTPException:
         return {"detail": "Подтверждающее письмо не отправлено"}
 
 
