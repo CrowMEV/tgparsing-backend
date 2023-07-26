@@ -32,13 +32,10 @@ jobs:
           
           pip install poetry && poetry install
       - name: Linting with Mypy
-        # working-directory: ./backend
         run: poetry run mypy ./backend
       - name: Linting with Pylint
-        # working-directory: ./backend
         run: poetry run pylint ./backend
       - name: Test with pytest
-        # working-directory: ./backend
         run: |
           poetry run pytest 
         env:
