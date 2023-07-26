@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic import BaseSettings, Field
@@ -9,6 +10,7 @@ class Config(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
+    BASE_DIR: Path = Path(__file__).parent
     # run server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
@@ -189,4 +191,5 @@ class Config(BaseSettings):
     PARSER_ACTIVE_MEMBERS: str = Field(default="parser_active_members")
 
 
+config = Config()
 config = Config()
