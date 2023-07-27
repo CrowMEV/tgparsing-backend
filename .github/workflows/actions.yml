@@ -4,7 +4,7 @@ on:
    [push]
 
 jobs:
-  test:
+  checking:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -27,14 +27,13 @@ jobs:
         with:
           python-version: 3.11
       - name: Install dependencies
-        working-directory: ./backend
         run: |
           
-          pip install poetry && poetry install
+          pip install poetry && poetry install --no-interaction --no-ansi
       - name: Linting with Mypy
-        run: poetry run mypy ./backend
+        run: poetry run mypy ./app
       - name: Linting with Pylint
-        run: poetry run pylint ./backend
+        run: poetry run pylint ./app
       - name: Test with pytest
         run: |
           poetry run pytest 
@@ -42,10 +41,10 @@ jobs:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  deploy-backend:
+  deploy:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    needs: test
+    needs: checking
     steps:
       - name: Connect and Deploy
         uses: appleboy/ssh-action@v0.1.10
