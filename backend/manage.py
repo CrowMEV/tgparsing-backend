@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import click
 import uvicorn
-
 from database.cli import db_group
 from settings import config
 

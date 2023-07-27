@@ -2,10 +2,9 @@ import decimal
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
-
 from services import Base
 from services.payment.schemas import PaymentChoice
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Payment(Base):

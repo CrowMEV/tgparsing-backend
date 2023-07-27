@@ -1,7 +1,6 @@
 from typing import AsyncGenerator
 
 import sqlalchemy.ext.asyncio as sq_async
-
 from settings import config
 
 

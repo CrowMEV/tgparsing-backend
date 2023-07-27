@@ -5,7 +5,6 @@ import fastapi as fa
 from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
 from services.user.models import User
 from services.user.schemas import UserRead
 from services.user.utils.cookie import set_cookie

@@ -1,6 +1,5 @@
 import fastapi as fa
 from fastapi.security import APIKeyCookie
-
 from settings import config
 
 

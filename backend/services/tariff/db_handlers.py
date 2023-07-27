@@ -1,9 +1,8 @@
 from typing import Sequence
 
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.tariff.models import Tariff
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_tariffs(session: AsyncSession) -> Sequence[Tariff]:

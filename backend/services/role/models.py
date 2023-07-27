@@ -1,11 +1,10 @@
 from typing import List
 
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import Mapped, mapped_column
-
 from services import Base
 from services.role.schemas import ActionChoice, RoleNameChoice
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Role(Base):

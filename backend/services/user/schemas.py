@@ -3,7 +3,6 @@ from typing import Optional
 
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr, Field
-
 from services.role.schemas import RoleResponse
 
 

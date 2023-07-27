@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from services import Base
 from services.user.models import User
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Tariff(Base):

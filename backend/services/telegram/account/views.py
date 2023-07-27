@@ -1,12 +1,11 @@
 from typing import Any
 
 import fastapi as fa
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-
 import services.telegram.account.db_handlers as db_hand
 import services.telegram.account.schemas as tg_schemas
 from database.db_async import get_async_session
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_accounts(

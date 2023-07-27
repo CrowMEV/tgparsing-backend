@@ -1,7 +1,6 @@
 from typing import List
 
 import fastapi as fa
-
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user

@@ -1,5 +1,4 @@
 from celery import Celery  # type: ignore
-
 from settings import config
 from utils.celery import celeryconfig
 

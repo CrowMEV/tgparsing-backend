@@ -1,9 +1,8 @@
 from typing import Sequence
 
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.role.models import Role
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_role(session: AsyncSession, name: str) -> Role | None:

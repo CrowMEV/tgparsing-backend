@@ -1,8 +1,7 @@
-import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
-
 import services.telegram.account.schemas as tg_schemas
+import sqlalchemy as sa
 from services import Base
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class TgAccount(Base):

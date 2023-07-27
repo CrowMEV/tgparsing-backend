@@ -1,11 +1,10 @@
 from datetime import datetime, time
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from services import Base
 from services.telegram.tasks import schemas
 from services.user.models import User
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Task(Base):

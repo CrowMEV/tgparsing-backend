@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-
 from services.payment import views
 from services.user.utils.permissions import payment_read
 from settings import config

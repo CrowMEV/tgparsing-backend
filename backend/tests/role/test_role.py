@@ -1,5 +1,4 @@
 import pytest
-
 from server import app
 from settings import config
 

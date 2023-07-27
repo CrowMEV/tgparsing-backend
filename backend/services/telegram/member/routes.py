@@ -1,7 +1,6 @@
 from typing import List
 
 import fastapi as fa
-
 from services.telegram.member import schemas, views
 from settings import config
 

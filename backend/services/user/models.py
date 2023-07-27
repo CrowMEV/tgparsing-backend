@@ -1,12 +1,11 @@
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from services import Base
 from services.role.models import Role
 from services.role.schemas import RoleNameChoice
 from settings import config
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class User(Base):

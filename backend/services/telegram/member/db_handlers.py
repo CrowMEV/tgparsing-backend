@@ -1,9 +1,8 @@
 from typing import Sequence
 
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.telegram.member.models import Chat, Member
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:

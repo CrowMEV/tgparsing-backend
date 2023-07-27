@@ -1,9 +1,8 @@
 from typing import Sequence
 
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.user.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_users(session: AsyncSession) -> Sequence[User]:

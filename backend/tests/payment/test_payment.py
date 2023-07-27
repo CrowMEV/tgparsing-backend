@@ -5,7 +5,6 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 import sqlalchemy as sa
-
 from server import app
 from services.payment.models import Payment
 from services.payment.utils.robokassa import calculate_signature

@@ -1,7 +1,6 @@
+from settings import config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from settings import config
 
 
 engine = create_engine(config.sync_url, echo=config.DB_ECHO)

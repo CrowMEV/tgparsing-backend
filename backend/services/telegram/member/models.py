@@ -1,9 +1,8 @@
 from typing import List
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from services import Base
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 chats_members = sa.Table(

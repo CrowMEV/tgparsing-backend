@@ -1,7 +1,6 @@
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.telegram.tasks.models import Task
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_task(session: AsyncSession, task_data: dict) -> Task:

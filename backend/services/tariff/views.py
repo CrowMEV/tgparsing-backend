@@ -1,11 +1,10 @@
 from typing import Any
 
-from fastapi import Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
 import services.tariff.db_handlers as db_hand
 import services.tariff.schemas as tariff_schemas
 from database.db_async import get_async_session
+from fastapi import Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_tariff_list(
