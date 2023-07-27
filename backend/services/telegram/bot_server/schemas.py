@@ -75,8 +75,15 @@ class GetActiveMembers(BaseModel):
         )
 
 
-class GetByGeo(BaseModel):
-    task_name: str
+class LatLotSchema(BaseModel):
     latitude: float
     longitude: float
+
+
+class GetByGeo(BaseModel):
+    task_name: str
+    coordinates: List[LatLotSchema] = Field(
+        description="Координаты внутри массива "
+        "[{latitude: 0.0, longitude: 0.0}]"
+    )
     accuracy_radius: int = Field(description="In meters")

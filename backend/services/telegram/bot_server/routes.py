@@ -1,5 +1,4 @@
 import fastapi as fa
-
 from services.telegram.bot_server import views
 from settings import config
 
@@ -27,9 +26,10 @@ parser_router.add_api_route(
     methods=["POST"],
     description="Получение пользователей по геолокации",
 )
-parser_router.add_api_route(
-    "/chats",
-    endpoint=views.get_chats_by_word,
-    methods=["POST"],
-    description="Получение чатов по ключевому слову",
-)
+# TODO: Раскомментировать в случае реализации поиска чатов по ключевому слову
+# parser_router.add_api_route(
+#     "/chats",
+#     endpoint=views.get_chats_by_word,
+#     methods=["POST"],
+#     description="Получение чатов по ключевому слову",
+# )
