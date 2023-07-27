@@ -36,5 +36,5 @@ repos:
         entry: mypy
         language: system
         types: [python]
-        exclude: "(migrations|.venv)/.*"
+        exclude: migrations/
         args: ["--exclude=migrations"]
