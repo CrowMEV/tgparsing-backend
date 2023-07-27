@@ -18,6 +18,7 @@ repos:
         types: [python]
         exclude: migrations/
         args: ["--profile=black", "--line-length=79", "--lai=2"]
+
   - repo: local
     hooks:
       - id: pylint
@@ -35,5 +36,5 @@ repos:
         entry: mypy
         language: system
         types: [python]
-        exclude: migrations/
+        exclude: "(migrations|.venv)/"
         args: ["--exclude=migrations"]

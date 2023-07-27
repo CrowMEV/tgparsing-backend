@@ -7,13 +7,13 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
-    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"
     restart: always
     env_file:
       - .env
     volumes:
-      - ./backend/static:/app/static
-       -./backend/:/app/
+      - ./app/static:/app/static
+      - ./app/:/app/
+    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)"

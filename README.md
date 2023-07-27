@@ -20,7 +20,7 @@ git clone git@github.com:CrowMEV/tgparsing-backend.git tgparsing
 cd tgparsing
 python3 -m venv .venv
 source .venv/bin/activate
-pip install poetry
+pip install --upgrade pip -r requirements.txt
 poetry install
 
 ```
@@ -29,12 +29,6 @@ poetry install
 Запустить docker compose
 ```bash
 docker compose up -d
-```
-
-### Загрузка ролей в базу данных
-```bash
-alembic upgrade head
-./manage.py db load-roles roles_data.json
 ```
 ### Установка pre-commit hooks
 
@@ -45,6 +39,12 @@ pre-commit install
 Для того чтобы прогнать тест по всему коду, а не только по коммиту
 ```bash
 pre-commit run --all-files
+```
+
+### Загрузка ролей в базу данных
+```bash
+alembic upgrade head
+./manage.py db load-roles roles_data.json
 ```
 
 ### Запуск тестов

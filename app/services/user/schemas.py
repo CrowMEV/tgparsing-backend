@@ -58,16 +58,16 @@ class UserPatch(BaseModel):
     def as_form(
         cls,
         firstname: Optional[str] = Form(
-            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
+            default=None, min_length=2, pattern="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
         lastname: Optional[str] = Form(
-            default=None, min_length=2, regex="^[a-zA-Zа-яА-ЯёЁ]+$"
+            default=None, min_length=2, pattern="^[a-zA-Zа-яА-ЯёЁ]+$"
         ),
         timezone: Optional[int] = Form(default=None, ge=-12, le=12),
         hashed_password: Optional[str] = Form(
             default=None,
             min_length=8,
-            regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
+            pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
             alias="password",
         ),
         avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
@@ -75,7 +75,7 @@ class UserPatch(BaseModel):
         phone_number: Optional[str] = Form(
             default=None,
             min_length=8,
-            regex=r"^\+[0-9+][0-9()-]{4,14}\d$",
+            pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
         ),
     ):
         return cls(
