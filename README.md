@@ -30,21 +30,22 @@ poetry install
 ```bash
 docker compose up -d
 ```
-
-### Загрузка ролей в базу данных
-```bash
-alembic upgrade head
-./manage.py db load-roles roles_data.json
-```
 ### Установка pre-commit hooks
 
 Установка хуков
 ```bash
+pip install pre-commit
 pre-commit install
 ```
 Для того чтобы прогнать тест по всему коду, а не только по коммиту
 ```bash
 pre-commit run --all-files
+```
+
+### Загрузка ролей в базу данных
+```bash
+alembic upgrade head
+./manage.py db load-roles roles_data.json
 ```
 
 ### Запуск тестов
