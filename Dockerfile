@@ -13,9 +13,3 @@ RUN pip install poetry && \
     poetry install --no-dev --no-interaction --no-ansi
 
 WORKDIR /app
-
-COPY ./backend .
-
-CMD alembic upgrade head && \
-    uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && \
-    gunicorn -k uvicorn.workers.UvicornWorker

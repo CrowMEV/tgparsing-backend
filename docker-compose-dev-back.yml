@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgresql:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+  backend:
+    build: ./
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./app/:/app/
+      - ./app/static:/app/static
+    ports:
+      - 80:8000
+    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"

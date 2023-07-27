@@ -63,7 +63,7 @@ addopts = "-v"
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-testpaths = ["backend/tests"]
+testpaths = ["app/tests"]
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore:pkg_resources is deprecated as an API:DeprecationWarning"

@@ -20,7 +20,6 @@ Dockerfile
 .env
 .venv/
 venv/
-venv-bots
 
 # PyCharm
 .idea
@@ -36,3 +35,4 @@ venv-bots
 # Files
 .pre-commit-config.yaml
 env.example
+app/
