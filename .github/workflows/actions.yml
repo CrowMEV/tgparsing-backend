@@ -30,10 +30,10 @@ jobs:
         run: |
           
           pip install poetry && poetry install --no-interaction --no-ansi
-      - name: Linting with Mypy
-        run: poetry run mypy ./app
       - name: Linting with Pylint
         run: poetry run pylint ./app
+      - name: Linting with Mypy
+        run: poetry run mypy ./app
       - name: Test with pytest
         run: |
           poetry run pytest 
