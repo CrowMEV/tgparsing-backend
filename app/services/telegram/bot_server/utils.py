@@ -193,7 +193,39 @@ async def get_active_members(
         work_status, result = await do_request("/activemembers", params)
         file_url = ""
         if result:
-            await write_data_to_file(
+            file_url = await write_data_to_file(
+                data=result, dir_name=dir_name, filename=filename
+            )
+        await end_parser(
+            session=session,
+            time_start=time_start,
+            task_id=task_id,
+            work_status=work_status,
+            file_url=file_url,
+            id_account=parser_data["tg_account_id"],
+            lock_inst=parser_data["lock_inst"],
+        )
+
+
+async def get_geo_members(
+    task_id: int,
+    coordinates: list[dict],
+    accuracy_radius: int,
+    dir_name: str,
+    filename: str,
+):
+    async with async_session() as session:
+        time_start = datetime.utcnow()
+        parser_data = await get_parser_data(session)
+        params = {
+            "session_string": parser_data["session_string"],
+            "coordinates": coordinates,
+            "accuracy_radius": accuracy_radius,
+        }
+        work_status, result = await do_request("/geomembers", params)
+        file_url = ""
+        if result:
+            file_url = await write_data_to_file(
                 data=result, dir_name=dir_name, filename=filename
             )
         await end_parser(
@@ -214,5 +246,6 @@ async def do_parsing(
     functions = {
         "get_members": get_members,
         "get_active_members": get_active_members,
+        "get_geo_members": get_geo_members,
     }
     await functions[parsing_task](**data)  # type: ignore

@@ -6,11 +6,6 @@ from settings import config
 
 
 tariff_router = APIRouter(prefix="/tariff", tags=["Tariff"])
-benefits_router = APIRouter(prefix="/benefits", tags=["Benefits"])
-tariff_benefits_router = APIRouter(
-    prefix="/benefits", tags=["Tariff benefits"]
-)
-
 
 tariff_router.add_api_route(
     path="/",

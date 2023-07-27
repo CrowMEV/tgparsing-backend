@@ -8,7 +8,7 @@ from settings import config
 
 
 tgaccount_router = fa.APIRouter(
-    prefix="/telegram",
+    prefix="/tgaccount",
     tags=["TgAccount"],
     dependencies=[fa.Depends(perms.is_admin), fa.Depends(perms.is_superuser)],
 )

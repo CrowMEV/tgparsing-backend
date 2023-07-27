@@ -36,6 +36,11 @@ class GetMembers(BaseModel):
         return value
 
 
+class Activity(BaseModel):
+    comments: bool = Field(default=False)
+    reposts: bool = Field(default=False)
+
+
 class GetActiveMembers(BaseModel):
     task_name: str
     parsed_chats: List[str] = Field(
@@ -46,6 +51,8 @@ class GetActiveMembers(BaseModel):
     )
     from_date: date
     to_date: date
+    activity_count: int = Field(default=1, ge=1)
+    activity: Activity
 
     @validator("from_date")
     def change_from_date(cls, value):  # pylint: disable=E0213
@@ -57,9 +64,27 @@ class GetActiveMembers(BaseModel):
             datetime.combine(value, datetime.max.time().replace(microsecond=0))
         )
 
+    @validator("activity")
+    def check_values(cls, value):  # pylint: disable=E0213
+        data = value.dict()
+        new_data = {key: value for key, value in data.items() if value}
+        if new_data:
+            return value
+        raise ValueError(
+            "Activity должно содержать как минимум один ключ с значением True"
+        )
+
+
+class LatLotSchema(BaseModel):
+    latitude: float
+    longitude: float
+
 
 class GetByGeo(BaseModel):
     task_name: str
-    latitude: float
-    longitude: float
+    coordinates: List[LatLotSchema] = Field(
+        description="Координаты внутри массива "
+        "[{latitude: 0.0, longitude: 0.0}]",
+        min_items=1,
+    )
     accuracy_radius: int = Field(description="In meters")

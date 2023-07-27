@@ -158,17 +158,6 @@ class Config(BaseSettings):
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
-    # benefits
-    BENEFIT_GET_ALL: str = Field(default="benefit_get_all")
-    BENEFIT_GET: str = Field(default="benefit_get")
-    BENEFIT_ADD: str = Field(default="benefit_add")
-    BENEFIT_PATCH: str = Field(default="benefit_patch")
-    BENEFIT_DELETE: str = Field(default="benefit_delete")
-    # tariff benefits
-    TARIFF_BENEFIT_GET_ALL: str = Field(default="tariff_benefit_get_all")
-    TARIFF_BENEFIT_GET: str = Field(default="tariff_benefit_get")
-    TARIFF_BENEFIT_ADD: str = Field(default="tariff_benefit_add")
-    TARIFF_BENEFIT_DELETE: str = Field(default="tariff_benefit_delete")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")
@@ -191,5 +180,4 @@ class Config(BaseSettings):
     PARSER_ACTIVE_MEMBERS: str = Field(default="parser_active_members")
 
 
-config = Config()
 config = Config()
