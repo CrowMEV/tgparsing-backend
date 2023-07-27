@@ -20,7 +20,7 @@ git clone git@github.com:CrowMEV/tgparsing-backend.git tgparsing
 cd tgparsing
 python3 -m venv .venv
 source .venv/bin/activate
-pip install poetry
+pip install --upgrade pip -r requirements.txt
 poetry install
 
 ```
@@ -34,7 +34,6 @@ docker compose up -d
 
 Установка хуков
 ```bash
-pip install pre-commit
 pre-commit install
 ```
 Для того чтобы прогнать тест по всему коду, а не только по коммиту
