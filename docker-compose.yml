@@ -12,10 +12,10 @@ services:
     volumes:
       - ./app/static:/app/static
       - ./app/:/app/
-    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"
+    entrypoint: [ "/bin/sh", "backend.sh" ]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)" #&& PathPrefix(/`api`)
+      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)"
       - "traefik.http.routers.tgparsing1.entrypoints=websecure"
       - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
