@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 
+import sqlalchemy as sa
 from services import Base
 from services.user.models import User
 from sqlalchemy import ForeignKey
@@ -16,8 +17,12 @@ class Tariff(Base):
     limitation_days: Mapped[int]
     price: Mapped[int]
     options: Mapped[dict[str, Any]]
-    active: Mapped[bool] = mapped_column(default=True)
-    archive: Mapped[bool] = mapped_column(default=False)
+    active: Mapped[bool] = mapped_column(
+        server_default=sa.true(), default=True
+    )
+    archive: Mapped[bool] = mapped_column(
+        server_default=sa.false(), default=True
+    )
 
 
 class UserSubscribe(Base):
