@@ -12,14 +12,16 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    firstname: Mapped[str] = mapped_column(nullable=True)
-    lastname: Mapped[str] = mapped_column(nullable=True)
+    firstname: Mapped[str] = mapped_column(server_default="", default="")
+    lastname: Mapped[str] = mapped_column(server_default="", default="")
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow())
     email: Mapped[str] = mapped_column(
         sa.String(length=320), unique=True, index=True
     )
     hashed_password: Mapped[str] = mapped_column(sa.String(length=1024))
-    phone_number: Mapped[str] = mapped_column(nullable=True, unique=True)
+    phone_number: Mapped[str] = mapped_column(
+        server_default="", default="", unique=True
+    )
     timezone: Mapped[int] = mapped_column(
         sa.SMALLINT,
         default=0,
