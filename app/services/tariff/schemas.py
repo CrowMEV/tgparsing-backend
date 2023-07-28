@@ -1,6 +1,14 @@
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel
+
+
+class TariffOptions(BaseModel):
+    parsers_per_day: int
+    simultaneous_parsing: int
+    geo: bool
+    members: bool
+    activity: bool
 
 
 class TariffPostModel(BaseModel):
@@ -8,7 +16,9 @@ class TariffPostModel(BaseModel):
     description: str
     limitation_days: int
     price: int
-    options: dict[str, Any]
+    options: TariffOptions
+    active: bool
+    archive: bool
 
 
 class TariffPatchModel(BaseModel):
@@ -16,7 +26,9 @@ class TariffPatchModel(BaseModel):
     description: Optional[str]
     limitation_days: Optional[int]
     price: Optional[int]
-    options: Optional[dict[str, Any]]
+    options: Optional[TariffOptions]
+    active: Optional[bool]
+    archive: Optional[bool]
 
 
 class TariffResponse(TariffPostModel):
