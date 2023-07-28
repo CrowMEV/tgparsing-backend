@@ -27,7 +27,7 @@ repos:
         language: system
         types: [python]
         exclude: "(migrations|.venv)/"
-        args: ["--disable=C0114,C0115,C0116"]
+        args: ["--disable=C0114,C0115,C0116,W0511"]
 
   - repo: local
     hooks:

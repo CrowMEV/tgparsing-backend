@@ -16,6 +16,8 @@ class Tariff(Base):
     limitation_days: Mapped[int]
     price: Mapped[int]
     options: Mapped[dict[str, Any]]
+    active: Mapped[bool]
+    archive: Mapped[bool]
 
 
 class UserSubscribe(Base):
@@ -25,7 +27,7 @@ class UserSubscribe(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
     tariff_id: Mapped[int] = mapped_column(ForeignKey("tariffs.id"))
     tariff_options: Mapped[dict[str, Any]]
-    start_date: Mapped[datetime]
+    end_date: Mapped[datetime]
 
     user: Mapped["User"] = relationship(backref="subscribes")
     tariff: Mapped["Tariff"] = relationship(backref="users")
