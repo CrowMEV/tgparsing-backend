@@ -1,8 +1,8 @@
-"""tariff_fix_model
+"""tariff active and archive
 
-Revision ID: 138c8e96a34c
+Revision ID: f0acd5a20c3d
 Revises: 245907d587fd
-Create Date: 2023-07-28 20:30:03.196459
+Create Date: 2023-07-28 22:18:25.759026
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '138c8e96a34c'
+revision = 'f0acd5a20c3d'
 down_revision = '245907d587fd'
 branch_labels = None
 depends_on = None

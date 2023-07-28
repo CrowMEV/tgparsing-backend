@@ -16,8 +16,8 @@ class Tariff(Base):
     limitation_days: Mapped[int]
     price: Mapped[int]
     options: Mapped[dict[str, Any]]
-    active: Mapped[bool]
-    archive: Mapped[bool]
+    active: Mapped[bool] = mapped_column(default=True)
+    archive: Mapped[bool] = mapped_column(default=False)
 
 
 class UserSubscribe(Base):
