@@ -124,6 +124,12 @@ class TestUser:
 
         assert response.status_code == code
 
+    async def test_user_patch_by_user(self, async_client, user_login):
+        url = app.url_path_for(config.USER_ADMIN_PATCH, id_row=1)
+        response = await async_client.patch(url)
+
+        assert response.status_code == 403
+
     logout_data = [
         200,
         401,
@@ -134,5 +140,127 @@ class TestUser:
         response = await async_client.post(
             self.logout_url,
         )
+
+        assert response.status_code == code
+
+    admin_patch_data = [
+        # wrong id
+        (" ", "Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("lala", "Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("44", "Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        # wrong firstname
+        ("1", " ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", " Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "&Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "1Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor1", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor%", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        # wrong lastname
+        ("1", "Igor", " ", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", " Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", "1Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", "%Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", "Pupkin ", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", "Pupkin1", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1", "Igor", "Pupkin%", "123", "+2904242", "igor@pupkin.com", 422),
+        # wrong password
+        (
+            "1",
+            "Igor",
+            "Pupkin",
+            "1michail#",
+            "+2904242",
+            "igor@pupkin.com",
+            422,
+        ),
+        (
+            "1",
+            "Igor",
+            "Pupkin",
+            "Michail#",
+            "+2904242",
+            "igor@pupkin.com",
+            422,
+        ),
+        (
+            "1",
+            "Igor",
+            "Pupkin",
+            "1Michail",
+            "+2904242",
+            "igor@pupkin.com",
+            422,
+        ),
+        (
+            "1",
+            "Igor",
+            "Pupkin",
+            "1michail#",
+            "+2904242",
+            "igor@pupkin.com",
+            422,
+        ),
+        # wrong phone_number
+        ("1", "Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
+        ("1", "Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
+        (
+            "1",
+            "Igor",
+            "Pupkin",
+            "123",
+            "+8888 8888 77775566",
+            "igor@pupkin.com",
+            422,
+        ),
+        ("1", "Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
+        ("1", "Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
+        # wrong email
+        ("1", "Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
+        ("1", "Igor", "Pupkin", "123", "+2904242", "igorpupkin.com", 422),
+        ("1", "Igor", "Pupkin", "123", "+2904242", "igor123pupkin.com", 422),
+        ("1", "Igor", "Pupkin", "123", "+2904242", "123%", 422),
+        # correct data
+        ("1", "Valera", "", "", "", "", 200),
+        ("1", "", "Gor", "", "", "", 200),
+        ("2", "", "", "HEro202333#", "", "", 200),
+        ("2", "", "", "", "+38(787)5675659", "", 200),
+        (
+            "1",
+            "Dasha",
+            "Zecharova",
+            "sAlenowS2023#",
+            "+79998886600",
+            "dasha@pukin.com",
+            200,
+        ),
+    ]
+
+    @pytest.mark.parametrize(
+        "id_row,name,surname,password,phone_number,email,code",
+        admin_patch_data,
+    )
+    async def test_user_patch_by_admin(
+        self,
+        async_client,
+        admin_login,
+        id_row,
+        name,
+        surname,
+        password,
+        phone_number,
+        email,
+        code,
+    ):
+        params = {
+            "firstname": name,
+            "lastname": surname,
+            "password": password,
+            "phone_number": phone_number,
+            "email": email,
+        }
+        params = {key: value for key, value in params.items() if value}
+        url = app.url_path_for(config.USER_ADMIN_PATCH, id_row=id_row)
+        response = await async_client.patch(url, data=params)
 
         assert response.status_code == code

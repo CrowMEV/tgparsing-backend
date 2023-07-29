@@ -4,7 +4,7 @@ import fastapi as fa
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
-from services.user.utils.permissions import user_read
+from services.user.utils.permissions import is_admin, user_read
 from settings import config
 from utils.responses import HTTP_201, HTTP_401
 
@@ -69,4 +69,12 @@ user_router.add_api_route(
     methods=["POST"],
     endpoint=views.check_password,
     name=config.USER_CHECK_PASSWORD,
+)
+user_router.add_api_route(
+    path="/{id_row}",
+    methods=["PATCH"],
+    endpoint=views.patch_user_by_admin,
+    name=config.USER_ADMIN_PATCH,
+    response_model=user_schemas.UserRead,
+    dependencies=[fa.Depends(is_admin)],
 )

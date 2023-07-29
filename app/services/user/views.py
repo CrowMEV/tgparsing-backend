@@ -125,3 +125,35 @@ async def check_password(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Успешно"},
     )
+
+
+async def patch_user_by_admin(
+    id_row: int,
+    update_data: u_schema.UserPatch = fa.Depends(u_schema.UserPatch.as_form),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    user = await db_hand.get_current_by_id(session, id_row)
+    if not user:
+        raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
+    data = update_data.dict()
+    if data.get("avatar_url"):
+        folder_path = os.path.join(config.STATIC_DIR, config.AVATARS_FOLDER)
+        file_name = (
+            f"{user.email}" f".{data['avatar_url'].filename.split('.')[-1]}"
+        )
+        file_url = os.path.join(folder_path, file_name)
+        async with aiofiles.open(file_url, "wb") as p_f:
+            await p_f.write(data["avatar_url"].file.read())
+        data["avatar_url"] = file_url
+    if data.get("hashed_password"):
+        data["hashed_password"] = security.get_hash_password(
+            data["hashed_password"]
+        )
+    data = {key: value for key, value in data.items() if value is not None}
+    if not data:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Нет данных для изменений",
+        )
+    changed_user = await db_hand.update_user(session, id_row, data)
+    return changed_user

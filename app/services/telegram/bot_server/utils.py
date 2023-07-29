@@ -1,6 +1,4 @@
 import asyncio
-import csv
-import os.path
 from datetime import datetime
 
 import fastapi as fa
@@ -12,6 +10,7 @@ from services.telegram.tasks import db_handlers as task_hand
 from services.telegram.tasks.schemas import WorkStatusChoice
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils import files
 from utils.redis.redis_app import redis_client
 
 
@@ -56,7 +55,6 @@ async def end_parser(
     time_start: datetime,
     task_id: int,
     work_status: WorkStatusChoice,
-    file_url: str,
     id_account: int,
     lock_inst: Lock,
 ):
@@ -70,7 +68,6 @@ async def end_parser(
         {
             "job_finish": job_finish,
             "time_work": time_work.time(),
-            "file_url": file_url,
             "work_status": work_status,
         },
     )
@@ -97,55 +94,11 @@ async def check_task_exists(
         )
 
 
-async def check_folder(name: str) -> str:
-    dir_url = os.path.join(config.abs_files_dir_url, name)
-    if not os.path.isdir(dir_url):
-        os.mkdir(dir_url)
-    return dir_url
-
-
-async def write_data_to_file(data: dict, dir_name: str, filename: str) -> str:
-    dir_url = await check_folder(dir_name)
-    new_filename = f"{filename}.csv"
-    abs_file_url = os.path.join(dir_url, new_filename)
-    with open(abs_file_url, "w", encoding="utf-8") as file:
-        writer = csv.writer(file, delimiter=";")
-        writer.writerow(
-            [
-                "user_id",
-                "first_name",
-                "last_name",
-                "username",
-                "phone_number",
-                "groups",
-            ]
-        )
-        for key, value in data.items():
-            firstname = value["first_name"]
-            lastname = value["last_name"]
-            username = value["username"]
-            phone_number = value["phone_number"]
-            groups = value["groups"]
-            writer.writerow(
-                [
-                    key,
-                    firstname,
-                    lastname,
-                    username,
-                    phone_number,
-                    ", ".join(groups),
-                ]
-            )
-    return os.path.join(
-        config.STATIC_DIR, config.FILES_DIR, dir_name, new_filename
-    )
-
-
 async def get_members(
     task_id: int,
     parsed_chats: list,
     groups_count: int,
-    dir_name: str,
+    dir_name: int,
     filename: str,
 ):
     async with async_session() as session:
@@ -157,17 +110,15 @@ async def get_members(
             "groups_count": groups_count,
         }
         work_status, result = await do_request("/members", params)
-        file_url = ""
-        if result:
-            file_url = await write_data_to_file(
-                data=result, dir_name=dir_name, filename=filename
+        if result is not None:
+            await files.write_data_to_csv_file(
+                data=result, dir_name=dir_name, file_name=filename
             )
         await end_parser(
             session=session,
             time_start=time_start,
             task_id=task_id,
             work_status=work_status,
-            file_url=file_url,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )
@@ -178,7 +129,7 @@ async def get_active_members(
     parsed_chats: list,
     from_date: str,
     to_date: str,
-    dir_name: str,
+    dir_name: int,
     filename: str,
 ):
     async with async_session() as session:
@@ -191,17 +142,15 @@ async def get_active_members(
             "to_date": to_date,
         }
         work_status, result = await do_request("/activemembers", params)
-        file_url = ""
-        if result:
-            file_url = await write_data_to_file(
-                data=result, dir_name=dir_name, filename=filename
+        if result is not None:
+            await files.write_data_to_csv_file(
+                data=result, dir_name=dir_name, file_name=filename
             )
         await end_parser(
             session=session,
             time_start=time_start,
             task_id=task_id,
             work_status=work_status,
-            file_url=file_url,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )
@@ -211,7 +160,7 @@ async def get_geo_members(
     task_id: int,
     coordinates: list[dict],
     accuracy_radius: int,
-    dir_name: str,
+    dir_name: int,
     filename: str,
 ):
     async with async_session() as session:
@@ -223,17 +172,15 @@ async def get_geo_members(
             "accuracy_radius": accuracy_radius,
         }
         work_status, result = await do_request("/geomembers", params)
-        file_url = ""
-        if result:
-            file_url = await write_data_to_file(
-                data=result, dir_name=dir_name, filename=filename
+        if result is not None:
+            await files.write_data_to_csv_file(
+                data=result, dir_name=dir_name, file_name=filename
             )
         await end_parser(
             session=session,
             time_start=time_start,
             task_id=task_id,
             work_status=work_status,
-            file_url=file_url,
             id_account=parser_data["tg_account_id"],
             lock_inst=parser_data["lock_inst"],
         )
