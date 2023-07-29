@@ -22,7 +22,7 @@ class UserRead(BaseModel):
     email: EmailStr
     timezone: int
     is_staff: bool
-    is_active: bool = True
+    is_active: bool = False
     is_superuser: bool = False
     is_verified: bool = False
     avatar_url: str

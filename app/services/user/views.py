@@ -8,7 +8,7 @@ from services.user import db_handlers as db_hand
 from services.user import schemas as u_schema
 from services.user.dependencies import get_current_user
 from services.user.models import User
-from services.user.utils import cookie, security
+from services.user.utils import cookie, email, security
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
@@ -48,6 +48,7 @@ async def refresh_user(
 
 
 async def create_user(
+    request: fa.Request,
     user: u_schema.UserCreate,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> fa.Response:
@@ -59,9 +60,31 @@ async def create_user(
         )
     user.hashed_password = security.get_hash_password(user.hashed_password)
     await db_hand.add_user(session, user.dict())
+    token_date = {"email": user.email, "password": user.hashed_password}
+    token = security.create_token(token_date)
+    url = request.url_for(config.USER_VERIFY).include_query_params(token=token)
+    await email.send_mail(user.email, url)
     return JSONResponse(
         status_code=fa.status.HTTP_201_CREATED,
         content={"detail": "Пользователь создан успешно"},
+    )
+
+
+async def verify_user(
+    token: str,
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> fa.Response:
+    current_user = await email.get_user_from_token(session, token)
+    if not current_user or current_user.is_active:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь уже был подтвержден ранее или токен устарел",
+        )
+    verify_date = {"is_active": True}
+    await db_hand.update_user(session, current_user.id, verify_date)
+    return JSONResponse(
+        status_code=fa.status.HTTP_200_OK,
+        content={"detail": "Адрес электронной почты успешно подтвержден"},
     )
 
 
@@ -124,4 +147,14 @@ async def check_password(
     return JSONResponse(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Успешно"},
+    )
+
+
+async def delete_non_active_users(
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> fa.Response:
+    await db_hand.delete_non_active_user(session)
+    return JSONResponse(
+        status_code=fa.status.HTTP_200_OK,
+        content={"detail": "Неактивирированные пользователи успешно удалены"},
     )

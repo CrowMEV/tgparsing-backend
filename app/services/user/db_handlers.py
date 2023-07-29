@@ -47,3 +47,11 @@ async def update_user(
     await session.commit()
     user = result.scalars().first()
     return user
+
+
+async def delete_non_active_user(
+    session: AsyncSession,
+) -> None:
+    stmt = sa.delete(User).where(User.is_active.is_(False)).returning(User)
+    await session.execute(stmt)
+    await session.commit()

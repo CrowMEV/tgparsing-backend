@@ -4,7 +4,7 @@ import fastapi as fa
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
-from services.user.utils.permissions import user_read
+from services.user.utils.permissions import is_admin, user_read
 from settings import config
 from utils.responses import HTTP_201, HTTP_401
 
@@ -69,4 +69,19 @@ user_router.add_api_route(
     methods=["POST"],
     endpoint=views.check_password,
     name=config.USER_CHECK_PASSWORD,
+)
+
+user_router.add_api_route(
+    path="/verify/",
+    methods=["PATCH"],
+    endpoint=views.verify_user,
+    name=config.USER_VERIFY,
+)
+
+user_router.add_api_route(
+    path="/delete",
+    methods=["DELETE"],
+    endpoint=views.delete_non_active_users,
+    name=config.USER_DELETE_NON_ACTIVE,
+    dependencies=[fa.Depends(is_admin)],
 )

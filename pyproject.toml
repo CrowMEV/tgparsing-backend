@@ -22,6 +22,7 @@ aiofiles = "^23.1.0"
 passlib = "^1.7.4"
 python-multipart = "^0.0.6"
 pydantic = {version = "^1", extras = ["email"]}
+aiosmtplib = "^2.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
