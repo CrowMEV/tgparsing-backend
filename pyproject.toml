@@ -36,6 +36,7 @@ types-passlib = "^1.7.7.12"
 types-python-jose = "^3.3.4.8"
 types-redis = "^4.6.0.3"
 pylint-pytest = "^1.1.2"
+pytest-lazy-fixture = "^0.6.3"
 
 [build-system]
 requires = ["poetry-core"]
@@ -79,3 +80,5 @@ load-plugins = ["pylint_pytest"]
 max-args = 8
 max-line-length = 79
 disable = ["C0114", "C0115", "C0116", "W1514", "W3101", "R0903", "W0511"]
+good-names=["FILES_DIR"]
+

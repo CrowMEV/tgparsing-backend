@@ -17,7 +17,7 @@ class GetMembers(BaseModel):
         unique_items=True,
         description="Чаты для парсинга",
     )
-    groups_count: int = Field(default=1)
+    groups_count: int = Field(default=1, ge=1)
 
     @validator("parsed_chats", pre=True)
     def check_chats(cls, value):  # pylint: disable=E0213
