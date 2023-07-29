@@ -29,4 +29,31 @@ services:
       - ./app/static:/app/static
     ports:
       - 80:8000
-    command: sh -c "alembic upgrade head && uvicorn server:app --host 0.0.0.0 --reload --proxy-headers && gunicorn -k uvicorn.workers.UvicornWorker"
+    entrypoint: ["sh", "backend.sh"]
+
+
+  redis:
+    image: redis:6.0.20-alpine
+    container_name: redis
+
+  celery_worker:
+    build: ./
+    container_name: celery_worker
+    depends_on:
+      - redis
+    volumes:
+        - ./app:/app/
+    command: celery -A utils.celery.celery_app worker -l DEBUG
+    env_file:
+      - .env
+    
+  celery_beat:
+    build: ./
+    container_name: celery_beat
+    depends_on:
+      - celery_worker
+    command: celery -A utils.celery.celery_app beat -l DEBUG
+    volumes:
+        - ./app/:/app/
+    env_file:
+      - .env
