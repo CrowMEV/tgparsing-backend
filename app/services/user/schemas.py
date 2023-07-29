@@ -67,7 +67,7 @@ class UserPatch(BaseModel):
         hashed_password: Optional[str] = Form(
             default=None,
             min_length=8,
-            pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
+            regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
             alias="password",
         ),
         avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
@@ -75,7 +75,7 @@ class UserPatch(BaseModel):
         phone_number: Optional[str] = Form(
             default=None,
             min_length=8,
-            pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
+            regex=r"^\+[0-9+][0-9()-]{4,14}\d$",
         ),
     ):
         return cls(

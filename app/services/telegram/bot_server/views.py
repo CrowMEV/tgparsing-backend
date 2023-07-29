@@ -32,7 +32,7 @@ async def get_members(
         "get_members",
         {
             "task_id": task.id,
-            "dir_name": current_user.email,
+            "dir_name": current_user.id,
             "filename": body_data.task_name,
             **data,
         },
@@ -65,7 +65,7 @@ async def get_active_members(
         "get_active_members",
         {
             "task_id": task.id,
-            "dir_name": current_user.email,
+            "dir_name": current_user.id,
             "filename": body_data.task_name,
             **data,
         },
@@ -98,7 +98,7 @@ async def get_members_by_geo(
         "get_geo_members",
         {
             "task_id": task.id,
-            "dir_name": current_user.email,
+            "dir_name": current_user.id,
             "filename": body_data.task_name,
             **data,
         },

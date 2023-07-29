@@ -11,6 +11,7 @@ class Config(BaseSettings):
         env_file_encoding = "utf-8"
 
     BASE_DIR: Path = Path(__file__).parent
+
     # run server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8000)
@@ -114,11 +115,8 @@ class Config(BaseSettings):
     FILES_DIR: str = Field(default="files")
 
     @property
-    def abs_files_dir_url(self):
-        return os.path.join(
-            os.getcwd(),
-            self.FILES_DIR,
-        )
+    def files_dir_url(self):
+        return os.path.join(self.BASE_DIR, self.FILES_DIR)
 
     # url names
     # user
@@ -170,6 +168,9 @@ class Config(BaseSettings):
     MEMBER_PATCH: str = Field(default="member_patch")
     MEMBER_DELETE: str = Field(default="member_delete")
     MEMBER_GET_ALL: str = Field(default="member_all")
+    # tasks
+    TASK_DOWNLOAD: str = Field(default="task_download")
+    TASK_DELETE: str = Field(default="task_delete")
     # parcered_chats
     CHAT_BY_ID: str = Field(default="chat_by_id")
     CHAT_CREATE: str = Field(default="chat_add")

@@ -36,7 +36,7 @@ docker compose up -d
 ```bash
 pre-commit install
 ```
-Для того чтобы прогнать тест по всему коду, а не только по коммиту
+Для того чтобы прогнать `pre-commit` до выполнения коммита
 ```bash
 pre-commit run --all-files
 ```
