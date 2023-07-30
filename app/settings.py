@@ -116,7 +116,7 @@ class Config(BaseSettings):
 
     @property
     def files_dir_url(self):
-        return os.path.join(self.BASE_DIR, self.FILES_DIR)
+        return self.BASE_DIR / self.FILES_DIR
 
     # url names
     # user
@@ -159,8 +159,6 @@ class Config(BaseSettings):
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")
-    TGACCOUNT_CREATE: str = Field(default="tg_create")
-    TGACCOUNT_PATCH: str = Field(default="tg_patch")
     TGACCOUNT_DELETE: str = Field(default="tg_delete")
     # chat_members
     MEMBER_BY_ID: str = Field(default="member_by_id")
@@ -169,8 +167,10 @@ class Config(BaseSettings):
     MEMBER_DELETE: str = Field(default="member_delete")
     MEMBER_GET_ALL: str = Field(default="member_all")
     # tasks
-    TASK_DOWNLOAD: str = Field(default="task_download")
-    TASK_DELETE: str = Field(default="task_delete")
+    TASK_GET_ALL: str = Field(default="task_get_all")
+    TASK_ME_DOWNLOAD_FILE: str = Field(default="task_me_download_file")
+    TASK_ME_DELETE: str = Field(default="task_me_delete")
+    TASK_ME_GET_ALL: str = Field(default="task_me_get_all")
     # parcered_chats
     CHAT_BY_ID: str = Field(default="chat_by_id")
     CHAT_CREATE: str = Field(default="chat_add")

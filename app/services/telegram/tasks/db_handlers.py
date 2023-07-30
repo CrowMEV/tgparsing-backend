@@ -1,3 +1,5 @@
+from typing import Sequence
+
 import sqlalchemy as sa
 from services.telegram.tasks.models import Task
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,11 +27,13 @@ async def update_task(
     return task
 
 
-async def get_task_by_filter(session: AsyncSession, data: dict) -> Task | None:
+async def get_tasks_by_filter(
+    session: AsyncSession, data: dict
+) -> Sequence[Task]:
     stmt = sa.select(Task).filter_by(**data)
     result = await session.execute(stmt)
-    task = result.scalars().first()
-    return task
+    tasks = result.scalars().all()
+    return tasks
 
 
 async def delete_task(session: AsyncSession, task_id: int) -> None:

@@ -17,7 +17,6 @@ class BlockChoice(enum.Enum):
 class TgAccountBase(BaseModel):
     api_id: int
     api_hash: str
-    # session_string: str
 
     class Config:
         orm_mode = True
@@ -28,13 +27,6 @@ class TgAccountRead(TgAccountBase):
     id: int
     work_status: WorkChoice = WorkChoice.FREE
     block_status: BlockChoice = BlockChoice.UNBLOCK
-
-
-class TgAccountCreate(TgAccountBase):
-    # Inherit api_id, api_hash and session_string from parent
-    phone_number: str = Field(
-        default=...,
-    )  # regex="^\+7\d{10}$")
 
 
 class TgAccountUpdate(BaseModel):

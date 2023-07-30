@@ -114,7 +114,7 @@ class TestPayment:
         return len(payments)
 
     async def test_get_payments_by_admin(
-        self, get_session, async_client, admin_login
+        self, get_session, async_client, superuser_login
     ):
         response = await async_client.get(
             self.payments_get,

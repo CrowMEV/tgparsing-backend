@@ -4,8 +4,34 @@ from settings import config
 
 
 class TestTask:
-    task_download_url: str = app.url_path_for(config.TASK_DOWNLOAD)
-    task_delete_url: str = app.url_path_for(config.TASK_DELETE)
+    admin_get_tasks_url: str = app.url_path_for(config.TASK_GET_ALL)
+    user_get_tasks_url: str = app.url_path_for(config.TASK_ME_GET_ALL)
+    user_download_url: str = app.url_path_for(config.TASK_ME_DOWNLOAD_FILE)
+    user_delete_url: str = app.url_path_for(config.TASK_ME_DELETE)
+
+    async def test_user_get_tasks(self, async_client, user_login):
+        response = await async_client.get(
+            self.user_get_tasks_url,
+        )
+        assert response.status_code == 200
+
+    async def test_user_get_all_db_tasks(self, async_client, user_login):
+        response = await async_client.get(
+            self.admin_get_tasks_url,
+        )
+        assert response.status_code == 403
+
+    async def test_admin_get_user_tasks(self, async_client, superuser_login):
+        response = await async_client.get(
+            self.user_get_tasks_url,
+        )
+        assert response.status_code == 403
+
+    async def test_get_tasks(self, async_client, superuser_login):
+        response = await async_client.get(
+            self.admin_get_tasks_url,
+        )
+        assert response.status_code == 200
 
     download_data = [
         # wrong data
@@ -16,7 +42,7 @@ class TestTask:
     ]
 
     @pytest.mark.parametrize("task_name,file_url,code", download_data)
-    async def test_download_task(
+    async def test_user_download_file(
         self,
         async_client,
         user_login,
@@ -25,7 +51,7 @@ class TestTask:
         code,
     ):
         response = await async_client.get(
-            self.task_download_url,
+            self.user_download_url,
             params={"task_name": task_name},
         )
         assert response.status_code == code
@@ -39,11 +65,11 @@ class TestTask:
     ]
 
     @pytest.mark.parametrize("task_name,code", delete_data)
-    async def test_delete_task(
+    async def test_user_delete_task(
         self, async_client, user_login, task_name, code
     ):
         response = await async_client.delete(
-            self.task_delete_url,
+            self.user_delete_url,
             params={"task_name": task_name},
         )
         assert response.status_code == code
