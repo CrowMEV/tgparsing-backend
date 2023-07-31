@@ -4,6 +4,11 @@
     "payment_action": ["READ"]
   },
   {
+    "name": "SUPERUSER",
+    "bot_action": ["READ", "WRITE", "UPDATE", "DELETE"],
+    "payment_action": ["READ"]
+  },
+  {
     "name": "ACCOUNTANT",
     "payment_action": ["READ"]
   },

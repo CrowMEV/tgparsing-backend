@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os.path
 import shutil
 from typing import AsyncGenerator
 
@@ -33,8 +32,8 @@ async_test_session = sa_asyncio.async_sessionmaker(
 async def check_files_dir():
     config.FILES_DIR = "files_test"
     files_dir_url = config.files_dir_url
-    if not os.path.isdir(files_dir_url):
-        os.mkdir(files_dir_url)
+    if not files_dir_url.exists():
+        files_dir_url.mkdir()
     yield
     shutil.rmtree(files_dir_url)
 
@@ -86,9 +85,9 @@ async def async_client(check_files_dir):
         yield client
 
 
-SUPERUSER_PASS = "AFFdmin1%"
+SUPERUSER_PASS = "Superuser1%"
 SUPERUSER_HASHED_PASSWORD = get_hash_password(SUPERUSER_PASS)
-SUPERUSER_EMAIL = "admin@mail.ru"
+SUPERUSER_EMAIL = "superuser@superuser.ru"
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -99,8 +98,7 @@ async def add_superuser(async_client, prepare_database):
             hashed_password=SUPERUSER_HASHED_PASSWORD,
             firstname="superuser",
             lastname="superuser",
-            role_name="ADMIN",
-            is_superuser=True,
+            role_name="SUPERUSER",
             is_staff=True,
         )
         session.add(user)
@@ -108,7 +106,7 @@ async def add_superuser(async_client, prepare_database):
 
 
 @pytest.fixture(scope="function")
-async def admin_login(async_client, add_superuser):
+async def superuser_login(async_client, add_superuser):
     login_url = app.url_path_for(config.USER_LOGIN)
     response = await async_client.post(
         login_url,

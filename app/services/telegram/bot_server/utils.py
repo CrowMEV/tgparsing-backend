@@ -84,7 +84,7 @@ async def check_task_exists(
     title: str,
     user_id: int,
 ):
-    task = await task_hand.get_task_by_filter(
+    task = await task_hand.get_tasks_by_filter(
         session, {"title": title, "user_id": user_id}
     )
     if task:

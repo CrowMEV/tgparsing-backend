@@ -36,9 +36,9 @@ class User(Base):
     is_staff: Mapped[bool] = mapped_column(
         default=False, server_default=sa.false()
     )
-    is_superuser: Mapped[bool] = mapped_column(
-        default=False, server_default=sa.false()
-    )
+    # is_superuser: Mapped[bool] = mapped_column(
+    #     default=False, server_default=sa.false()
+    # )
     is_verified: Mapped[bool] = mapped_column(
         default=False, server_default=sa.false()
     )

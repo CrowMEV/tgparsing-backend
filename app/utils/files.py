@@ -1,23 +1,23 @@
 import csv
-import os.path
+from pathlib import Path
 
 from settings import config
 
 
 async def delete_file(dir_name: str, file_name: str) -> None:
     file_url = await get_file_url(dir_name, file_name)
-    if os.path.exists(file_url):
-        os.remove(file_url)
+    if file_url.exists():
+        file_url.unlink()
 
 
-async def get_file_url(dir_url: str, file_name: str) -> str:
-    return os.path.join(config.files_dir_url, dir_url, f"{file_name}.csv")
+async def get_file_url(dir_url: str, file_name: str) -> Path:
+    return config.files_dir_url / dir_url / f"{file_name}.csv"
 
 
 async def check_folder(dir_name: int) -> str:
-    dir_url = os.path.join(config.files_dir_url, str(dir_name))
-    if not os.path.isdir(dir_url):
-        os.mkdir(dir_url)
+    dir_url = config.files_dir_url / str(dir_name)
+    if not dir_url.exists():
+        dir_url.mkdir()
     return dir_url
 
 
