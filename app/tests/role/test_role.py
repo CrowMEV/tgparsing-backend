@@ -7,7 +7,7 @@ class TestRole:
     get_all_roles: str = app.url_path_for(config.ROLE_GET_ALL)
     patch_role: str = app.url_path_for(config.ROLE_PATCH)
 
-    async def test_get_roles_by_admin(self, async_client, admin_login):
+    async def test_get_roles_by_admin(self, async_client, superuser_login):
         response = await async_client.get(self.get_all_roles)
 
         assert response.status_code == 200
@@ -37,7 +37,7 @@ class TestRole:
 
     @pytest.mark.parametrize("data,code", admin_change_data)
     async def test_change_role_by_admin(
-        self, async_client, admin_login, data, code
+        self, async_client, superuser_login, data, code
     ):
         response = await async_client.patch(self.patch_role, json=data)
 

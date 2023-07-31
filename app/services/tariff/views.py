@@ -47,7 +47,9 @@ async def change_tariff(
     if not check_tariff:
         raise HTTPException(status_code=404, detail="Тариф не найден")
     patch_data = {
-        key: value for key, value in tariff_schema.dict().items() if value
+        key: value
+        for key, value in tariff_schema.dict().items()
+        if value is not None
     }
     if not patch_data:
         raise HTTPException(status_code=400, detail="Пустое поле недопустимо")

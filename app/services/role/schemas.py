@@ -9,6 +9,7 @@ class RoleNameChoice(enum.Enum):
     ADMIN = "admin"
     ACCOUNTANT = "accountant"
     HR = "hr"
+    SUPERUSER = "superuser"
 
 
 class ActionChoice(enum.Enum):

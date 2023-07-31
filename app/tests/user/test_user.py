@@ -243,7 +243,7 @@ class TestUser:
     async def test_user_patch_by_admin(
         self,
         async_client,
-        admin_login,
+        superuser_login,
         id_row,
         name,
         surname,
