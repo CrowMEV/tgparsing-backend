@@ -132,6 +132,7 @@ async def get_active_members(
     dir_name: int,
     filename: str,
     activity_count: int,
+    activity: dict,
 ):
     async with async_session() as session:
         time_start = datetime.utcnow()
@@ -142,6 +143,7 @@ async def get_active_members(
             "from_date": from_date,
             "to_date": to_date,
             "activity_count": activity_count,
+            "activity": activity,
         }
         work_status, result = await do_request("/activemembers", params)
         if result is not None:
