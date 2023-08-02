@@ -37,7 +37,6 @@ class PaymentConfirm(BaseModel):
 
 
 class PaymentsGetAll(BaseModel):
-    status: Optional[bool] = Field(default=None)
-    user: Optional[int] = Field(default=None)
-    period_start: Optional[datetime.date] = Field(default=None)
-    period_end: Optional[datetime.date] = Field(default=None)
+    status: Optional[bool]
+    period_start: Optional[datetime.date]
+    period_end: Optional[datetime.date]
