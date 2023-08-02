@@ -1,71 +1,42 @@
-import decimal
 from typing import Any
 
 import fastapi as fa
 import services.payment.db_handlers as db_hand
 import services.payment.schemas as payment_schemas
 from database.db_async import get_async_session
-from fastapi import Body
-from services.payment.utils.robokassa import (
-    check_result_payment,
-    generate_payment_link,
-)
+from services.payment.utils.robokassa import generate_payment_link
 from services.role.schemas import RoleNameChoice
 from services.user.dependencies import get_current_user
-from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import JSONResponse
 
 
 async def get_payment_link(
-    amount: decimal.Decimal = Body(..., ge=1, decimal_places=2, embed=True),
+    create_schema: payment_schemas.PaymentCreate,
     user=fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
-) -> str:
+) -> Any:
     payment_data = {
         "user": user.id,
-        "amount": amount,
+        "amount": create_schema.amount,
         "action": payment_schemas.PaymentChoice.DEBIT,
     }
     payment = await db_hand.add_payment(session, payment_data)
     url_data = {
         "inv_id": payment.id,
-        "amount": amount,
-        "email": user.email,
+        "amount": create_schema.amount,
+        "email": create_schema.email or user.email,
     }
     url = generate_payment_link(url_data)
     return url
 
 
-async def check_responce(
-    schema: payment_schemas.PaymentConfirm = fa.Depends(
-        payment_schemas.PaymentConfirm.as_params
-    ),
-) -> fa.Response:
-    check_result = check_result_payment(schema, strict_check=True)
-    if check_result:
-        detail = f"OK{schema.inv_id}"
-    else:
-        detail = config.RK_BAD_SIGNATURE
-    response = JSONResponse(
-        status_code=fa.status.HTTP_200_OK, content={"detail": detail}
-    )
-    return response
-
-
-async def confirm_payment(
-    schema: payment_schemas.PaymentConfirm = fa.Depends(
-        payment_schemas.PaymentConfirm.as_params
-    ),
+async def result_callback(
+    result_schema: payment_schemas.RoboCallbackData,
     session: AsyncSession = fa.Depends(get_async_session),
-) -> None:
-    check_result = check_result_payment(schema)
-    if check_result:
-        await db_hand.upd_payment(session, schema.inv_id)
-
-
-async def fail_payment() -> None:
-    pass
+) -> Any:
+    print(session)
+    print(result_schema.dict())
+    return {"status": "ok"}
 
 
 async def get_payments(
