@@ -25,6 +25,7 @@ class TgAccountBase(BaseModel):
 class TgAccountRead(TgAccountBase):
     # Inherit api_id, api_hash and session_string from parent
     id: int
+    phone_number: str
     work_status: WorkChoice = WorkChoice.FREE
     block_status: BlockChoice = BlockChoice.UNBLOCK
 

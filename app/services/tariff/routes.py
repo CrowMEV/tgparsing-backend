@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends
+import fastapi as fa
 from services.tariff import views
 from services.tariff.schemas import TariffResponse
-from services.user.utils.permissions import is_superuser
+from services.user.utils.permissions import RoleChecker
 from settings import config
 
 
-tariff_router = APIRouter(prefix="/tariff", tags=["Tariff"])
+tariff_router = fa.APIRouter(
+    prefix="/tariff",
+    tags=["Tariff"],
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+)
 
 tariff_router.add_api_route(
     path="/",
@@ -20,7 +24,6 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     response_model=TariffResponse,
-    dependencies=[Depends(is_superuser)],
 )
 
 tariff_router.add_api_route(
@@ -37,7 +40,6 @@ tariff_router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PATCH,
     response_model=TariffResponse,
-    dependencies=[Depends(is_superuser)],
 )
 
 tariff_router.add_api_route(
@@ -45,5 +47,4 @@ tariff_router.add_api_route(
     endpoint=views.delete_tariff,
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
-    dependencies=[Depends(is_superuser)],
 )

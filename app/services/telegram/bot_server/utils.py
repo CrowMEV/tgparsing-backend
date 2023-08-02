@@ -7,6 +7,7 @@ from database.db_async import async_session
 from redis.lock import Lock
 from services.telegram.account import db_handlers as account_hand
 from services.telegram.tasks import db_handlers as task_hand
+from services.telegram.tasks.models import Task
 from services.telegram.tasks.schemas import WorkStatusChoice
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -79,124 +80,117 @@ async def end_parser(
     lock_inst.release()
 
 
-async def check_task_exists(
+async def task_checking(
     session: AsyncSession,
     title: str,
     user_id: int,
-):
-    task = await task_hand.get_tasks_by_filter(
+    rerun: bool,
+    task_data: dict,
+) -> Task:
+    tasks = await task_hand.get_tasks_by_filter(
         session, {"title": title, "user_id": user_id}
     )
-    if task:
+    if rerun and tasks:
+        task = tasks[0]
+        task_data.update({"job_start": datetime.utcnow()})
+        await task_hand.update_task(
+            session, task_id=task.id, task_data=task_data
+        )
+    elif not tasks:
+        task = await task_hand.create_task(
+            session,
+            task_data=task_data,
+        )
+    else:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Задание с таким именем уже существует",
         )
+    return task
 
 
 async def get_members(
-    task_id: int,
+    session_string: str,
     parsed_chats: list,
     groups_count: int,
-    dir_name: int,
-    filename: str,
 ):
-    async with async_session() as session:
-        time_start = datetime.utcnow()
-        parser_data = await get_parser_data(session)
-        params = {
-            "session_string": parser_data["session_string"],
-            "parsed_chats": parsed_chats,
-            "groups_count": groups_count,
-        }
-        work_status, result = await do_request("/members", params)
-        if result is not None:
-            await files.write_data_to_csv_file(
-                data=result, dir_name=dir_name, file_name=filename
-            )
-        await end_parser(
-            session=session,
-            time_start=time_start,
-            task_id=task_id,
-            work_status=work_status,
-            id_account=parser_data["tg_account_id"],
-            lock_inst=parser_data["lock_inst"],
-        )
+    params = {
+        "session_string": session_string,
+        "parsed_chats": parsed_chats,
+        "groups_count": groups_count,
+    }
+    work_status, result = await do_request("/members", params)
+    return work_status, result
 
 
 async def get_active_members(
-    task_id: int,
+    session_string: str,
     parsed_chats: list,
     from_date: str,
     to_date: str,
-    dir_name: int,
-    filename: str,
     activity_count: int,
     activity: dict,
 ):
-    async with async_session() as session:
-        time_start = datetime.utcnow()
-        parser_data = await get_parser_data(session)
-        params = {
-            "session_string": parser_data["session_string"],
-            "parsed_chats": parsed_chats,
-            "from_date": from_date,
-            "to_date": to_date,
-            "activity_count": activity_count,
-            "activity": activity,
-        }
-        work_status, result = await do_request("/activemembers", params)
-        if result is not None:
-            await files.write_data_to_csv_file(
-                data=result, dir_name=dir_name, file_name=filename
-            )
-        await end_parser(
-            session=session,
-            time_start=time_start,
-            task_id=task_id,
-            work_status=work_status,
-            id_account=parser_data["tg_account_id"],
-            lock_inst=parser_data["lock_inst"],
-        )
+    params = {
+        "session_string": session_string,
+        "parsed_chats": parsed_chats,
+        "from_date": from_date,
+        "to_date": to_date,
+        "activity_count": activity_count,
+        "activity": activity,
+    }
+    work_status, result = await do_request("/activemembers", params)
+    return work_status, result
 
 
 async def get_geo_members(
-    task_id: int,
+    session_string: str,
     coordinates: list[dict],
     accuracy_radius: int,
-    dir_name: int,
-    filename: str,
 ):
-    async with async_session() as session:
-        time_start = datetime.utcnow()
-        parser_data = await get_parser_data(session)
-        params = {
-            "session_string": parser_data["session_string"],
-            "coordinates": coordinates,
-            "accuracy_radius": accuracy_radius,
-        }
-        work_status, result = await do_request("/geomembers", params)
-        if result is not None:
-            await files.write_data_to_csv_file(
-                data=result, dir_name=dir_name, file_name=filename
-            )
-        await end_parser(
-            session=session,
-            time_start=time_start,
-            task_id=task_id,
-            work_status=work_status,
-            id_account=parser_data["tg_account_id"],
-            lock_inst=parser_data["lock_inst"],
-        )
+    params = {
+        "session_string": session_string,
+        "coordinates": coordinates,
+        "accuracy_radius": accuracy_radius,
+    }
+    work_status, result = await do_request("/geomembers", params)
+    return work_status, result
 
 
 async def do_parsing(
     parsing_task: str,
     data: dict,
 ):
-    functions = {
-        "get_members": get_members,
-        "get_active_members": get_active_members,
-        "get_geo_members": get_geo_members,
-    }
-    await functions[parsing_task](**data)  # type: ignore
+    async with async_session() as session:
+        time_start = datetime.utcnow()
+        parser_data = await get_parser_data(session)
+        session_string = parser_data["session_string"]
+        dir_name = data.pop("dir_name")
+        file_name = data.pop("filename")
+        task_id = data.pop("task_id")
+        try:
+            functions = {
+                "get_members": get_members,
+                "get_active_members": get_active_members,
+                "get_geo_members": get_geo_members,
+            }
+            work_status, result = await functions[  # type: ignore
+                parsing_task
+            ](session_string, **data)
+            if result is not None:
+                await files.write_data_to_csv_file(
+                    data=result,
+                    dir_name=dir_name,
+                    file_name=file_name,
+                )
+        except Exception:  # pylint: disable=W0718:
+            work_status = "FAILED"
+        finally:
+            await end_parser(
+                session=session,
+                time_start=time_start,
+                task_id=task_id,
+                work_status=work_status,  # pylint: disable=E0601:
+                id_account=parser_data["tg_account_id"],
+                lock_inst=parser_data["lock_inst"],
+            )
