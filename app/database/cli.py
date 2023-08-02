@@ -37,14 +37,12 @@ def load_roles(path: str, db_session=Session):
 @click.option("-e", "--email", help="User email", required=True)
 @click.option("-p", "--password", help="User password", required=True)
 @click.option("-r", "--role", default="user", help="User role")
-@click.option("-s", "--superuser", default=False, help="User is superuser")
-def add_admin(
+def add_user(
     firstname: str,
     lastname: str,
     email: str,
     password: str,
     role: str,
-    superuser: str,
 ):
     with Session() as session:
         stmt = select(User).where(and_(User.email == email))
@@ -66,7 +64,6 @@ def add_admin(
         prepared_data.update(
             {
                 "hashed_password": hashed_password,
-                "is_superuser": superuser,
                 "role_name": role.upper(),
             }
         )

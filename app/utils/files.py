@@ -26,7 +26,7 @@ async def write_data_to_csv_file(
 ) -> None:
     dir_url = await check_folder(dir_name=dir_name)
     file_url = await get_file_url(dir_url=dir_url, file_name=file_name)
-    with open(file_url, "w", encoding="utf-8") as file:
+    with open(file_url, "w", encoding="cp1251") as file:
         writer = csv.writer(file, delimiter=";")
         writer.writerow(
             [

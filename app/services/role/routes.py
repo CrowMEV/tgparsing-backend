@@ -1,11 +1,15 @@
+import fastapi as fa
 import services.role.schemas as role_schemas
-from fastapi import APIRouter, Depends
 from services.role import views
-from services.user.utils.permissions import is_superuser
+from services.user.utils.permissions import RoleChecker
 from settings import config
 
 
-role_router = APIRouter(prefix="/role", tags=["Role"])
+role_router = fa.APIRouter(
+    prefix="/role",
+    tags=["Role"],
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+)
 
 role_router.add_api_route(
     path="/{name}",
@@ -13,7 +17,6 @@ role_router.add_api_route(
     methods=["GET"],
     name=config.ROLE_GET,
     response_model=role_schemas.RoleResponse,
-    dependencies=[Depends(is_superuser)],
 )
 role_router.add_api_route(
     path="/",
@@ -21,12 +24,10 @@ role_router.add_api_route(
     methods=["PATCH"],
     name=config.ROLE_PATCH,
     response_model=role_schemas.RoleResponse,
-    dependencies=[Depends(is_superuser)],
 )
 role_router.add_api_route(
     path="/",
     endpoint=views.get_roles,
     methods=["GET"],
     name=config.ROLE_GET_ALL,
-    dependencies=[Depends(is_superuser)],
 )

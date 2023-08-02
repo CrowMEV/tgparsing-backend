@@ -1,48 +1,17 @@
-from fastapi import Depends, HTTPException, status
-from services.role.schemas import ActionChoice
+from typing import List
+
+import fastapi as fa
 from services.user.dependencies import get_current_user
+from services.user.models import User
 
 
-async def is_superuser(user=Depends(get_current_user)) -> None:
-    if not user.role.name.value in ["superuser"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Запрещено",
-        )
+class RoleChecker:
+    def __init__(self, allowed_roles: List[str]):
+        self.allowed_roles = allowed_roles
 
-
-async def is_admin(user=Depends(get_current_user)) -> None:
-    if not user.role.name.value in ["admin", "superuser"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Запрещено",
-        )
-
-
-async def is_user(user=Depends(get_current_user)) -> None:
-    if not user.role.name.value == "user":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Запрещено",
-        )
-
-
-async def payment_read(user=Depends(get_current_user)) -> None:
-    if user.role.name.value == "superuser":
-        return
-    pay_act = user.role.payment_action
-    read = ActionChoice("read")
-    if not pay_act or read not in pay_act:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Запрещено",
-        )
-
-
-async def user_read(user=Depends(get_current_user)) -> None:
-    if user.role.name.value in ["admin", "superuser"]:
-        return
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="Запрещено",
-    )
+    def __call__(self, user: User = fa.Depends(get_current_user)):
+        if user.role.name.value not in self.allowed_roles:
+            raise fa.HTTPException(
+                status_code=fa.status.HTTP_403_FORBIDDEN,
+                detail="You have not a permission to perform this action.",
+            )

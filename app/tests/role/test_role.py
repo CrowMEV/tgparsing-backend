@@ -20,19 +20,9 @@ class TestRole:
     admin_change_data = [
         # wrong data
         ({"is_active": True}, 422),
-        ({"staff_action": ["delete"]}, 422),
-        ({"payment_action": ["delete"]}, 422),
         # correct data
         ({"name": "user", "is_active": False}, 200),
-        ({"name": "user", "payment_action": ["delete"]}, 200),
-        (
-            {
-                "name": "user",
-                "is_active": True,
-                "staff_action": ["delete"],
-            },
-            200,
-        ),
+        ({"name": "user", "is_active": True}, 200),
     ]
 
     @pytest.mark.parametrize("data,code", admin_change_data)

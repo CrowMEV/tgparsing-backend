@@ -25,7 +25,7 @@ class TestTask:
         response = await async_client.get(
             self.user_get_tasks_url,
         )
-        assert response.status_code == 403
+        assert response.status_code == 200
 
     async def test_get_tasks(self, async_client, superuser_login):
         response = await async_client.get(

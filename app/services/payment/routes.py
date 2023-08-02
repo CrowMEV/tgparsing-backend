@@ -1,17 +1,18 @@
-from fastapi import APIRouter, Depends
+import fastapi as fa
 from services.payment import views
-from services.user.utils.permissions import payment_read
 from settings import config
 
 
-payment_router = APIRouter(prefix="/payment", tags=["Payment"])
+payment_router = fa.APIRouter(
+    prefix="/payment",
+    tags=["Payment"],
+)
 
 payment_router.add_api_route(
     path="/",
     endpoint=views.get_payments,
     methods=["GET"],
     name=config.PAYMENTS_GET,
-    dependencies=[Depends(payment_read)],
 )
 payment_router.add_api_route(
     path="/",
