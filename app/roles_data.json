@@ -1,24 +1,17 @@
 [
   {
-    "name": "USER",
-    "payment_action": ["READ"]
+    "name": "USER"
   },
   {
-    "name": "SUPERUSER",
-    "bot_action": ["READ", "WRITE", "UPDATE", "DELETE"],
-    "payment_action": ["READ"]
+    "name": "SUPERUSER"
   },
   {
-    "name": "ACCOUNTANT",
-    "payment_action": ["READ"]
+    "name": "ACCOUNTANT"
   },
   {
-    "name": "ADMIN",
-    "bot_action": ["READ", "WRITE", "UPDATE", "DELETE"],
-    "payment_action": ["READ"]
+    "name": "ADMIN"
   },
   {
-    "name": "HR",
-    "staff_action": ["READ", "WRITE", "UPDATE", "DELETE"]
+    "name": "HR"
   }
 ]

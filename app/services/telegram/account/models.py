@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class TgAccount(Base):
-    __tablename__ = "tgacounts"
+    __tablename__ = "tgaccounts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     api_id: Mapped[int] = mapped_column(unique=True)

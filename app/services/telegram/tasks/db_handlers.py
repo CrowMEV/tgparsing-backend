@@ -13,7 +13,7 @@ async def create_task(session: AsyncSession, task_data: dict) -> Task:
 
 
 async def update_task(
-    session: AsyncSession, task_id, task_data: dict
+    session: AsyncSession, task_id: int, task_data: dict
 ) -> Task | None:
     stmt = (
         sa.update(Task)

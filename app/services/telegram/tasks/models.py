@@ -1,6 +1,7 @@
 from datetime import datetime, time
 
 import sqlalchemy as sa
+from database.utils import UtcNow
 from services import Base
 from services.telegram.tasks import schemas
 from services.user.models import User
@@ -12,12 +13,12 @@ class Task(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(
-        nullable=True,
-        default=datetime.utcnow(),
+        sa.TIMESTAMP(timezone=False),
+        server_default=UtcNow(),
     )
     job_start: Mapped[datetime] = mapped_column(
-        nullable=True,
-        default=datetime.utcnow(),
+        sa.TIMESTAMP(timezone=False),
+        server_default=UtcNow(),
     )
     job_finish: Mapped[datetime] = mapped_column(
         nullable=True,
@@ -38,4 +39,7 @@ class Task(Base):
     user: Mapped[User] = relationship(
         backref="tasks",
         lazy="joined",
+    )
+    settings: Mapped[dict] = mapped_column(
+        sa.JSON, default={}, server_default="{}"
     )

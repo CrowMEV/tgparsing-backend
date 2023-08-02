@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 from services.telegram.bot_server import schemas as bot_sh
 from services.telegram.bot_server import utils
 from services.telegram.bot_server.orders import start_parsing
-from services.telegram.tasks import db_handlers as task_hand
 from services.user.dependencies import get_current_user
 from services.user.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,18 +14,25 @@ async def get_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
-    await utils.check_task_exists(
-        session=session,
-        title=body_data.task_name,
-        user_id=current_user.id,
-    )
     data = body_data.dict()
-    task = await task_hand.create_task(
-        session,
-        {
-            "title": data.pop("task_name"),
+    rerun = data.pop("rerun")
+    task_name = data.pop("task_name")
+    task_data = {
+        "title": task_name,
+        "user_id": current_user.id,
+        "settings": {
+            "title": task_name,
             "user_id": current_user.id,
+            "parsed_chats": data["parsed_chats"],
+            "groups_count": data["groups_count"],
         },
+    }
+    task = await utils.task_checking(
+        session=session,
+        title=task_name,
+        user_id=current_user.id,
+        rerun=rerun,
+        task_data=task_data,
     )
     start_parsing.delay(
         "get_members",
@@ -48,18 +54,26 @@ async def get_active_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
-    await utils.check_task_exists(
-        session=session,
-        title=body_data.task_name,
-        user_id=current_user.id,
-    )
     data = body_data.dict()
-    task = await task_hand.create_task(
-        session,
-        {
-            "title": data.pop("task_name"),
+    rerun = data.pop("rerun")
+    task_name = data.pop("task_name")
+    task_data = {
+        "title": task_name,
+        "user_id": current_user.id,
+        "settings": {
+            "title": task_name,
             "user_id": current_user.id,
+            "parsed_chats": data["parsed_chats"],
+            "activity_count": data["activity_count"],
+            "activity": data["activity"],
         },
+    }
+    task = await utils.task_checking(
+        session=session,
+        title=task_name,
+        user_id=current_user.id,
+        rerun=rerun,
+        task_data=task_data,
     )
     start_parsing.delay(
         "get_active_members",
@@ -81,18 +95,25 @@ async def get_members_by_geo(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ):
-    await utils.check_task_exists(
-        session=session,
-        title=body_data.task_name,
-        user_id=current_user.id,
-    )
     data = body_data.dict()
-    task = await task_hand.create_task(
-        session,
-        {
-            "title": data.pop("task_name"),
+    rerun = data.pop("rerun")
+    task_name = data.pop("task_name")
+    task_data = {
+        "title": task_name,
+        "user_id": current_user.id,
+        "settings": {
+            "title": task_name,
             "user_id": current_user.id,
+            "coordinates": data["coordinates"],
+            "accuracy_radius": data["accuracy_radius"],
         },
+    }
+    task = await utils.task_checking(
+        session=session,
+        title=task_name,
+        user_id=current_user.id,
+        rerun=rerun,
+        task_data=task_data,
     )
     start_parsing.delay(
         "get_geo_members",

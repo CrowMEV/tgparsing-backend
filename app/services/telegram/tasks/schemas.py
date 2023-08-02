@@ -27,6 +27,7 @@ class GetTasksResponse(BaseModel):
     work_status: WorkStatusChoice
     data_count: int
     favorite: bool
+    settings: str
 
     class Config:
         orm_mode = True

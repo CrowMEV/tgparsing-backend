@@ -18,6 +18,7 @@ class GetMembers(BaseModel):
         description="Чаты для парсинга",
     )
     groups_count: int = Field(default=1, ge=1)
+    rerun: bool = Field(default=False)
 
     @validator("parsed_chats", pre=True)
     def check_chats(cls, value):  # pylint: disable=E0213
@@ -53,6 +54,7 @@ class GetActiveMembers(BaseModel):
     to_date: date
     activity_count: int = Field(default=1, ge=1)
     activity: Activity
+    rerun: bool = Field(default=False)
 
     @validator("from_date")
     def change_from_date(cls, value):  # pylint: disable=E0213
@@ -88,3 +90,4 @@ class GetByGeo(BaseModel):
         min_items=1,
     )
     accuracy_radius: int = Field(description="In meters")
+    rerun: bool = Field(default=False)

@@ -10,8 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 ws_router = fa.APIRouter()
 
 
-@ws_router.websocket("/auth")
-async def auth_account(
+@ws_router.websocket(
+    "/telegram/tgaccount/create",
+)
+async def create_account(
     api_id: int,
     api_hash: str,
     phone_number: str,

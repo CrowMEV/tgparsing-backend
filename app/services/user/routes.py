@@ -4,7 +4,7 @@ import fastapi as fa
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
-from services.user.utils.permissions import user_read
+from services.user.utils.permissions import RoleChecker
 from settings import config
 from utils.responses import HTTP_201, HTTP_401
 
@@ -25,7 +25,9 @@ user_router.add_api_route(
     endpoint=views.get_users,
     name=config.USER_ALL,
     response_model=List[user_schemas.UserRead],
-    dependencies=[fa.Depends(user_read)],
+    dependencies=[
+        fa.Depends(RoleChecker(["superuser", "admin", "accountant"]))
+    ],
 )
 user_router.add_api_route(
     path="/login",
@@ -62,7 +64,9 @@ user_router.add_api_route(
     endpoint=views.get_user_by_id,
     name=config.USER_BY_ID,
     response_model=user_schemas.UserRead,
-    dependencies=[fa.Depends(user_read)],
+    dependencies=[
+        fa.Depends(RoleChecker(["superuser", "admin", "accountant"]))
+    ],
 )
 user_router.add_api_route(
     path="/pass",

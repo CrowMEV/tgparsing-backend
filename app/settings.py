@@ -37,7 +37,7 @@ class Config(BaseSettings):
     # cookie
     COOKIE_NAME: str = Field(default="TgParsing")
     COOKIE_SECURE: bool = Field(default=False)
-    COOKIE_AGE: int = Field(default=3600, ge=1, le=86400)
+    COOKIE_AGE: int = Field(default=86400, ge=1, le=86400)
     COOKIE_HTTPONLY: bool = Field(default=False)
     COOKIE_SAME_SITE: Optional[Literal["lax", "strict", "none"]] = Field(
         default="lax"
