@@ -6,16 +6,6 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
-class RoboCallbackData(BaseModel):
-    OutSum: decimal.Decimal
-    InvId: int
-    Fee: int
-    EMail: str
-    SignatureValue: str
-    PaymentMethod: str
-    IncCurrLabel: str
-
-
 class PaymentChoice(enum.Enum):
     DEBIT = "debit"
     CREDIT = "credit"

@@ -14,6 +14,7 @@ def generate_payment_link(
     """URL for redirection of the customer to the service."""
     check_login = config.RK_CHECK_LOGIN
     check_pass = config.RK_CHECK_PASS_1ST
+    ps2 = config.RK_CHECK_PASS_2ND
     payment_url = config.RK_PAYMENT_URL
     amount = data["amount"]
     inv_id = data["inv_id"]
@@ -25,5 +26,7 @@ def generate_payment_link(
         "InvId": inv_id,
         "Email": email,
         "SignatureValue": signature,
+        "IsTest": 1,
+        "Pass1": check_pass
     }
     return f"{payment_url}?{parse.urlencode(data)}"

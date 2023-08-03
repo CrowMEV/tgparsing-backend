@@ -22,7 +22,7 @@ payment_router.add_api_route(
 )
 payment_router.add_api_route(
     path="/callback",
-    endpoint=views.get_payment_link,
+    endpoint=views.result_callback,
     methods=["POST"],
     name=config.PAYMENT_ADD,
 )

@@ -1,10 +1,12 @@
-from typing import Any
+from typing import Any, Annotated
+from decimal import Decimal
+from settings import config
 
 import fastapi as fa
 import services.payment.db_handlers as db_hand
 import services.payment.schemas as payment_schemas
 from database.db_async import get_async_session
-from services.payment.utils.robokassa import generate_payment_link
+from services.payment.utils.robokassa import generate_payment_link, calculate_signature
 from services.role.schemas import RoleNameChoice
 from services.tariff.db_handlers import get_tariff_by_id
 from services.user.dependencies import get_current_user
@@ -32,12 +34,14 @@ async def get_payment_link(
 
 
 async def result_callback(
-    result_schema: payment_schemas.RoboCallbackData,
-    session: AsyncSession = fa.Depends(get_async_session),
+        out_sum: Annotated[Decimal, fa.Form(alias="OutSum")], out_sum2: Annotated[Decimal, fa.Form(alias="out_summ")], inv_id: Annotated[int, fa.Form(alias="InvId")], signature: Annotated[str, fa.Form(alias="SignatureValue")]
 ) -> Any:
-    print(session)
-    print(result_schema.dict())
-    return {"status": "ok"}
+    if out_sum != out_sum2:
+        raise fa.HTTPException(status_code=400, detail="Суммы не совпадают")
+    signature_2 = calculate_signature(out_sum, inv_id, config.RK_CHECK_PASS_2ND)
+    if signature.lower() != signature_2:
+        raise fa.HTTPException(status_code=400, detail="Хушы не совпадают")
+    return "OK" + str(inv_id)
 
 
 async def get_payments(
