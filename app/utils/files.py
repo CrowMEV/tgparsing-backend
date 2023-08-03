@@ -4,17 +4,17 @@ from pathlib import Path
 from settings import config
 
 
-async def delete_file(dir_name: str, file_name: str) -> None:
-    file_url = await get_file_url(dir_name, file_name)
+async def delete_file(dir_url: Path, file_name: str) -> None:
+    file_url = await get_file_url(dir_url, file_name)
     if file_url.exists():
         file_url.unlink()
 
 
-async def get_file_url(dir_url: str, file_name: str) -> Path:
+async def get_file_url(dir_url: Path, file_name: str) -> Path:
     return config.files_dir_url / dir_url / f"{file_name}.csv"
 
 
-async def check_folder(dir_name: int) -> str:
+async def check_folder(dir_name: int) -> Path:
     dir_url = config.files_dir_url / str(dir_name)
     if not dir_url.exists():
         dir_url.mkdir()
@@ -26,7 +26,7 @@ async def write_data_to_csv_file(
 ) -> None:
     dir_url = await check_folder(dir_name=dir_name)
     file_url = await get_file_url(dir_url=dir_url, file_name=file_name)
-    with open(file_url, "w", encoding="cp1251") as file:
+    with file_url.open("w", encoding="cp1251") as file:
         writer = csv.writer(file, delimiter=";")
         writer.writerow(
             [

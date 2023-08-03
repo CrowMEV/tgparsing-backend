@@ -1,5 +1,5 @@
 import enum
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -12,30 +12,21 @@ class RoleNameChoice(enum.Enum):
     SUPERUSER = "superuser"
 
 
-class ActionChoice(enum.Enum):
-    READ = "read"
-    WRITE = "write"
-    DELETE = "delete"
-    UPDATE = "update"
-
-
 class RoleGet(BaseModel):
     name: RoleNameChoice
+
+
+class RoleResponse(RoleGet):
+    # Inherit name from RoleGet
+    is_active: bool
+
+    class Config:
+        orm_mode = True
 
 
 class RolePatch(RoleGet):
     # Inherit name from RoreGet
     is_active: Optional[bool]
-    staff_action: Optional[List[ActionChoice]]
-    payment_action: Optional[List[ActionChoice]]
-    role_action: Optional[List[ActionChoice]]
-
-
-class RoleResponse(RolePatch):
-    # Inherit fields from RolePatch
-
-    class Config:
-        orm_mode = True
 
 
 class Permissions(BaseModel):

@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.drop_column('roles', 'bot_action')
     op.drop_column('roles', 'role_action')
     op.drop_column('roles', 'staff_action')
-    op.add_column('tasks', sa.Column('settings', sa.JSON(), server_default='{}', nullable=False))
+    op.add_column('tasks', sa.Column('settings', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=False))
     op.alter_column('tasks', 'created_at',
                existing_type=postgresql.TIMESTAMP(),
                server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"),
@@ -37,6 +37,7 @@ def upgrade() -> None:
         ALTER TABLE tgaccounts RENAME CONSTRAINT pk_tgacounts TO pk_tgaccounts;
         ALTER TABLE tgaccounts RENAME CONSTRAINT uq_tgacounts_api_id TO uq_tgaccounts_api_id;
         ALTER SEQUENCE tgacounts_id_seq RENAME TO tgaccounts_id_seq;
+        DROP TYPE actionchoice;
         """
     )
     # ### end Alembic commands ###
@@ -53,6 +54,11 @@ def downgrade() -> None:
                server_default=None,
                nullable=True)
     op.drop_column('tasks', 'settings')
+    op.execute(
+        """
+        CREATE TYPE actionchoice AS ENUM ('READ', 'WRITE', 'DELETE', 'UPDATE');
+        """
+    )
     op.add_column('roles', sa.Column('staff_action', postgresql.ARRAY(postgresql.ENUM('READ', 'WRITE', 'DELETE', 'UPDATE', name='actionchoice')), server_default=sa.text("'{}'::actionchoice[]"), autoincrement=False, nullable=False))
     op.add_column('roles', sa.Column('role_action', postgresql.ARRAY(postgresql.ENUM('READ', 'WRITE', 'DELETE', 'UPDATE', name='actionchoice')), server_default=sa.text("'{}'::actionchoice[]"), autoincrement=False, nullable=False))
     op.add_column('roles', sa.Column('bot_action', postgresql.ARRAY(postgresql.ENUM('READ', 'WRITE', 'DELETE', 'UPDATE', name='actionchoice')), server_default=sa.text("'{}'::actionchoice[]"), autoincrement=False, nullable=False))

@@ -57,14 +57,6 @@ user_router.add_api_route(
     response_model=user_schemas.UserRead,
 )
 user_router.add_api_route(
-    path="/{id_row}",
-    methods=["GET"],
-    endpoint=views.get_user_by_id,
-    name=config.USER_BY_ID,
-    response_model=user_schemas.UserRead,
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
-)
-user_router.add_api_route(
     path="/pass",
     methods=["POST"],
     endpoint=views.check_password,
@@ -72,9 +64,19 @@ user_router.add_api_route(
 )
 user_router.add_api_route(
     path="/{id_row}",
-    methods=["PATCH"],
-    endpoint=views.patch_user_by_admin,
-    name=config.USER_ADMIN_PATCH,
+    methods=["GET"],
+    endpoint=views.get_user_by_id,
+    name=config.USER_BY_ID,
     response_model=user_schemas.UserRead,
     dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    description="This method can use admin and superuser",
+)
+user_router.add_api_route(
+    path="/{id_row}",
+    methods=["PATCH"],
+    endpoint=views.patch_user_by_admin,
+    name=config.USER_PATCH_BY_ADMIN,
+    response_model=user_schemas.UserRead,
+    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    description="This method can use admin and superuser",
 )

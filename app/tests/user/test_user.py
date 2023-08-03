@@ -125,7 +125,7 @@ class TestUser:
         assert response.status_code == code
 
     async def test_user_patch_by_user(self, async_client, user_login):
-        url = app.url_path_for(config.USER_ADMIN_PATCH, id_row=1)
+        url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=1)
         response = await async_client.patch(url)
 
         assert response.status_code == 403
@@ -260,7 +260,7 @@ class TestUser:
             "email": email,
         }
         params = {key: value for key, value in params.items() if value}
-        url = app.url_path_for(config.USER_ADMIN_PATCH, id_row=id_row)
+        url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=id_row)
         response = await async_client.patch(url, data=params)
 
         assert response.status_code == code
