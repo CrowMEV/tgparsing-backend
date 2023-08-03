@@ -137,7 +137,6 @@ class Config(BaseSettings):
     ROLE_GET_ALL: str = Field(default="role_get_all")
     # payment
     PAYMENT_ADD: str = Field(default="payment_get_link")
-    PAYMENT_FAIL: str = Field(default="payment_fail")
     PAYMENTS_GET: str = Field(default="payments_get")
     # robokassa settings
     RK_CHECK_LOGIN: str = Field(default="")

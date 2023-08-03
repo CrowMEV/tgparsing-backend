@@ -12,38 +12,32 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_payment_link(
-    tariff_id: int,
+    create_schema: payment_schemas.PaymentCreate,
     user=fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
-) -> str:
-    tariff = await get_tariff_by_id(session, tariff_id)
-    if not tariff:
-        raise fa.HTTPException(status_code=400, detail="Тариф не существует")
+) -> Any:
     payment_data = {
         "user": user.id,
-        "amount": tariff.price,
+        "amount": create_schema.amount,
         "action": payment_schemas.PaymentChoice.DEBIT,
     }
     payment = await db_hand.add_payment(session, payment_data)
     url_data = {
         "inv_id": payment.id,
-        "amount": tariff.price,
-        "email": user.email,
+        "amount": create_schema.amount,
+        "email": create_schema.email or user.email
     }
     url = generate_payment_link(url_data)
     return url
 
 
-async def result_callback():
-    pass
-
-
-async def fail_payment() -> None:
-    pass
-
-
-async def success_payment() -> None:
-    pass
+async def result_callback(
+    result_schema: payment_schemas.RoboCallbackData,
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    print(session)
+    print(result_schema.dict())
+    return {"status": "ok"}
 
 
 async def get_payments(
