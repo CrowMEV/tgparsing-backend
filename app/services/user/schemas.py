@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, root_validator
 from services.role.schemas import RoleResponse
 
 
@@ -23,7 +23,6 @@ class UserRead(BaseModel):
     timezone: int
     is_staff: bool
     is_active: bool = True
-    is_superuser: bool = False
     is_verified: bool = False
     avatar_url: str
     role: RoleResponse
@@ -87,3 +86,10 @@ class UserPatch(BaseModel):
             email=email,
             phone_number=phone_number,
         )
+
+    @root_validator
+    def check_data_exists(cls, values):  # pylint: disable=E0213
+        new_values = {
+            key: value for key, value in values.items() if value is not None
+        }
+        return new_values
