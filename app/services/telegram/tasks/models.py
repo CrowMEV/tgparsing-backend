@@ -5,6 +5,7 @@ from database.utils import UtcNow
 from services import Base
 from services.telegram.tasks import schemas
 from services.user.models import User
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -41,5 +42,5 @@ class Task(Base):
         lazy="joined",
     )
     settings: Mapped[dict] = mapped_column(
-        sa.JSON, default={}, server_default="{}"
+        JSONB, default={}, server_default="{}"
     )

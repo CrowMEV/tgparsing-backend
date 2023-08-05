@@ -57,4 +57,4 @@ jobs:
             cd ${{ secrets.SSH_PROJECT_FOLDER }}
             git switch main
             git pull
-            docker compose up -d --build --no-deps backend
+            docker compose up --build --no-deps -d backend celery_worker celery_beat

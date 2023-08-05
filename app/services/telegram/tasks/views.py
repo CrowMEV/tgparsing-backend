@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from services.telegram.tasks import db_handlers as db_hand
 from services.user.dependencies import get_current_user
 from services.user.models import User
+from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import files
 
@@ -27,8 +28,9 @@ async def download_file(
             status_code=fa.status.HTTP_404_NOT_FOUND,
             detail="Такой задачи не существует",
         )
+    dir_url = config.files_dir_url / str(current_user.id)
     file_url = await files.get_file_url(
-        dir_url=str(current_user.id),
+        dir_url=dir_url,
         file_name=task_name,
     )
     return FileResponse(
@@ -60,7 +62,8 @@ async def delete_task(
         session=session,
         task_id=task.id,
     )
-    await files.delete_file(dir_name=str(current_user.id), file_name=task_name)
+    dir_url = config.files_dir_url / str(current_user.id)
+    await files.delete_file(dir_url=dir_url, file_name=task_name)
     return fa.Response(content="Задача удалена успешно")
 
 

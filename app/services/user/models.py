@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+from database.utils import UtcNow
 from services import Base
 from services.role.models import Role
 from services.role.schemas import RoleNameChoice
@@ -14,7 +15,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     firstname: Mapped[str] = mapped_column(server_default="", default="")
     lastname: Mapped[str] = mapped_column(server_default="", default="")
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow())
+    created_at: Mapped[datetime] = mapped_column(server_default=UtcNow())
     email: Mapped[str] = mapped_column(
         sa.String(length=320), unique=True, index=True
     )
@@ -26,8 +27,8 @@ class User(Base):
         server_default="0",
     )
     avatar_url: Mapped[str] = mapped_column(
-        default=config.base_avatar_url,
-        server_default=config.base_avatar_url,
+        default=str(config.base_avatar_url),
+        server_default=str(config.base_avatar_url),
     )
     is_active: Mapped[bool] = mapped_column(
         default=config.IS_ACTIVE,

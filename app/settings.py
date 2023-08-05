@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -99,23 +98,25 @@ class Config(BaseSettings):
     FASTAPI_SECRET: str = Field(default="fastapi_secret")
 
     # static
-    STATIC_DIR: str = Field(default="static")
+    STATIC_DIR_NAME: str = Field(default="static")
     AVATARS_FOLDER: str = Field(default="users_avatars")
     BASE_AVATAR_NAME: str = Field(default="base_avatar.png")
 
     @property
-    def base_avatar_url(self) -> str:
-        return os.path.join(
-            self.STATIC_DIR,
-            self.AVATARS_FOLDER,
-            self.BASE_AVATAR_NAME,
+    def static_dir_url(self) -> Path:
+        return Path(self.STATIC_DIR_NAME)
+
+    @property
+    def base_avatar_url(self) -> Path:
+        return (
+            self.static_dir_url / self.AVATARS_FOLDER / self.BASE_AVATAR_NAME
         )
 
     # files
     FILES_DIR: str = Field(default="files")
 
     @property
-    def files_dir_url(self):
+    def files_dir_url(self) -> Path:
         return self.BASE_DIR / self.FILES_DIR
 
     # url names
@@ -129,6 +130,7 @@ class Config(BaseSettings):
     USER_BY_ID: str = Field(default="user_by_id")
     USER_DELETE: str = Field(default="user_delete")
     USER_CHECK_PASSWORD: str = Field(default="check_password")
+    USER_PATCH_BY_ADMIN: str = Field(default="user_admin_patch")
     # role
     ROLE_GET: str = Field(default="role_get")
     ROLE_ADD: str = Field(default="role_add")
