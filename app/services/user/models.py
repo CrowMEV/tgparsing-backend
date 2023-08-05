@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -44,5 +45,8 @@ class User(Base):
         sa.ForeignKey("roles.name"),
         default=RoleNameChoice.USER,
         server_default=RoleNameChoice.USER.name,
+    )
+    balance: Mapped[decimal.Decimal] = mapped_column(
+        default=0, server_default="0"
     )
     role = relationship(Role, backref="users", lazy="joined")

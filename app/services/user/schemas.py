@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 from typing import Optional
 
@@ -28,6 +29,7 @@ class UserRead(BaseModel):
     role: RoleResponse
     phone_number: str | None
     created_at: datetime
+    balance: decimal.Decimal
 
     class Config:
         orm_mode = True

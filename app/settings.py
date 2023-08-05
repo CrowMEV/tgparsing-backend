@@ -145,7 +145,7 @@ class Config(BaseSettings):
     RK_PAYMENT_URL: str = Field(default="")
     RK_CHECK_PASS_1ST: str = Field(default="")
     RK_CHECK_PASS_2ND: str = Field(default="")
-    RK_BAD_SIGNATURE: str = Field(default="error: bad signature")
+    RK_TEST_MODE: int = Field(default=0)
     # tariffs
     TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     TARIFF_GET: str = Field(default="tariff_get")
