@@ -12,13 +12,14 @@ from services.payment.utils.robokassa import (
 from services.role.schemas import RoleNameChoice
 from services.user.db_handlers import get_current_by_id, update_user
 from services.user.dependencies import get_current_user
+from services.user.models import User
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_payment_link(
     create_schema: payment_schemas.PaymentCreate,
-    user=fa.Depends(get_current_user),
+    user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     payment_data = {
@@ -66,7 +67,7 @@ async def result_callback(
 async def get_payments(
     get_data: payment_schemas.PaymentsGetAll = fa.Depends(),
     session: AsyncSession = fa.Depends(get_async_session),
-    user=fa.Depends(get_current_user),
+    user: User = fa.Depends(get_current_user),
 ) -> Any:
     data = {
         key: value

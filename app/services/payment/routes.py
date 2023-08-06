@@ -24,5 +24,5 @@ payment_router.add_api_route(
     path="/callback",
     endpoint=views.result_callback,
     methods=["POST"],
-    name=config.PAYMENT_ADD,
+    name=config.PAYMENTS_CALLBACK,
 )

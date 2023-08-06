@@ -140,6 +140,7 @@ class Config(BaseSettings):
     # payment
     PAYMENT_ADD: str = Field(default="payment_get_link")
     PAYMENTS_GET: str = Field(default="payments_get")
+    PAYMENTS_CALLBACK: str = Field(default="payments_get")
     # robokassa settings
     RK_CHECK_LOGIN: str = Field(default="")
     RK_PAYMENT_URL: str = Field(default="")
@@ -152,6 +153,7 @@ class Config(BaseSettings):
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
+    TARIFF_PURCHASE: str = Field(default="tariff_delete")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")
