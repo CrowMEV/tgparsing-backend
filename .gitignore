@@ -172,4 +172,4 @@ files_test/
 #SSL Cert
 **/acme.json
 
-
+*.pre-commit-config.yaml

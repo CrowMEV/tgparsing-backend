@@ -1,5 +1,6 @@
 import aiofiles
 import fastapi as fa
+from services.role.schemas import RoleNameChoice
 from services.user import db_handlers as db_hand
 from services.user import schemas as user_schema
 from services.user.models import User
@@ -9,7 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def update_user(
-    session: AsyncSession, user: User, update_data: user_schema.UserPatch
+    session: AsyncSession,
+    changing_user: User,
+    current_user: User,
+    update_data: user_schema.UserPatch | user_schema.UserPatchByAdmin,
 ) -> User | None:
     data = update_data.dict()
     if not data:
@@ -20,7 +24,8 @@ async def update_user(
     if data.get("avatar_url"):
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
         file_name = (
-            f"{user.email}" f".{data['avatar_url'].filename.split('.')[-1]}"
+            f"{changing_user.email}"
+            f".{data['avatar_url'].filename.split('.')[-1]}"
         )
         file_url = folder_path / file_name
         async with aiofiles.open(file_url, "wb") as p_f:
@@ -30,5 +35,13 @@ async def update_user(
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]
         )
-    user_db = await db_hand.update_user(session, user.id, data)
+    if (
+        data.get("role_name")
+        and current_user.role_name is not RoleNameChoice.SUPERUSER
+    ):
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_403_FORBIDDEN,
+            detail="Изменение роли недоступно",
+        )
+    user_db = await db_hand.update_user(session, changing_user.id, data)
     return user_db

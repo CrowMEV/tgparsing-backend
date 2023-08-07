@@ -145,6 +145,39 @@ async def user_login(async_client, add_user) -> User:
     return user
 
 
+ADMIN_PASS = "Admin1%"
+ADMIN_HASHED_PASSWORD = get_hash_password(ADMIN_PASS)
+ADMIN_EMAIL = "admin@admin.ru"
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_admin(async_client, prepare_database):
+    async with async_test_session() as session:
+        user = User(
+            email=ADMIN_EMAIL,
+            hashed_password=ADMIN_HASHED_PASSWORD,
+            firstname="admin",
+            lastname="admin",
+            role_name="ADMIN",
+            is_staff=True,
+        )
+        session.add(user)
+        await session.commit()
+
+
+@pytest.fixture(scope="function")
+async def admin_login(async_client, add_admin):
+    login_url = app.url_path_for(config.USER_LOGIN)
+    response = await async_client.post(
+        login_url,
+        json={
+            "email": ADMIN_EMAIL,
+            "password": ADMIN_PASS,
+        },
+    )
+    return response.json()
+
+
 @pytest.fixture(autouse=True, scope="session")
 async def add_payments(async_client, add_superuser):
     async with async_test_session() as session:
