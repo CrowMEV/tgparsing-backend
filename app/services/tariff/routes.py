@@ -8,7 +8,6 @@ from settings import config
 tariff_router = fa.APIRouter(
     prefix="/tariff",
     tags=["Tariff"],
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
 tariff_router.add_api_route(
@@ -24,6 +23,7 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     response_model=TariffResponse,
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
 tariff_router.add_api_route(
@@ -32,6 +32,7 @@ tariff_router.add_api_route(
     methods=["GET"],
     name=config.TARIFF_GET,
     response_model=TariffResponse,
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
 tariff_router.add_api_route(
@@ -40,6 +41,7 @@ tariff_router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PATCH,
     response_model=TariffResponse,
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
 tariff_router.add_api_route(
@@ -47,4 +49,5 @@ tariff_router.add_api_route(
     endpoint=views.delete_tariff,
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
+    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
