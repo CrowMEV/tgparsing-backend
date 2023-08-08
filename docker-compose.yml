@@ -14,15 +14,17 @@ services:
       - ./app/static:/app/static
       - ./app/files:/app/files
       - ./app/:/app/
-    entrypoint: [ "/bin/sh", "backend.sh" ]
+    entrypoint: ["/bin/sh", "run.sh"]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)"
+      - "traefik.http.routers.tgparsing1.rule=(Host(`api.tgparsing.ru`) && Path(`/docs`))"
       - "traefik.http.routers.tgparsing1.entrypoints=websecure"
       - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
       - "traefik.http.services.tgparsing-service1.loadbalancer.server.port=8000"
-      
+      - "traefik.http.middlewares.tgparsing-auth.basicauth.users=apiuser:$$2y$$05$$cL6Q9BmMnTxLPog.wUkxLeYZN78r0sSlg.jISQ6VM/SkdYriIl2/6"
+      - "traefik.http.routers.tgparsing1.middlewares=tgparsing-auth"
+
   postgresql:
     image: postgres:15-alpine
     container_name: postgresql
@@ -68,10 +70,10 @@ services:
     labels:
       - "traefik.enable=true"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./letsencrypt:/letsencrypt
       - ./traefik_config/:/etc/traefik
-      
+
   redis:
     image: redis:6.0.20-alpine
     container_name: redis
@@ -82,11 +84,11 @@ services:
     depends_on:
       - redis
     volumes:
-        - ./app:/app/
+      - ./app:/app/
     command: celery -A utils.celery.celery_app worker -l DEBUG
     env_file:
       - .env
-    
+
   celery_beat:
     build: ./
     container_name: celery_beat
@@ -94,6 +96,6 @@ services:
       - celery_worker
     command: celery -A utils.celery.celery_app beat -l DEBUG
     volumes:
-        - ./app/:/app/
+      - ./app/:/app/
     env_file:
       - .env
