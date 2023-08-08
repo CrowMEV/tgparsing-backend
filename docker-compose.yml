@@ -17,13 +17,11 @@ services:
     entrypoint: ["/bin/sh", "run.sh"]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tgparsing1.rule=(Host(`api.tgparsing.ru`) && Path(`/docs`))"
+      - "traefik.http.routers.tgparsing1.rule=Host(`api.tgparsing.ru`)"
       - "traefik.http.routers.tgparsing1.entrypoints=websecure"
       - "traefik.http.routers.tgparsing1.tls.certresolver=myresolver"
       - "traefik.http.routers.tgparsing1.service=tgparsing-service1"
       - "traefik.http.services.tgparsing-service1.loadbalancer.server.port=8000"
-      - "traefik.http.middlewares.tgparsing-auth.basicauth.users=apiuser:$$2y$$05$$cL6Q9BmMnTxLPog.wUkxLeYZN78r0sSlg.jISQ6VM/SkdYriIl2/6"
-      - "traefik.http.routers.tgparsing1.middlewares=tgparsing-auth"
 
   postgresql:
     image: postgres:15-alpine
