@@ -18,20 +18,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_payment_link(
-    create_schema: payment_schemas.PaymentCreate,
+    payment_schema: payment_schemas.PaymentCreate,
     user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     payment_data = {
         "user_id": user.id,
-        "amount": create_schema.amount,
+        "amount": payment_schema.amount,
         "action": payment_schemas.PaymentChoice.DEBIT,
     }
     payment = await db_hand.add_payment(session, payment_data)
     url_data = {
         "inv_id": payment.id,
-        "amount": create_schema.amount,
-        "email": create_schema.email or user.email,
+        "amount": payment_schema.amount,
+        "email": payment_schema.email or user.email,
     }
     url = generate_payment_link(url_data)
     return url
