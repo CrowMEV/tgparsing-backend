@@ -21,7 +21,7 @@ payment_router.add_api_route(
     endpoint=views.get_payment_link,
     methods=["POST"],
     name=config.PAYMENT_ADD,
-    dependencies=[fa.Depends(RoleChecker(["user"]))],
+    dependencies=[fa.Depends(RoleChecker(["superuser", "admin", "user"]))],
 )
 payment_router.add_api_route(
     path="/callback",
