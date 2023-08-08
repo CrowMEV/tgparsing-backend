@@ -91,31 +91,6 @@ async def update_user_subscribe(
     return sub
 
 
-async def update_subscribe_options(
-    session: AsyncSession, tariffs_list: Sequence[Tariff]
-) -> None:
-    for tariff in tariffs_list:
-        stmt = (
-            sa.update(UserSubscribe)
-            .where(UserSubscribe.tariff_id == tariff.id)
-            .values(tariff_options=tariff.options)
-        )
-        await session.execute(stmt)
-    await session.commit()
-
-
-async def get_subscribes(
-    session: AsyncSession, filter_data: dict | None = None
-) -> Sequence[UserSubscribe]:
-    stmt = sa.select(UserSubscribe)
-    if filter_data:
-        for key, value in filter_data:
-            stmt = stmt.where(getattr(UserSubscribe, key) == value)
-    result = await session.execute(stmt)
-    subs = result.scalars().fetchall()
-    return subs
-
-
 def get_tariffs_sync(session_sync: Session) -> Sequence[Tariff]:
     stmt = sa.select(Tariff)
     result = session_sync.execute(stmt)

@@ -14,7 +14,7 @@ def reset_options_daily():
 
 
 @celery_app.task
-def tariff_active_debit_daily():
+def renew_subscribe():
     with Session() as session:
         subscribes = tariff_db_hand.get_subscribes_sync(session)
         for subscribe in subscribes:

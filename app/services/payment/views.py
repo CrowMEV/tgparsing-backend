@@ -41,15 +41,13 @@ async def result_callback(
     out_sum: Annotated[Decimal, fa.Form(alias="OutSum")],
     out_sum2: Annotated[Decimal, fa.Form(alias="out_summ")],
     inv_id: Annotated[int, fa.Form(alias="InvId")],
-    signature: Annotated[str, fa.Form(alias="SignatureValue")],
+    response_signature: Annotated[str, fa.Form(alias="SignatureValue")],
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     if out_sum != out_sum2:
         raise fa.HTTPException(status_code=400, detail="Суммы не совпадают")
-    signature_2 = calculate_signature(
-        out_sum, inv_id, config.RK_CHECK_PASS_2ND
-    )
-    if signature.lower() != signature_2:
+    signature = calculate_signature(out_sum, inv_id, config.RK_CHECK_PASS_2ND)
+    if response_signature.lower() != signature:
         raise fa.HTTPException(status_code=400, detail="Хэшы не совпадают")
     payment = await db_hand.get_payment_by_id(session, inv_id)
     if not payment:
