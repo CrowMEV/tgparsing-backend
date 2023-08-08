@@ -1,6 +1,7 @@
 import fastapi as fa
 from database.db_async import get_async_session
 from fastapi.responses import JSONResponse
+from services.tariff.db_handlers import get_user_subscribe
 from services.telegram.bot_server import schemas as bot_sh
 from services.telegram.bot_server import utils
 from services.telegram.bot_server.orders import start_parsing
@@ -14,6 +15,11 @@ async def get_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
+    user_subscribe = await get_user_subscribe(session, current_user.id)
+    if not user_subscribe or not user_subscribe.active:
+        raise fa.HTTPException(
+            status_code=403, detail="У вас закончилась подписка"
+        )
     data = body_data.dict()
     rerun = data.pop("rerun")
     task_name = data.pop("task_name")
@@ -54,6 +60,11 @@ async def get_active_members(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ) -> fa.Response:
+    user_subscribe = await get_user_subscribe(session, current_user.id)
+    if not user_subscribe or not user_subscribe.active:
+        raise fa.HTTPException(
+            status_code=403, detail="У вас закончилась подписка"
+        )
     data = body_data.dict()
     rerun = data.pop("rerun")
     task_name = data.pop("task_name")
@@ -95,6 +106,11 @@ async def get_members_by_geo(
     session: AsyncSession = fa.Depends(get_async_session),
     current_user: User = fa.Depends(get_current_user),
 ):
+    user_subscribe = await get_user_subscribe(session, current_user.id)
+    if not user_subscribe or not user_subscribe.active:
+        raise fa.HTTPException(
+            status_code=403, detail="У вас закончилась подписка"
+        )
     data = body_data.dict()
     rerun = data.pop("rerun")
     task_name = data.pop("task_name")

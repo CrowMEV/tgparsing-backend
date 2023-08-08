@@ -61,7 +61,7 @@ async def result_callback(
         )
     await update_user(session, user.id, {"balance": user.balance + out_sum})
     await db_hand.upd_payment(session, inv_id, {"status": True})
-    return "OK" + str(inv_id)
+    return f"OK{inv_id}"
 
 
 async def get_payments(

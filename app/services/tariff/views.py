@@ -106,6 +106,7 @@ async def purchase_tariff(
         "end_date": (
             user_sub.end_date + datetime.timedelta(tariff.limitation_days)
         ),
+        "active": True,
     }
     user_sub = await db_hand.update_user_subscribe(
         session, user.id, update_data

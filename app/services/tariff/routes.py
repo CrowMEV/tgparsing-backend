@@ -33,7 +33,6 @@ tariff_router.add_api_route(
     methods=["GET"],
     name=config.TARIFF_GET,
     response_model=TariffResponse,
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
 tariff_router.add_api_route(

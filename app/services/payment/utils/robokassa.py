@@ -29,4 +29,4 @@ def generate_payment_link(
     if config.RK_TEST_MODE:
         payment_data["IsTest"] = 1
         payment_data["Pass1"] = pass_1
-    return f"{payment_url}?{parse.urlencode(payment_data)}"
+    return parse.urljoin(payment_url, parse.urlencode(payment_data))

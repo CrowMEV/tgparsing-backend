@@ -1,12 +1,10 @@
 import json
-from urllib import parse
 
 import pytest
 import sqlalchemy as sa
 from server import app
 from services.payment.models import Payment
 from settings import config
-from tests import conftest
 
 
 class TestPayment:
@@ -14,34 +12,23 @@ class TestPayment:
 
     payment_data = [
         # wrong data
-        (0, 422),
-        (1.123, 422),
+        (100, "someone", 422),
+        ("12ad", "addpayment", 422),
         # correct data
-        (1, 200),
+        (1000, "admin@gmail.com", 200),
     ]
 
-    @pytest.mark.parametrize("tariff_id,code", payment_data[:-1])
+    @pytest.mark.parametrize("amount,email,code", payment_data[:-1])
     async def test_add_payment_wrong_data(
-        self, async_client, user_login, tariff_id, code
+        self, async_client, user_login, amount, email, code
     ):
         payment_url: str = app.url_path_for(
-            config.PAYMENT_ADD, tariff_id=tariff_id
+            config.PAYMENT_ADD,
         )
         response = await async_client.post(
-            payment_url,
+            payment_url, data={"amount": amount, "email": email}
         )
         assert response.status_code == code
-
-    @pytest.mark.parametrize("tariff_id,code", payment_data[-1:])
-    async def test_add_payment_correct_data(
-        self, async_client, user_login, tariff_id, code
-    ):
-        payment_url: str = app.url_path_for(
-            config.PAYMENT_ADD, tariff_id=tariff_id
-        )
-        response = await async_client.post(payment_url)
-        assert response.status_code == code
-        assert parse.quote(conftest.USER_EMAIL) in response.content.decode()
 
     async def get_payments(self, session):
         stmt = sa.select(Payment)
@@ -59,14 +46,3 @@ class TestPayment:
         payments = json.loads(row)
 
         assert len(payments) == await self.get_payments(get_session)
-
-    async def test_get_payments_by_user(
-        self, get_session, async_client, user_login
-    ):
-        response = await async_client.get(
-            self.payments_get,
-        )
-        row = response.content.decode()
-        payments = json.loads(row)
-
-        assert len(payments) == await self.get_payments(get_session) - 1

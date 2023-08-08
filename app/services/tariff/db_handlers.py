@@ -3,6 +3,7 @@ from typing import Sequence
 import sqlalchemy as sa
 from services.tariff.models import Tariff, UserSubscribe
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.session import Session
 
 
 async def get_tariffs(session: AsyncSession) -> Sequence[Tariff]:
@@ -87,4 +88,76 @@ async def update_user_subscribe(
     result = await session.execute(stmt)
     sub: UserSubscribe | None = result.scalars().first()
     await session.commit()
+    return sub
+
+
+async def update_subscribe_options(
+    session: AsyncSession, tariffs_list: Sequence[Tariff]
+) -> None:
+    for tariff in tariffs_list:
+        stmt = (
+            sa.update(UserSubscribe)
+            .where(UserSubscribe.tariff_id == tariff.id)
+            .values(tariff_options=tariff.options)
+        )
+        await session.execute(stmt)
+    await session.commit()
+
+
+async def get_subscribes(
+    session: AsyncSession, filter_data: dict | None = None
+) -> Sequence[UserSubscribe]:
+    stmt = sa.select(UserSubscribe)
+    if filter_data:
+        for key, value in filter_data:
+            stmt = stmt.where(getattr(UserSubscribe, key) == value)
+    result = await session.execute(stmt)
+    subs = result.scalars().fetchall()
+    return subs
+
+
+def get_tariffs_sync(session_sync: Session) -> Sequence[Tariff]:
+    stmt = sa.select(Tariff)
+    result = session_sync.execute(stmt)
+    tariffs = result.scalars().fetchall()
+    return tariffs
+
+
+def update_subscribe_options_sync(
+    session_sync: Session, tariffs_list: Sequence[Tariff]
+) -> None:
+    for tariff in tariffs_list:
+        stmt = (
+            sa.update(UserSubscribe)
+            .where(UserSubscribe.tariff_id == tariff.id)
+            .values(tariff_options=tariff.options)
+        )
+        session_sync.execute(stmt)
+    session_sync.commit()
+
+
+def get_subscribes_sync(
+    session: Session, filter_data: dict | None = None
+) -> Sequence[UserSubscribe]:
+    stmt = sa.select(UserSubscribe)
+    if filter_data:
+        for key, value in filter_data.items():
+            stmt = stmt.where(getattr(UserSubscribe, key) == value)
+    result = session.execute(stmt)
+    subs = result.scalars().fetchall()
+    return subs
+
+
+def update_user_subscribe_sync(
+    session: Session, user_id: int, data: dict
+) -> UserSubscribe | None:
+    stmt = (
+        sa.update(UserSubscribe)
+        .values(**data)
+        .returning(UserSubscribe)
+        .where(UserSubscribe.user_id == user_id)
+    )
+    result = session.execute(stmt)
+    sub: UserSubscribe | None = result.scalars().first()
+    session.commit()
     return sub
