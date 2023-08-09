@@ -9,7 +9,6 @@ tariff_router = fa.APIRouter(
     prefix="/tariff",
     tags=["Tariff"],
 )
-purchase_router = fa.APIRouter(prefix="/purchase", tags=["Tariff purchases"])
 
 tariff_router.add_api_route(
     path="/",
@@ -52,12 +51,10 @@ tariff_router.add_api_route(
     dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
 
-purchase_router.add_api_route(
-    path="/{id_row}",
+tariff_router.add_api_route(
+    path="/purchase/{id_row}",
     endpoint=views.purchase_tariff,
     methods=["POST"],
     name=config.TARIFF_PURCHASE,
     response_model=UserSubscribeResponse,
 )
-
-tariff_router.include_router(purchase_router)
