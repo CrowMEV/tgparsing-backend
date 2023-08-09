@@ -103,6 +103,7 @@ async def add_superuser(async_client, prepare_database):
         )
         session.add(user)
         await session.commit()
+    return user
 
 
 @pytest.fixture(scope="function")
@@ -182,7 +183,7 @@ async def admin_login(async_client, add_admin):
 async def add_payments(async_client, add_superuser):
     async with async_test_session() as session:
         payment = Payment(
-            user=1,
+            user_id=add_superuser.id,
             amount=1,
             action=payment_schemas.PaymentChoice.DEBIT,
         )

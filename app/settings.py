@@ -139,25 +139,20 @@ class Config(BaseSettings):
     ROLE_GET_ALL: str = Field(default="role_get_all")
     # payment
     PAYMENT_ADD: str = Field(default="payment_get_link")
-    PAYMENT_CHK: str = Field(default="payment_check_responce")
-    PAYMENT_UPD: str = Field(default="payment_confirm")
-    PAYMENT_FAIL: str = Field(default="payment_fail")
     PAYMENTS_GET: str = Field(default="payments_get")
+    PAYMENTS_CALLBACK: str = Field(default="payments_get")
     # robokassa settings
     RK_CHECK_LOGIN: str = Field(default="")
     RK_PAYMENT_URL: str = Field(default="")
     RK_CHECK_PASS_1ST: str = Field(default="")
     RK_CHECK_PASS_2ND: str = Field(default="")
-    RK_TAX_SYSTEM: str = Field(default="")
-    RK_REPLENISHMENT_NAME: str = Field(default="")
-    RK_TAX: str = Field(default="")
-    RK_BAD_SIGNATURE: str = Field(default="error: bad signature")
     # tariffs
     TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     TARIFF_GET: str = Field(default="tariff_get")
     TARIFF_ADD: str = Field(default="tariff_add")
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
+    TARIFF_PURCHASE: str = Field(default="tariff_purchase")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")

@@ -3,6 +3,7 @@ from typing import Sequence
 import sqlalchemy as sa
 from services.user.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.session import Session
 
 
 async def get_users(session: AsyncSession) -> Sequence[User]:
@@ -45,5 +46,20 @@ async def update_user(
     )
     result = await session.execute(stmt)
     await session.commit()
+    user = result.scalars().first()
+    return user
+
+
+def update_user_sync(
+    session: Session, user_id: int, data: dict
+) -> User | None:
+    stmt = (
+        sa.update(User)
+        .where(User.id == user_id)
+        .values(**data)
+        .returning(User)
+    )
+    result = session.execute(stmt)
+    session.commit()
     user = result.scalars().first()
     return user

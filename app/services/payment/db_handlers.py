@@ -12,10 +12,12 @@ async def add_payment(session: AsyncSession, data: dict) -> Payment:
     return payment
 
 
-async def upd_payment(session: AsyncSession, id_row: int) -> Payment | None:
+async def upd_payment(
+    session: AsyncSession, id_row: int, update_data: dict
+) -> Payment | None:
     stmt = (
         sa.update(Payment)
-        .values({"status": True})
+        .values(**update_data)
         .returning(Payment)
         .where(Payment.id == id_row)
     )
@@ -32,10 +34,23 @@ async def get_payments(
     stmt = sa.select(Payment)
     period_start = data.pop("period_start", None)
     period_end = data.pop("period_end", None)
-    if period_start and period_end:
-        stmt = stmt.where(Payment.date.between(period_start, period_end))
+    if period_start:
+        stmt = stmt.where(Payment.date >= period_start)
+    if period_end:
+        stmt = stmt.where(Payment.date <= period_end)
     for key, value in data.items():
         stmt = stmt.where(getattr(Payment, key) == value)
     result = await session.execute(stmt)
     payments = result.scalars().fetchall()
+    return payments
+
+
+async def get_payment_by_id(
+    session: AsyncSession, id_row: int, status: bool = False
+) -> Payment | None:
+    stmt = sa.select(Payment).where(
+        sa.and_(Payment.id == id_row, Payment.status == status)
+    )
+    result = await session.execute(stmt)
+    payments = result.scalars().first()
     return payments

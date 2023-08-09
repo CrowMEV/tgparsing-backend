@@ -1,6 +1,6 @@
 import fastapi as fa
 from services.tariff import views
-from services.tariff.schemas import TariffResponse
+from services.tariff.schemas import TariffResponse, UserSubscribeResponse
 from services.user.utils.permissions import RoleChecker
 from settings import config
 
@@ -9,6 +9,7 @@ tariff_router = fa.APIRouter(
     prefix="/tariff",
     tags=["Tariff"],
 )
+purchase_router = fa.APIRouter(prefix="/purchase", tags=["Tariff purchases"])
 
 tariff_router.add_api_route(
     path="/",
@@ -51,3 +52,13 @@ tariff_router.add_api_route(
     name=config.TARIFF_DELETE,
     dependencies=[fa.Depends(RoleChecker(["superuser"]))],
 )
+
+purchase_router.add_api_route(
+    path="/{id_row}",
+    endpoint=views.purchase_tariff,
+    methods=["POST"],
+    name=config.TARIFF_PURCHASE,
+    response_model=UserSubscribeResponse,
+)
+
+tariff_router.include_router(purchase_router)

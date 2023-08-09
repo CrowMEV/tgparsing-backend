@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -33,6 +34,17 @@ class TariffPatchModel(BaseModel):
 
 class TariffResponse(TariffPostModel):
     id: int
+
+    class Config:
+        orm_mode: bool = True
+
+
+class UserSubscribeResponse(BaseModel):
+    id: int
+    user_id: int
+    tariff_id: int
+    end_date: datetime.datetime
+    tariff_options: TariffOptions
 
     class Config:
         orm_mode: bool = True

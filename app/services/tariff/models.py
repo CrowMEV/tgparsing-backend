@@ -33,6 +33,8 @@ class UserSubscribe(Base):
     tariff_id: Mapped[int] = mapped_column(ForeignKey("tariffs.id"))
     tariff_options: Mapped[dict[str, Any]]
     end_date: Mapped[datetime]
+    active: Mapped[bool] = mapped_column(default=True)
+    auto_debit: Mapped[bool] = mapped_column(default=True)
 
-    user: Mapped["User"] = relationship(backref="subscribes")
-    tariff: Mapped["Tariff"] = relationship(backref="users")
+    user: Mapped["User"] = relationship(backref="subscribes", lazy="joined")
+    tariff: Mapped["Tariff"] = relationship(backref="users", lazy="joined")
