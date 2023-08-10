@@ -50,16 +50,7 @@ async def update_user(
     return user
 
 
-def update_user_sync(
-    session: Session, user_id: int, data: dict
-) -> User | None:
-    stmt = (
-        sa.update(User)
-        .where(User.id == user_id)
-        .values(**data)
-        .returning(User)
-    )
-    result = session.execute(stmt)
+def update_user_sync(session: Session, user_id: int, data: dict) -> None:
+    stmt = sa.update(User).where(User.id == user_id).values(**data)
+    session.execute(stmt)
     session.commit()
-    user = result.scalars().first()
-    return user

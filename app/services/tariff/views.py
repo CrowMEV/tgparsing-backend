@@ -112,13 +112,3 @@ async def purchase_tariff(
         session, user.id, update_data
     )
     return user_sub
-
-
-async def get_user_subscribe(
-    user: User = fa.Depends(get_current_user),
-    session: AsyncSession = fa.Depends(get_async_session),
-) -> Any:
-    user_sub = await db_hand.get_user_subscribe(session, user.id)
-    if not user_sub:
-        raise fa.HTTPException(status_code=404, detail="Подписки нет")
-    return user_sub

@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr, Field, root_validator
 from services.role.schemas import RoleResponse
+from services.tariff.schemas import UserSubscribeResponse
 
 
 class UserLogin(BaseModel):
@@ -30,6 +31,7 @@ class UserRead(BaseModel):
     phone_number: str | None
     created_at: datetime
     balance: decimal.Decimal
+    subscribe: UserSubscribeResponse | None
 
     class Config:
         orm_mode = True
