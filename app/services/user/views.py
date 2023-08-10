@@ -133,9 +133,9 @@ async def toggle_tariff_auto_write_off(
     user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    if user.subscribe:
-        updated_sub = await update_user_subscribe(
-            session, user.id, {"auto_debit": not user.subscribe.auto_debit}
-        )
-        return updated_sub
-    return {}
+    if not user.subscribe:
+        raise fa.HTTPException(status_code=400, detail="У вас нет подписки")
+    updated_sub = await update_user_subscribe(
+        session, user.id, {"auto_debit": not user.subscribe.auto_debit}
+    )
+    return updated_sub
