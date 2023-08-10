@@ -5,10 +5,12 @@ import fastapi as fa
 import httpx
 from database.db_async import async_session
 from redis.lock import Lock
+from services.tariff.db_handlers import update_user_subscribe
 from services.telegram.account import db_handlers as account_hand
 from services.telegram.tasks import db_handlers as task_hand
 from services.telegram.tasks.models import Task
 from services.telegram.tasks.schemas import WorkStatusChoice
+from services.user.db_handlers import get_current_by_id
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import files
@@ -20,6 +22,7 @@ async def do_request(route, params: dict):
         resp = client.post(
             timeout=None, url=f"{config.PARSER_SERVER}{route}", json=params
         )
+    print("STATUS CODE", resp.status_code)
     if resp.status_code != 200:
         return WorkStatusChoice.FAILED, None
     return WorkStatusChoice.SUCCESS, resp.json()
@@ -169,6 +172,15 @@ async def do_parsing(
         file_name = data.pop("filename")
         task_id = data.pop("task_id")
         try:
+            user = await get_current_by_id(session, dir_name)
+            options = user.subscribe.tariff_options.copy()  # type: ignore
+            options["parsers_per_day"] = options["parsers_per_day"] - 1
+            options["simultaneous_parsing"] = (
+                options["simultaneous_parsing"] - 1
+            )
+            await update_user_subscribe(
+                session, user.id, {"tariff_options": options}  # type: ignore
+            )
             functions = {
                 "get_members": get_members,
                 "get_active_members": get_active_members,
@@ -184,8 +196,15 @@ async def do_parsing(
                     file_name=file_name,
                 )
         except Exception:  # pylint: disable=W0718:
+            options["parsers_per_day"] = options["parsers_per_day"] + 1
             work_status = "FAILED"
         finally:
+            options["simultaneous_parsing"] = (
+                options["simultaneous_parsing"] + 1
+            )
+            await update_user_subscribe(
+                session, user.id, {"tariff_options": options}  # type: ignore
+            )
             await end_parser(
                 session=session,
                 time_start=time_start,
