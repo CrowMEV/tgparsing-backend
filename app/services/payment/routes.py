@@ -1,6 +1,7 @@
 import fastapi as fa
 from services.payment import views
-from services.user.utils.permissions import RoleChecker
+from services.role.schemas import RoleNameChoice
+from services.user.utils import permissions as perm
 from settings import config
 
 
@@ -14,7 +15,17 @@ payment_router.add_api_route(
     endpoint=views.get_payments,
     methods=["GET"],
     name=config.PAYMENTS_GET,
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin", "user"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                    RoleNameChoice.ADMIN,
+                    RoleNameChoice.USER,
+                ]
+            )
+        )
+    ],
 )
 payment_router.add_api_route(
     path="/create",
@@ -27,4 +38,9 @@ payment_router.add_api_route(
     endpoint=views.result_callback,
     methods=["POST"],
     name=config.PAYMENTS_CALLBACK,
+)
+payment_router.add_api_route(
+    path="/fail",
+    endpoint=views.fail_url,
+    methods=["POST"],
 )

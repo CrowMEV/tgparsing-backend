@@ -3,7 +3,7 @@ import decimal
 import enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
 class PaymentChoice(enum.Enum):
@@ -13,7 +13,6 @@ class PaymentChoice(enum.Enum):
 
 class PaymentCreate(BaseModel):
     amount: decimal.Decimal = Field(..., ge=1, decimal_places=2)
-    email: Optional[EmailStr]
 
 
 class PaymentsGetAll(BaseModel):

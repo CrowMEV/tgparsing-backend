@@ -9,6 +9,7 @@ from settings import config
 
 class TestPayment:
     payments_get: str = app.url_path_for(config.PAYMENTS_GET)
+    payment_url: str = app.url_path_for(config.PAYMENT_ADD)
 
     payment_data = [
         # wrong data
@@ -22,11 +23,8 @@ class TestPayment:
     async def test_add_payment_wrong_data(
         self, async_client, user_login, amount, email, code
     ):
-        payment_url: str = app.url_path_for(
-            config.PAYMENT_ADD,
-        )
         response = await async_client.post(
-            payment_url, data={"amount": amount, "email": email}
+            self.payment_url, data={"amount": amount, "email": email}
         )
         assert response.status_code == code
 

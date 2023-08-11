@@ -2,15 +2,20 @@ import typing
 
 import fastapi as fa
 import services.telegram.account.schemas as tg_schemas
+from services.role.schemas import RoleNameChoice
 from services.telegram.account import views
-from services.user.utils.permissions import RoleChecker
+from services.user.utils import permissions as perm
 from settings import config
 
 
 tgaccount_router = fa.APIRouter(
     prefix="/tgaccount",
     tags=["TgAccount"],
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker([RoleNameChoice.SUPERUSER, RoleNameChoice.ADMIN])
+        )
+    ],
 )
 
 tgaccount_router.add_api_route(

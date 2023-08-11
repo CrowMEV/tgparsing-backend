@@ -1,7 +1,7 @@
 import fastapi as fa
 from services.tariff.errors import TARIFF_OPTIONS_ERRORS
 from services.telegram.bot_server import views
-from services.user.dependencies import CheckParserOptions
+from services.user.dependencies import CheckParserOptions, get_current_user
 from settings import config
 
 
@@ -9,6 +9,7 @@ parser_router = fa.APIRouter(
     prefix="/parser",
     tags=["Parser"],
     dependencies=[
+        fa.Depends(get_current_user),
         fa.Depends(CheckParserOptions(TARIFF_OPTIONS_ERRORS)),
     ],
 )

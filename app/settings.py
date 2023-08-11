@@ -1,3 +1,4 @@
+import typing
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -19,7 +20,10 @@ class Config(BaseSettings):
     # fastapi app
     APP_NAME: str = "TgParsing"
     SECRET: str = Field(default="secret")
-    DB_ECHO: bool = Field(default=True)
+    APP_ORIGINS: typing.List[str] = Field(default=["*"])
+    APP_ALLOWED_HOSTS: typing.List[str] = Field(default=["*"])
+    DOCS_URL: typing.Optional[str] = Field(default=None)
+    REDOC_URL: typing.Optional[str] = Field(default=None)
 
     # redis
     REDIS_HOST: str = Field(default="localhost")
@@ -55,6 +59,7 @@ class Config(BaseSettings):
     DB_HOST: str = Field(default="localhost")
     DB_PORT: int = Field(default=5432)
     DB_NAME: str = Field(default="tg_db")
+    DB_ECHO: bool = Field(default=True)
 
     @property
     def sync_url(self) -> str:
@@ -142,10 +147,26 @@ class Config(BaseSettings):
     PAYMENTS_GET: str = Field(default="payments_get")
     PAYMENTS_CALLBACK: str = Field(default="payments_get")
     # robokassa settings
-    RK_CHECK_LOGIN: str = Field(default="")
+    RK_LOGIN: str = Field(default="")
+    RK_MAIN_PASSWORD_1: str = Field(default="")
+    RK_MAIN_PASSWORD_2: str = Field(default="")
+    RK_TEST_PASSWORD_1: str = Field(default="")
+    RK_TEST_PASSWORD_2: str = Field(default="")
+    RK_ISTEST: int = Field(default=0)
     RK_PAYMENT_URL: str = Field(default="")
-    RK_CHECK_PASS_1ST: str = Field(default="")
-    RK_CHECK_PASS_2ND: str = Field(default="")
+
+    @property
+    def rk_password_1(self) -> str:
+        if self.RK_ISTEST:
+            return self.RK_TEST_PASSWORD_1
+        return self.RK_MAIN_PASSWORD_1
+
+    @property
+    def rk_password_2(self) -> str:
+        if self.RK_ISTEST:
+            return self.RK_TEST_PASSWORD_2
+        return self.RK_MAIN_PASSWORD_2
+
     # tariffs
     TARIFF_GET_ALL: str = Field(default="tariff_get_all")
     TARIFF_GET: str = Field(default="tariff_get")

@@ -2,15 +2,16 @@ from decimal import Decimal
 from typing import Annotated, Any
 
 import fastapi as fa
-import services.payment.db_handlers as db_hand
+import services.payment.db_handlers as payment_hand
 import services.payment.schemas as payment_schemas
 from database.db_async import get_async_session
+from fastapi.responses import RedirectResponse
 from services.payment.utils.robokassa import (
-    calculate_signature,
+    calc_signature,
     generate_payment_link,
 )
 from services.role.schemas import RoleNameChoice
-from services.user.db_handlers import get_current_by_id, update_user
+from services.user import db_handlers as user_hand
 from services.user.dependencies import get_current_user
 from services.user.models import User
 from settings import config
@@ -27,39 +28,32 @@ async def get_payment_link(
         "amount": payment_schema.amount,
         "action": payment_schemas.PaymentChoice.DEBIT,
     }
-    payment = await db_hand.add_payment(session, payment_data)
+    payment = await payment_hand.add_payment(session, payment_data)
     url_data = {
         "inv_id": payment.id,
         "amount": payment_schema.amount,
-        "email": payment_schema.email or user.email,
+        "email": user.email,
     }
     url = generate_payment_link(url_data)
-    return url
+    return RedirectResponse(url, headers={"allow_origins": "*"})
 
 
 async def result_callback(
     out_sum: Annotated[Decimal, fa.Form(alias="OutSum")],
-    out_sum2: Annotated[Decimal, fa.Form(alias="out_summ")],
     inv_id: Annotated[int, fa.Form(alias="InvId")],
     response_signature: Annotated[str, fa.Form(alias="SignatureValue")],
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    if out_sum != out_sum2:
-        raise fa.HTTPException(status_code=400, detail="Суммы не совпадают")
-    signature = calculate_signature(out_sum, inv_id, config.RK_CHECK_PASS_2ND)
-    if response_signature.lower() != signature:
-        raise fa.HTTPException(status_code=400, detail="Хэшы не совпадают")
-    payment = await db_hand.get_payment_by_id(session, inv_id)
-    if not payment:
-        raise fa.HTTPException(status_code=400, detail="Тикет не найден")
-    user = await get_current_by_id(session, payment.user_id)
-    if not user:
-        raise fa.HTTPException(
-            status_code=400, detail="Пользователь не найден"
-        )
-    await update_user(session, user.id, {"balance": user.balance + out_sum})
-    await db_hand.upd_payment(session, inv_id, {"status": True})
-    return f"OK{inv_id}"
+    signature = calc_signature(out_sum, inv_id, config.rk_password_2)
+    if response_signature.lower() == signature:
+        payment = await payment_hand.get_payment_by_id(session, inv_id)
+        if payment:
+            user = payment.user
+            await user_hand.update_user(
+                session, user.id, {"balance": user.balance + out_sum}
+            )
+            await payment_hand.upd_payment(session, inv_id, {"status": True})
+            return f"OK{inv_id}"
 
 
 async def get_payments(
@@ -74,5 +68,9 @@ async def get_payments(
     }
     if user.role.name == RoleNameChoice.USER:
         data["user_id"] = user.id
-    payments = await db_hand.get_payments(session, data)
+    payments = await payment_hand.get_payments(session, data)
     return payments
+
+
+async def fail_url():
+    pass
