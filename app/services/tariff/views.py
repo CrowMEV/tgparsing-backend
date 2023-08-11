@@ -113,4 +113,4 @@ async def purchase_tariff(
     user_sub = await db_hand.update_user_subscribe(
         session, user.id, update_data
     )
-    return user_sub
+    return user
