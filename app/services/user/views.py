@@ -2,6 +2,7 @@ from typing import Any
 
 import fastapi as fa
 from database.db_async import get_async_session
+from services.tariff.db_handlers import update_user_subscribe
 from services.user import db_handlers as db_hand
 from services.user import helpers
 from services.user import schemas as user_schema
@@ -126,3 +127,15 @@ async def patch_user_by_admin(
         update_data=update_data,
     )
     return user
+
+
+async def toggle_tariff_auto_write_off(
+    user: User = fa.Depends(get_current_user),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    if not user.subscribe:
+        raise fa.HTTPException(status_code=400, detail="У вас нет подписки")
+    updated_sub = await update_user_subscribe(
+        session, user.id, {"auto_debit": not user.subscribe.auto_debit}
+    )
+    return updated_sub
