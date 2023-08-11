@@ -102,9 +102,11 @@ async def purchase_tariff(
         user_sub = await db_hand.create_user_subscribe(session, create_data)
         return user_sub
     update_data: dict = {
+        "tariff_id": tariff.id,
         "tariff_options": tariff.options,
         "end_date": (
-            user_sub.end_date + datetime.timedelta(tariff.limitation_days)
+            datetime.datetime.utcnow()
+            + datetime.timedelta(tariff.limitation_days)
         ),
         "active": True,
     }
