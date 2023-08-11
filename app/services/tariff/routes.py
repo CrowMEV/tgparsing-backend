@@ -1,6 +1,7 @@
 import fastapi as fa
 from services.tariff import views
-from services.tariff.schemas import TariffResponse, UserSubscribeResponse
+from services.tariff.schemas import TariffResponse
+from services.user.schemas import UserRead
 from services.user.utils.permissions import RoleChecker
 from settings import config
 
@@ -56,5 +57,5 @@ tariff_router.add_api_route(
     endpoint=views.purchase_tariff,
     methods=["POST"],
     name=config.TARIFF_PURCHASE,
-    response_model=UserSubscribeResponse,
+    response_model=UserRead,
 )
