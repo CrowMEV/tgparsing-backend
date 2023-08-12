@@ -120,7 +120,7 @@ class TestUser:
             "email": email,
         }
         params = {key: value for key, value in params.items() if value}
-        response = await async_client.patch(self.patch_url, data=params)
+        response = await async_client.patch(self.patch_url, params=params)
 
         assert response.status_code == code
 
@@ -533,20 +533,21 @@ class TestUser:
             "phone_number": phone_number,
             "email": email,
             "is_staff": is_staff,
-            "role_name": role,
+            "role": role,
         }
         params = {key: value for key, value in params.items() if value}
         url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=id_row)
-        response = await async_client.patch(url, data=params)
+        response = await async_client.patch(url, params=params)
 
         assert response.status_code == code
 
     admin_patch_data = {
         # wrong permission
-        ("1", "Valera", "", "", "", "", "", "", 403),
-        ("3", "", "", "", "", "", "", "user", 403),
+        ("1", "Valera", "", "", "", "", "", "", "", 403),
         # correct data
-        ("3", "", "", "", "", "", "True", "", 200),
+        ("3", "", "", "", "", "", "False", "", "", 200),
+        ("3", "", "", "", "", "", "", "False", "", 200),
+        ("3", "", "", "", "", "", "", "", "hr", 200),
         (
             "3",
             "Dasha",
@@ -554,14 +555,15 @@ class TestUser:
             "sAlenowS2023#",
             "+79998886600",
             "dasha@pukin.com",
-            "False",
+            "True",
             "",
+            "user",
             200,
         ),
     }
 
     @pytest.mark.parametrize(
-        "id_row,name,surname,password,phone_number,email,is_staff,role,code",
+        "id_row,name,surname,password,phone,email,active,staff,role,code",
         admin_patch_data,
     )
     async def test_user_patch_by_admin(
@@ -572,9 +574,10 @@ class TestUser:
         name,
         surname,
         password,
-        phone_number,
+        phone,
         email,
-        is_staff,
+        active,
+        staff,
         role,
         code,
     ):
@@ -582,13 +585,14 @@ class TestUser:
             "firstname": name,
             "lastname": surname,
             "password": password,
-            "phone_number": phone_number,
+            "phone_number": phone,
             "email": email,
-            "is_staff": is_staff,
-            "role_name": role,
+            "is_active": active,
+            "is_staff": staff,
+            "role": role,
         }
         params = {key: value for key, value in params.items() if value}
         url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=id_row)
-        response = await async_client.patch(url, data=params)
+        response = await async_client.patch(url, params=params)
 
         assert response.status_code == code

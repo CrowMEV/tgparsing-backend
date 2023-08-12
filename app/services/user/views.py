@@ -2,6 +2,7 @@ from typing import Any
 
 import fastapi as fa
 from database.db_async import get_async_session
+from services.tariff.db_handlers import update_user_subscribe
 from services.user import db_handlers as db_hand
 from services.user import helpers
 from services.user import schemas as user_schema
@@ -81,15 +82,12 @@ async def get_users(
 
 
 async def patch_current_user(
-    update_data: user_schema.UserPatch = fa.Depends(
-        user_schema.UserPatch.as_form
-    ),
+    update_data: user_schema.UserPatch = fa.Depends(user_schema.UserPatch),
     current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     user = await helpers.update_user(
         session=session,
-        current_user=current_user,
         changing_user=current_user,
         update_data=update_data,
     )
@@ -114,9 +112,8 @@ async def check_password(
 async def patch_user_by_admin(
     id_row: int,
     update_data: user_schema.UserPatchByAdmin = fa.Depends(
-        user_schema.UserPatchByAdmin.as_form
+        user_schema.UserPatchByAdmin
     ),
-    current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     db_user = await db_hand.get_current_by_id(session, id_row)
@@ -129,8 +126,19 @@ async def patch_user_by_admin(
         )
     user = await helpers.update_user(
         session=session,
-        current_user=current_user,
         changing_user=db_user,
         update_data=update_data,
     )
     return user
+
+
+async def toggle_tariff_auto_write_off(
+    user: User = fa.Depends(get_current_user),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    if not user.subscribe:
+        raise fa.HTTPException(status_code=400, detail="У вас нет подписки")
+    updated_sub = await update_user_subscribe(
+        session, user.id, {"auto_debit": not user.subscribe.auto_debit}
+    )
+    return updated_sub
