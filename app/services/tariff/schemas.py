@@ -39,12 +39,14 @@ class TariffResponse(TariffPostModel):
         orm_mode: bool = True
 
 
-class UserSubscribeResponse(BaseModel):
+class UserSubscribe(BaseModel):
     id: int
     user_id: int
     tariff_id: int
     end_date: datetime.datetime
     tariff_options: TariffOptions
 
+
+class UserSubscribeResponse(UserSubscribe):
     class Config:
         orm_mode: bool = True

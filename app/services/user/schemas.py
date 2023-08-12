@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr, Field, root_validator
 from services.role.schemas import RoleNameChoice, RoleResponse
+from services.tariff.schemas import UserSubscribe, UserSubscribeResponse
 
 
 class UserLogin(BaseModel):
@@ -30,6 +31,7 @@ class UserRead(BaseModel):
     phone_number: str | None
     created_at: datetime
     balance: decimal.Decimal
+    subscribe: UserSubscribeResponse | None
 
     class Config:
         orm_mode = True
@@ -54,52 +56,10 @@ class UserPatch(BaseModel):
     avatar_url: Optional[UploadFile]
     email: Optional[EmailStr]
     phone_number: Optional[str]
-
-    @classmethod
-    def as_form(
-        cls,
-        firstname: Optional[str] = Form(
-            default=None, min_length=2, pattern="^[a-zA-Zа-яА-ЯёЁ]+$"
-        ),
-        lastname: Optional[str] = Form(
-            default=None, min_length=2, pattern="^[a-zA-Zа-яА-ЯёЁ]+$"
-        ),
-        timezone: Optional[int] = Form(default=None, ge=-12, le=12),
-        hashed_password: Optional[str] = Form(
-            default=None,
-            min_length=8,
-            pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
-            alias="password",
-        ),
-        avatar_url: Optional[UploadFile] = Form(default=None, alias="picture"),
-        email: Optional[EmailStr] = Form(default=None),
-        phone_number: Optional[str] = Form(
-            default=None,
-            min_length=8,
-            pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
-        ),
-    ):
-        return cls(
-            firstname=firstname,
-            lastname=lastname,
-            timezone=timezone,
-            hashed_password=hashed_password,
-            avatar_url=avatar_url,
-            email=email,
-            phone_number=phone_number,
-        )
-
-    @root_validator
-    def check_data_exists(cls, values):  # pylint: disable=E0213
-        new_values = {
-            key: value for key, value in values.items() if value is not None
-        }
-        return new_values
-
-
-class UserPatchByAdmin(UserPatch):
     is_staff: Optional[bool]
     role_name: Optional[RoleNameChoice]
+    is_active: Optional[bool]
+    subscrabes: Optional[UserSubscribe]
 
     @classmethod
     def as_form(
@@ -125,7 +85,11 @@ class UserPatchByAdmin(UserPatch):
             pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
         ),
         is_staff: Optional[bool] = Form(default=None),
-        role_name: Optional[RoleNameChoice] = Form(default=None),
+        role_name: Optional[RoleNameChoice] = Form(default=None, alias="role"),
+        is_active: Optional[bool] = Form(default=None),
+        subscrabes: Optional[UserSubscribe] = Form(
+            default=None, alias="tarrif"
+        ),
     ):
         return cls(
             firstname=firstname,
@@ -137,6 +101,8 @@ class UserPatchByAdmin(UserPatch):
             phone_number=phone_number,
             is_staff=is_staff,
             role_name=role_name,
+            is_active=is_active,
+            subscrabes=subscrabes,
         )
 
     @root_validator

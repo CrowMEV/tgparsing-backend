@@ -3,7 +3,6 @@ from typing import Any
 
 import sqlalchemy as sa
 from services import Base
-from services.user.models import User
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -36,5 +35,4 @@ class UserSubscribe(Base):
     active: Mapped[bool] = mapped_column(default=True)
     auto_debit: Mapped[bool] = mapped_column(default=True)
 
-    user: Mapped["User"] = relationship(backref="subscribes", lazy="joined")
     tariff: Mapped["Tariff"] = relationship(backref="users", lazy="joined")

@@ -13,13 +13,35 @@ async def update_user(
     session: AsyncSession,
     changing_user: User,
     current_user: User,
-    update_data: user_schema.UserPatch | user_schema.UserPatchByAdmin,
+    update_data: user_schema.UserPatch,
 ) -> User | None:
     data = update_data.dict()
     if not data:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Нет данных для изменений",
+        )
+    if (
+        data.get("is_staff") is not None
+        or data.get("subscrabes")
+        or (
+            data.get("role_name") is not None
+            and data.get("role_name") != RoleNameChoice.USER
+        )
+    ) and current_user.role_name is not RoleNameChoice.SUPERUSER:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_403_FORBIDDEN,
+            detail="Изменение поля недоступно",
+        )
+    if data.get(
+        "is_active"
+    ) is not None and current_user.role_name.value not in [
+        "superuser",
+        "admin",
+    ]:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_403_FORBIDDEN,
+            detail="Изменение поля недоступно",
         )
     if data.get("avatar_url"):
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
@@ -34,14 +56,6 @@ async def update_user(
     if data.get("hashed_password"):
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]
-        )
-    if (
-        data.get("role_name")
-        and current_user.role_name is not RoleNameChoice.SUPERUSER
-    ):
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_403_FORBIDDEN,
-            detail="Изменение роли недоступно",
         )
     user_db = await db_hand.update_user(session, changing_user.id, data)
     return user_db

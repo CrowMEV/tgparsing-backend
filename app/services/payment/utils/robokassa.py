@@ -26,4 +26,4 @@ def generate_payment_link(
         "Email": email,
         "SignatureValue": signature,
     }
-    return parse.urljoin(payment_url, parse.urlencode(payment_data))
+    return f"{payment_url}?{parse.urlencode(payment_data)}"

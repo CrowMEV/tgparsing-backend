@@ -1,6 +1,7 @@
 from typing import List
 
 import fastapi as fa
+from services.tariff.schemas import UserSubscribeResponse
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
@@ -79,4 +80,11 @@ user_router.add_api_route(
     response_model=user_schemas.UserRead,
     dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
     description="This method can use admin and superuser",
+)
+user_router.add_api_route(
+    path="/subscribe/toggle",
+    endpoint=views.toggle_tariff_auto_write_off,
+    methods=["POST"],
+    name=config.TARIFF_TOGGLE_STATUS,
+    response_model=UserSubscribeResponse,
 )

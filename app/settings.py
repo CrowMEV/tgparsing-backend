@@ -153,6 +153,8 @@ class Config(BaseSettings):
     TARIFF_PATCH: str = Field(default="tariff_patch")
     TARIFF_DELETE: str = Field(default="tariff_delete")
     TARIFF_PURCHASE: str = Field(default="tariff_purchase")
+    USER_SUBSCRIBE_GET: str = Field(default="user_subscribe_get")
+    TARIFF_TOGGLE_STATUS: str = Field(default="tariff_toggle_status")
     # telegram accounts
     TGACCOUNT_GET_ALL: str = Field(default="tg_get_all")
     TGACCOUNT_GET: str = Field(default="tg_get")
