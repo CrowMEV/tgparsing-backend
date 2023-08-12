@@ -1,16 +1,22 @@
 from typing import List
 
 import fastapi as fa
+from services.role.schemas import RoleNameChoice
 from services.tariff.schemas import UserSubscribeResponse
 from services.user import schemas as user_schemas
 from services.user import views
 from services.user.dependencies import get_current_user
-from services.user.utils.permissions import RoleChecker
+from services.user.utils import permissions as perm
 from settings import config
 from utils.responses import HTTP_201, HTTP_401
 
 
 user_router = fa.APIRouter(prefix="/user", tags=["User"])
+
+ADMINS = [
+    RoleNameChoice.SUPERUSER,
+    RoleNameChoice.ADMIN,
+]
 
 user_router.add_api_route(
     path="/",
@@ -26,7 +32,7 @@ user_router.add_api_route(
     endpoint=views.get_users,
     name=config.USER_ALL,
     response_model=List[user_schemas.UserRead],
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
 )
 user_router.add_api_route(
     path="/login",
@@ -69,7 +75,7 @@ user_router.add_api_route(
     endpoint=views.get_user_by_id,
     name=config.USER_BY_ID,
     response_model=user_schemas.UserRead,
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
 user_router.add_api_route(
@@ -78,7 +84,7 @@ user_router.add_api_route(
     endpoint=views.patch_user_by_admin,
     name=config.USER_PATCH_BY_ADMIN,
     response_model=user_schemas.UserRead,
-    dependencies=[fa.Depends(RoleChecker(["superuser", "admin"]))],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
 user_router.add_api_route(
