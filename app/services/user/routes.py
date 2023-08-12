@@ -13,6 +13,11 @@ from utils.responses import HTTP_201, HTTP_401
 
 user_router = fa.APIRouter(prefix="/user", tags=["User"])
 
+ADMINS = [
+    RoleNameChoice.SUPERUSER,
+    RoleNameChoice.ADMIN,
+]
+
 user_router.add_api_route(
     path="/",
     methods=["POST"],
@@ -27,16 +32,7 @@ user_router.add_api_route(
     endpoint=views.get_users,
     name=config.USER_ALL,
     response_model=List[user_schemas.UserRead],
-    dependencies=[
-        fa.Depends(
-            perm.RoleChecker(
-                [
-                    RoleNameChoice.SUPERUSER,
-                    RoleNameChoice.ADMIN,
-                ]
-            )
-        )
-    ],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
 )
 user_router.add_api_route(
     path="/login",
@@ -79,16 +75,7 @@ user_router.add_api_route(
     endpoint=views.get_user_by_id,
     name=config.USER_BY_ID,
     response_model=user_schemas.UserRead,
-    dependencies=[
-        fa.Depends(
-            perm.RoleChecker(
-                [
-                    RoleNameChoice.SUPERUSER,
-                    RoleNameChoice.ADMIN,
-                ]
-            )
-        )
-    ],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
 user_router.add_api_route(
@@ -97,16 +84,7 @@ user_router.add_api_route(
     endpoint=views.patch_user_by_admin,
     name=config.USER_PATCH_BY_ADMIN,
     response_model=user_schemas.UserRead,
-    dependencies=[
-        fa.Depends(
-            perm.RoleChecker(
-                [
-                    RoleNameChoice.SUPERUSER,
-                    RoleNameChoice.ADMIN,
-                ]
-            )
-        )
-    ],
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
 user_router.add_api_route(

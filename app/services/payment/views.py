@@ -5,7 +5,6 @@ import fastapi as fa
 import services.payment.db_handlers as payment_hand
 import services.payment.schemas as payment_schemas
 from database.db_async import get_async_session
-from fastapi.responses import RedirectResponse
 from services.payment.utils.robokassa import (
     calc_signature,
     generate_payment_link,
@@ -19,23 +18,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_payment_link(
+    request: fa.Request,
     payment_schema: payment_schemas.PaymentCreate,
-    user: User = fa.Depends(get_current_user),
+    current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     payment_data = {
-        "user_id": user.id,
+        "user_id": current_user.id,
         "amount": payment_schema.amount,
         "action": payment_schemas.PaymentChoice.DEBIT,
     }
     payment = await payment_hand.add_payment(session, payment_data)
-    url_data = {
-        "inv_id": payment.id,
-        "amount": payment_schema.amount,
-        "email": user.email,
-    }
-    url = generate_payment_link(url_data)
-    return RedirectResponse(url, headers={"allow_origins": "*"})
+    url = generate_payment_link(
+        ticket_id=payment.id,
+        amount=payment_schema.amount,
+        email=current_user.email,
+        timezone=request.cookies["tz"],
+    )
+    return url
 
 
 async def result_callback(
@@ -70,7 +70,3 @@ async def get_payments(
         data["user_id"] = user.id
     payments = await payment_hand.get_payments(session, data)
     return payments
-
-
-async def fail_url():
-    pass

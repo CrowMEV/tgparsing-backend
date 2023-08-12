@@ -1,6 +1,9 @@
 import hashlib
+from datetime import datetime, tzinfo
 from urllib import parse
 
+import pytz
+from pydantic.types import Decimal
 from settings import config
 
 
@@ -9,28 +12,36 @@ def calc_signature(*args) -> str:
 
 
 def generate_payment_link(
-    data: dict,
+    ticket_id: int,
+    amount: Decimal,
+    email: str,
+    timezone: str,
 ) -> str:
     """URL for redirection of the customer to the service."""
-    rk_login = config.RK_LOGIN
-    rk_password_1 = config.rk_password_1
+    tz_info: tzinfo = pytz.timezone(timezone)
+    utc_datetime = datetime.utcnow().replace(tzinfo=pytz.utc)
+    local_datetime = utc_datetime.astimezone(tz_info)
+    expiration_date = (local_datetime + config.rk_ticket_life).strftime(
+        "%Y-%m-%dT%H:%M:%S.%f%z"
+    )
     payment_url = config.RK_PAYMENT_URL
-    amount = data["amount"]
-    inv_id = data["inv_id"]
-    email = data["email"]
-    signature = calc_signature(rk_login, amount, inv_id, rk_password_1)
+    signature = calc_signature(
+        config.RK_LOGIN, amount, ticket_id, config.rk_password_1
+    )
+    # redis_client
     payment_data = {
-        "MerchantLogin": rk_login,
+        "MerchantLogin": config.RK_LOGIN,
         "OutSum": amount,
-        "InvId": inv_id,
+        "InvId": ticket_id,
         "Email": email,
         "SignatureValue": signature,
+        "ExpirationDate": expiration_date,
     }
     if config.RK_ISTEST:
         payment_data.update(
             {
                 "IsTest": config.RK_ISTEST,
-                "Pass1": rk_password_1,
+                "Pass1": config.rk_password_1,
             }
         )
     return f"{payment_url}?{parse.urlencode(payment_data)}"

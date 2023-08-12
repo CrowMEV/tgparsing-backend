@@ -39,8 +39,3 @@ payment_router.add_api_route(
     methods=["POST"],
     name=config.PAYMENTS_CALLBACK,
 )
-payment_router.add_api_route(
-    path="/fail",
-    endpoint=views.fail_url,
-    methods=["POST"],
-)

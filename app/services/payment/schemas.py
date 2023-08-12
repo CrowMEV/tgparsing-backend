@@ -1,9 +1,9 @@
 import datetime
-import decimal
 import enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
+from pydantic.types import Decimal
 
 
 class PaymentChoice(enum.Enum):
@@ -12,7 +12,7 @@ class PaymentChoice(enum.Enum):
 
 
 class PaymentCreate(BaseModel):
-    amount: decimal.Decimal = Field(..., ge=1, decimal_places=2)
+    amount: Decimal = Field(..., ge=0.1)
 
 
 class PaymentsGetAll(BaseModel):
