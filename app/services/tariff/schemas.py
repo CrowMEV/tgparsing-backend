@@ -45,6 +45,7 @@ class UserSubscribeResponse(BaseModel):
     tariff_id: int
     end_date: datetime.datetime
     tariff_options: TariffOptions
+    auto_debit: bool
 
     class Config:
         orm_mode: bool = True
