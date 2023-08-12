@@ -38,6 +38,14 @@ tariff_router.add_api_route(
 
 tariff_router.add_api_route(
     path="/{id_row}",
+    endpoint=views.get_tariff,
+    methods=["GET"],
+    name=config.TARIFF_GET,
+    response_model=TariffResponse,
+)
+
+tariff_router.add_api_route(
+    path="/{id_row}",
     endpoint=views.change_tariff,
     methods=["PATCH"],
     name=config.TARIFF_PATCH,
