@@ -30,7 +30,6 @@ async def do_request(route, params: dict):
         resp = client.post(
             timeout=None, url=f"{config.PARSER_SERVER}{route}", json=params
         )
-    print("STATUS CODE", resp.status_code)
     if resp.status_code != 200:
         return WorkStatusChoice.FAILED, None
     return WorkStatusChoice.SUCCESS, resp.json()
