@@ -20,15 +20,6 @@ async def get_tariff_list(
     return tariffs
 
 
-async def get_tariff(
-    id_row: int, session: AsyncSession = fa.Depends(get_async_session)
-) -> Any:
-    tariff = await db_hand_tariff.get_tariff_by_id(session, id_row)
-    if not tariff:
-        raise fa.HTTPException(status_code=404, detail="Тариф не найден")
-    return tariff
-
-
 async def create_tariff(
     tariff_schema: tariff_schemas.TariffPostModel,
     session: AsyncSession = fa.Depends(get_async_session),

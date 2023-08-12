@@ -19,9 +19,7 @@ class Config(BaseSettings):
     DEBUG: bool = Field(default=True)
 
     # fastapi app
-    FASTAPI_SECRET: str = Field(default="fastapi_secret")
     APP_NAME: str = "TgParsing"
-    SECRET: str = Field(default="secret")
     APP_ALLOWED_ORIGINS: typing.List[str] = Field(default=["*"])
     APP_ALLOWED_HOSTS: typing.List[str] = Field(default=["*"])
     DOCS_URL: typing.Optional[str] = Field(default=None)
@@ -56,9 +54,6 @@ class Config(BaseSettings):
     RK_TEST_PASSWORD_2: str = Field(default="")
     RK_ISTEST: int = Field(default=0)
     RK_PAYMENT_URL: str = Field(default="")
-    RK_REDIS_TICKET_PREFIX: str = Field(
-        default="Ticket_", min_length=2, regex=r"[a-zA-z]+_"
-    )
     RK_TICKET_EXPIRE_HOURS: int = Field(default=0, ge=0, le=23)
     RK_TICKET_EXPIRE_MINUTES: int = Field(default=0, ge=0, le=59)
     RK_TICKET_EXPIRE_SECONDS: int = Field(default=0, ge=0, le=59)
