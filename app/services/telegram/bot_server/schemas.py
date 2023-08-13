@@ -6,14 +6,14 @@ from pydantic import BaseModel, Field, validator
 
 class GetChats(BaseModel):
     task_name: str = Field(
-        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     query: str = Field(description="Ключевое слово")
 
 
 class GetMembers(BaseModel):
     task_name: str = Field(
-        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     parsed_chats: List[str] = Field(
         min_items=1,
@@ -48,7 +48,7 @@ class Activity(BaseModel):
 
 class GetActiveMembers(BaseModel):
     task_name: str = Field(
-        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     parsed_chats: List[str] = Field(
         min_items=1,
@@ -90,7 +90,7 @@ class LatLotSchema(BaseModel):
 
 class GetByGeo(BaseModel):
     task_name: str = Field(
-        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     coordinates: List[LatLotSchema] = Field(
         description="Координаты внутри массива "

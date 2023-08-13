@@ -52,45 +52,45 @@ class TestUser:
         assert response.status_code == code
 
     patch_data = [
-        # # wrong firstname
-        # (" ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # (" Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("&Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("1Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor1", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor%", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # # wrong lastname
-        # ("Igor", " ", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", " Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "1Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "%Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin ", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin1", "123", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin%", "123", "+2904242", "igor@pupkin.com", 422),
-        # # wrong password
-        # ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin", "Michail#", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin", "1Michail", "+2904242", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
-        # # wrong phone_number
-        # ("Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
-        # (
-        #     "Igor",
-        #     "Pupkin",
-        #     "123",
-        #     "+8888 8888 77775566",
-        #     "igor@pupkin.com",
-        #     422,
-        # ),
-        # ("Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
-        # ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
-        # # wrong email
-        # ("Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
-        # ("Igor", "Pupkin", "123", "+2904242", "igorpupkin.com", 422),
-        # ("Igor", "Pupkin", "123", "+2904242", "igor123pupkin.com", 422),
-        # ("Igor", "Pupkin", "123", "+2904242", "123%", 422),
+        # wrong firstname
+        (" ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        (" Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("&Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("1Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor1", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor%", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        # wrong lastname
+        ("Igor", " ", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", " Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "1Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "%Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin ", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin1", "123", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin%", "123", "+2904242", "igor@pupkin.com", 422),
+        # wrong password
+        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin", "Michail#", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin", "1Michail", "+2904242", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
+        # wrong phone_number
+        ("Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
+        (
+            "Igor",
+            "Pupkin",
+            "123",
+            "+8888 8888 77775566",
+            "igor@pupkin.com",
+            422,
+        ),
+        ("Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
+        ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
+        # wrong email
+        ("Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
+        ("Igor", "Pupkin", "123", "+2904242", "igorpupkin.com", 422),
+        ("Igor", "Pupkin", "123", "+2904242", "igor123pupkin.com", 422),
+        ("Igor", "Pupkin", "123", "+2904242", "123%", 422),
         # correct data
         ("Vasya", "", "", "", "", 200),
         ("", "Gordeev", "", "", "", 200),
