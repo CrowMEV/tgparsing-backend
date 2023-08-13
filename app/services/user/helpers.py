@@ -11,15 +11,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def update_user(
     session: AsyncSession,
     changing_user: User,
-    update_data: user_schema.UserPatch | user_schema.UserPatchByAdmin,
+    update_data: user_schema.UserPatch,
 ) -> User | None:
-    data = update_data.dict()
+    data = {
+        key: value
+        for key, value in update_data.__dict__.items()
+        if value is not None
+    }
     if not data:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
             detail="Нет данных для изменений",
         )
-    if data.get("avatar_url"):
+    picture = data.get("avatar_url")
+    if picture and picture.content_type:
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
         file_name = (
             f"{changing_user.email}"
@@ -29,6 +34,8 @@ async def update_user(
         async with aiofiles.open(file_url, "wb") as p_f:
             await p_f.write(data["avatar_url"].file.read())
         data["avatar_url"] = str(file_url)
+    else:
+        data.pop("avatar_url", None)
     if data.get("hashed_password"):
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]

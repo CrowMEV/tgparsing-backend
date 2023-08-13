@@ -82,7 +82,7 @@ async def get_users(
 
 
 async def patch_current_user(
-    update_data: user_schema.UserPatch = fa.Depends(user_schema.UserPatch),
+    update_data: user_schema.UserPatch = fa.Depends(),
     current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:

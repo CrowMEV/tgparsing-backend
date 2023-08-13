@@ -1,9 +1,10 @@
 import decimal
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, EmailStr, Field, root_validator
+from pydantic import BaseModel, EmailStr, Field
 from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
 
@@ -48,7 +49,8 @@ class UserCreate(BaseModel):
     timezone: Optional[int] = Field(default=0, ge=-12, le=12)
 
 
-class UserPatch(BaseModel):
+@dataclass
+class UserPatch:
     firstname: Optional[str] = Form(
         default=None, min_length=2, pattern="^[a-zA-Zа-яА-ЯёЁ]+$"
     )
@@ -70,14 +72,8 @@ class UserPatch(BaseModel):
         pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
     )
 
-    @root_validator
-    def check_data_exists(cls, values):  # pylint: disable=E0213
-        new_values = {
-            key: value for key, value in values.items() if value is not None
-        }
-        return new_values
 
-
+@dataclass
 class UserPatchByAdmin(UserPatch):
     is_staff: Optional[bool] = Form(default=None)
     role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
