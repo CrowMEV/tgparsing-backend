@@ -74,7 +74,7 @@ user_router.add_api_route(
     methods=["GET"],
     endpoint=views.get_user_by_id,
     name=config.USER_BY_ID,
-    response_model=user_schemas.UserRead,
+    response_model=user_schemas.UserPatchResponse,
     dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
@@ -83,7 +83,7 @@ user_router.add_api_route(
     methods=["PATCH"],
     endpoint=views.patch_user_by_admin,
     name=config.USER_PATCH_BY_ADMIN,
-    response_model=user_schemas.UserRead,
+    response_model=user_schemas.UserPatchByAbminResponse,
     dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
     description="This method can use admin and superuser",
 )
