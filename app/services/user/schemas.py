@@ -9,6 +9,12 @@ from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
 
 
+NAME_PATTER = (
+    "^(([а-яА-ЯёЁ][а-яё]*)(-[а-яА-ЯёЁ][а-яё]*)?)|"
+    "(([a-zA-Z][a-z]*)(-[a-zA-Z][a-z]*)?)$"
+)
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -54,12 +60,14 @@ class UserPatch:
     firstname: Optional[str] = Form(
         default=None,
         min_length=1,
-        regex="^([A-ZА-ЯЁ][а-яa-zё]*)(-[A-ZА-ЯЁ][а-яa-zё]*)?$",
+        max_length=61,
+        regex=NAME_PATTER,
     )
     lastname: Optional[str] = Form(
         default=None,
         min_length=1,
-        regex="^([A-ZА-ЯЁ][а-яa-zё]*)(-[A-ZА-ЯЁ][а-яa-zё]*)?$",
+        max_length=61,
+        regex=NAME_PATTER,
     )
     timezone: Optional[int] = Form(default=None, ge=-12, le=12)
     hashed_password: Optional[str] = Form(
