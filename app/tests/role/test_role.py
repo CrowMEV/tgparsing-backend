@@ -21,8 +21,18 @@ class TestRole:
         # wrong data
         ({"is_active": True}, 422),
         # correct data
-        ({"name": "user", "is_active": False}, 200),
-        ({"name": "user", "is_active": True}, 200),
+        (
+            {
+                "name": "user",
+                "pretty_name": "Пользователь",
+                "is_active": False,
+            },
+            200,
+        ),
+        (
+            {"name": "user", "pretty_name": "Пользователь", "is_active": True},
+            200,
+        ),
     ]
 
     @pytest.mark.parametrize("data,code", admin_change_data)

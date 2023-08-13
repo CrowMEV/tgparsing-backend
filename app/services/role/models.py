@@ -11,3 +11,4 @@ class Role(Base):
     is_active: Mapped[bool] = mapped_column(
         default=True, server_default=sa.true()
     )
+    pretty_name: Mapped[str]

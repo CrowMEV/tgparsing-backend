@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class RoleNameChoice(enum.Enum):
@@ -14,6 +14,7 @@ class RoleNameChoice(enum.Enum):
 
 class RoleGet(BaseModel):
     name: RoleNameChoice
+    pretty_name: str
 
 
 class RoleResponse(RoleGet):
@@ -27,18 +28,3 @@ class RoleResponse(RoleGet):
 class RolePatch(RoleGet):
     # Inherit name from RoreGet
     is_active: Optional[bool]
-
-
-class Permissions(BaseModel):
-    read: bool = False
-    write: bool = False
-
-
-class RoleCreate(BaseModel):
-    name: str = Field(..., min_length=1, regex="^[a-zA-Z]+$")
-    permissions: Permissions = Permissions()
-
-
-class RoleUpdate(BaseModel):
-    name: str = Field(..., min_length=1, regex="^[a-zA-Z]+$")
-    permissions: Permissions = Permissions(read=True, write=False)

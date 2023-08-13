@@ -19,10 +19,14 @@ async def get_roles(session: AsyncSession) -> Sequence[Role]:
     return roles
 
 
-async def change_role(session: AsyncSession, data: dict) -> Role | None:
-    name = data.pop("name").name
+async def change_role(
+    session: AsyncSession, role_name: str, data: dict
+) -> Role | None:
     stmt = (
-        sa.update(Role).values(**data).returning(Role).where(Role.name == name)
+        sa.update(Role)
+        .values(**data)
+        .returning(Role)
+        .where(Role.name == role_name)
     )
     result = await session.execute(stmt)
     role = result.scalars().first()

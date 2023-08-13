@@ -1,17 +1,22 @@
 [
   {
-    "name": "USER"
+    "name": "USER",
+    "pretty_name": "Пользователь"
   },
   {
-    "name": "SUPERUSER"
+    "name": "SUPERUSER",
+    "pretty_name": "Директор"
   },
   {
-    "name": "ACCOUNTANT"
+    "name": "ACCOUNTANT",
+    "pretty_name": "Бухгалтер"
   },
   {
-    "name": "ADMIN"
+    "name": "ADMIN",
+    "pretty_name": "Администратор"
   },
   {
-    "name": "HR"
+    "name": "HR",
+    "pretty_name": "HR"
   }
 ]
