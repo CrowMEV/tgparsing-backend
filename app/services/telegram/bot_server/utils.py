@@ -5,7 +5,7 @@ import fastapi as fa
 import httpx
 from database.db_async import async_session
 from redis.lock import Lock
-from services.tariff.db_handlers import update_user_subscribe
+from services.tariff import db_handlers as tariff_hand
 from services.telegram.account import db_handlers as account_hand
 from services.telegram.tasks import db_handlers as task_hand
 from services.telegram.tasks.models import Task
@@ -17,12 +17,19 @@ from utils import files
 from utils.redis.redis_app import redis_client
 
 
+async def check_subscribe(session: AsyncSession, user_id: int):
+    user_subscribe = await tariff_hand.get_user_subscribe(session, user_id)
+    if not user_subscribe or not user_subscribe.active:
+        raise fa.HTTPException(
+            status_code=403, detail="Your limit has been reached"
+        )
+
+
 async def do_request(route, params: dict):
     with httpx.Client() as client:
         resp = client.post(
             timeout=None, url=f"{config.PARSER_SERVER}{route}", json=params
         )
-    print("STATUS CODE", resp.status_code)
     if resp.status_code != 200:
         return WorkStatusChoice.FAILED, None
     return WorkStatusChoice.SUCCESS, resp.json()
@@ -178,7 +185,7 @@ async def do_parsing(
             options["simultaneous_parsing"] = (
                 options["simultaneous_parsing"] - 1
             )
-            await update_user_subscribe(
+            await tariff_hand.update_user_subscribe(
                 session, user.id, {"tariff_options": options}  # type: ignore
             )
             functions = {
@@ -202,7 +209,7 @@ async def do_parsing(
             options["simultaneous_parsing"] = (
                 options["simultaneous_parsing"] + 1
             )
-            await update_user_subscribe(
+            await tariff_hand.update_user_subscribe(
                 session, user.id, {"tariff_options": options}  # type: ignore
             )
             await end_parser(

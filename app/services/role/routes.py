@@ -1,14 +1,22 @@
 import fastapi as fa
 import services.role.schemas as role_schemas
 from services.role import views
-from services.user.utils.permissions import RoleChecker
+from services.user.utils import permissions as perm
 from settings import config
 
 
 role_router = fa.APIRouter(
     prefix="/role",
     tags=["Role"],
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    role_schemas.RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 role_router.add_api_route(

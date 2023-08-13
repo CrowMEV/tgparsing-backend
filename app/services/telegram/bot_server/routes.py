@@ -1,16 +1,14 @@
 import fastapi as fa
-from services.tariff.errors import TARIFF_OPTIONS_ERRORS
 from services.telegram.bot_server import views
-from services.user.dependencies import CheckParserOptions
+from services.user.dependencies import get_current_user
+from services.user.utils import permissions as perm
 from settings import config
 
 
 parser_router = fa.APIRouter(
     prefix="/parser",
     tags=["Parser"],
-    dependencies=[
-        fa.Depends(CheckParserOptions(TARIFF_OPTIONS_ERRORS)),
-    ],
+    dependencies=[fa.Depends(get_current_user)],
 )
 
 parser_router.add_api_route(
@@ -19,6 +17,7 @@ parser_router.add_api_route(
     methods=["POST"],
     name=config.PARSER_MEMBERS,
     description="Получить всех пользователей из списка групп",
+    dependencies=[fa.Depends(perm.CheckParserOptions("members"))],
 )
 parser_router.add_api_route(
     path="/activemembers",
@@ -27,12 +26,14 @@ parser_router.add_api_route(
     name=config.PARSER_ACTIVE_MEMBERS,
     description="Получить всех пользователей из списка групп, "
     "которые проявляли активность за определенный период",
+    dependencies=[fa.Depends(perm.CheckParserOptions("activity"))],
 )
 parser_router.add_api_route(
     "/geomembers",
     endpoint=views.get_members_by_geo,
     methods=["POST"],
     description="Получение пользователей по геолокации",
+    dependencies=[fa.Depends(perm.CheckParserOptions("geo"))],
 )
 # TODO: Раскомментировать в случае реализации поиска чатов по ключевому слову
 # parser_router.add_api_route(

@@ -18,4 +18,7 @@ class Payment(Base):
     date: Mapped[datetime] = mapped_column(default=datetime.utcnow())
     status: Mapped[bool] = mapped_column(default=False)
 
-    user: Mapped["User"] = sa.orm.relationship(backref="user_payments")
+    user: Mapped["User"] = sa.orm.relationship(
+        backref="user_payments",
+        lazy="joined",
+    )

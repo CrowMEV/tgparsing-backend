@@ -1,8 +1,9 @@
 import fastapi as fa
+from services.role.schemas import RoleNameChoice
 from services.tariff import views
 from services.tariff.schemas import TariffResponse
 from services.user.schemas import UserRead
-from services.user.utils.permissions import RoleChecker
+from services.user.utils import permissions as perm
 from settings import config
 
 
@@ -24,7 +25,15 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_ADD,
     response_model=TariffResponse,
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 tariff_router.add_api_route(
@@ -33,7 +42,15 @@ tariff_router.add_api_route(
     methods=["GET"],
     name=config.TARIFF_GET,
     response_model=TariffResponse,
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 tariff_router.add_api_route(
@@ -42,7 +59,15 @@ tariff_router.add_api_route(
     methods=["PATCH"],
     name=config.TARIFF_PATCH,
     response_model=TariffResponse,
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 tariff_router.add_api_route(
@@ -50,7 +75,15 @@ tariff_router.add_api_route(
     endpoint=views.delete_tariff,
     methods=["DELETE"],
     name=config.TARIFF_DELETE,
-    dependencies=[fa.Depends(RoleChecker(["superuser"]))],
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 tariff_router.add_api_route(
