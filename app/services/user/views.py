@@ -82,15 +82,13 @@ async def get_users(
 
 
 async def patch_current_user(
-    update_data: user_schema.UserPatch = fa.Depends(
-        user_schema.UserPatch.as_form
-    ),
+    update_data: user_schema.UserPatch = fa.Depends(user_schema.UserPatch),
     current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     user = await helpers.update_user(
         session=session,
-        user=current_user,
+        changing_user=current_user,
         update_data=update_data,
     )
     return user
@@ -113,17 +111,22 @@ async def check_password(
 
 async def patch_user_by_admin(
     id_row: int,
-    update_data: user_schema.UserPatch = fa.Depends(
-        user_schema.UserPatch.as_form
+    update_data: user_schema.UserPatchByAdmin = fa.Depends(
+        user_schema.UserPatchByAdmin
     ),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     db_user = await db_hand.get_current_by_id(session, id_row)
     if not db_user:
         raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
+    if db_user.role_name.value in ["superuser", "admin"]:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_403_FORBIDDEN,
+            detail="Изменение админа или суперпользователя недоступно",
+        )
     user = await helpers.update_user(
         session=session,
-        user=db_user,
+        changing_user=db_user,
         update_data=update_data,
     )
     return user

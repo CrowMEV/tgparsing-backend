@@ -1,5 +1,5 @@
 from celery import Celery  # type: ignore
-from celery.schedules import crontab
+from celery.schedules import crontab  # type: ignore
 from settings import config
 from utils.celery import celeryconfig
 

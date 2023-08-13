@@ -42,6 +42,15 @@ tariff_router.add_api_route(
     methods=["GET"],
     name=config.TARIFF_GET,
     response_model=TariffResponse,
+    dependencies=[
+        fa.Depends(
+            perm.RoleChecker(
+                [
+                    RoleNameChoice.SUPERUSER,
+                ]
+            )
+        )
+    ],
 )
 
 tariff_router.add_api_route(

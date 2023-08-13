@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def update_user(
-    session: AsyncSession, user: User, update_data: user_schema.UserPatch
+    session: AsyncSession,
+    changing_user: User,
+    update_data: user_schema.UserPatch | user_schema.UserPatchByAdmin,
 ) -> User | None:
     data = update_data.dict()
     if not data:
@@ -20,7 +22,8 @@ async def update_user(
     if data.get("avatar_url"):
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
         file_name = (
-            f"{user.email}" f".{data['avatar_url'].filename.split('.')[-1]}"
+            f"{changing_user.email}"
+            f".{data['avatar_url'].filename.split('.')[-1]}"
         )
         file_url = folder_path / file_name
         async with aiofiles.open(file_url, "wb") as p_f:
@@ -30,5 +33,5 @@ async def update_user(
         data["hashed_password"] = security.get_hash_password(
             data["hashed_password"]
         )
-    user_db = await db_hand.update_user(session, user.id, data)
+    user_db = await db_hand.update_user(session, changing_user.id, data)
     return user_db
