@@ -90,3 +90,23 @@ class UserPatchByAdmin(UserPatch):
     is_staff: Optional[bool] = Form(default=None)
     role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
     is_active: Optional[bool] = Form(default=None)
+
+
+class UserPatchResponse(BaseModel):
+    firstname: str | None
+    lastname: str | None
+    email: EmailStr
+    hashed_password: str
+    timezone: int
+    avatar_url: str
+    phone_number: str | None
+
+    class Config:
+        orm_mode = True
+
+
+class UserPatchByAbminResponse(UserPatchResponse):
+    is_staff: bool
+    is_active: bool = True
+    is_verified: bool = False
+    role_name: RoleNameChoice
