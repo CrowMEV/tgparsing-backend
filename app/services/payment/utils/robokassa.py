@@ -1,8 +1,7 @@
 import hashlib
-from datetime import datetime, tzinfo
+from datetime import datetime
 from urllib import parse
 
-import pytz
 from pydantic.types import Decimal
 from settings import config
 
@@ -15,13 +14,10 @@ def generate_payment_link(
     ticket_id: int,
     amount: Decimal,
     email: str,
-    timezone: str,
+    user_datetime: datetime,
 ) -> str:
     """URL for redirection of the customer to the service."""
-    tz_info: tzinfo = pytz.timezone(timezone)
-    utc_datetime = datetime.utcnow().replace(tzinfo=pytz.utc)
-    local_datetime = utc_datetime.astimezone(tz_info)
-    expiration_date = (local_datetime + config.rk_ticket_life).strftime(
+    expiration_date = (user_datetime + config.rk_ticket_life).strftime(
         "%Y-%m-%dT%H:%M:%S.%f%z"
     )
     payment_url = config.RK_PAYMENT_URL
