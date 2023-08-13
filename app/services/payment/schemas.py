@@ -13,6 +13,7 @@ class PaymentChoice(enum.Enum):
 
 class PaymentCreate(BaseModel):
     amount: Decimal = Field(..., ge=0.1)
+    datetime: datetime.datetime
 
 
 class PaymentsGetAll(BaseModel):
