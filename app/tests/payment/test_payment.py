@@ -1,6 +1,8 @@
 import json
+from datetime import datetime
 
 import pytest
+import pytz
 import sqlalchemy as sa
 from server import app
 from services.payment.models import Payment
@@ -10,21 +12,45 @@ from settings import config
 class TestPayment:
     payments_get: str = app.url_path_for(config.PAYMENTS_GET)
     payment_url: str = app.url_path_for(config.PAYMENT_ADD)
+    utc_datetime = (
+        datetime.utcnow()
+        .astimezone(pytz.timezone("UTC"))
+        .replace(microsecond=0)
+    )
 
     payment_data = [
+        # Wrong headers
+        (
+            100,
+            "someone",
+            {"X-Datetime": f"{utc_datetime}"},
+            400,
+        ),
         # wrong data
-        (100, "someone", 422),
-        ("12ad", "addpayment", 422),
+        (
+            100,
+            "someone",
+            {"X-Datetime": f"{utc_datetime.strftime('%Y-%m-%dT%H:%M:%S%z')}"},
+            422,
+        ),
+        (
+            "12ad",
+            "addpayment",
+            {"X-Datetime": f"{utc_datetime.strftime('%Y-%m-%dT%H:%M:%S%z')}"},
+            422,
+        ),
         # correct data
         (1000, "admin@gmail.com", 200),
     ]
 
-    @pytest.mark.parametrize("amount,email,code", payment_data[:-1])
+    @pytest.mark.parametrize("amount,email,headers,code", payment_data[:-1])
     async def test_add_payment_wrong_data(
-        self, async_client, user_login, amount, email, code
+        self, async_client, user_login, amount, email, headers, code
     ):
         response = await async_client.post(
-            self.payment_url, data={"amount": amount, "email": email}
+            self.payment_url,
+            data={"amount": amount, "email": email},
+            headers=headers,
         )
         assert response.status_code == code
 

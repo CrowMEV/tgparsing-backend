@@ -1,5 +1,5 @@
-import datetime
 import enum
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -13,10 +13,9 @@ class PaymentChoice(enum.Enum):
 
 class PaymentCreate(BaseModel):
     amount: Decimal = Field(..., ge=0.1)
-    datetime: datetime.datetime
 
 
 class PaymentsGetAll(BaseModel):
     status: Optional[bool]
-    period_start: Optional[datetime.date]
-    period_end: Optional[datetime.date]
+    period_start: Optional[date]
+    period_end: Optional[date]

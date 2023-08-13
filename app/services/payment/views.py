@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Any
 
@@ -11,17 +12,17 @@ from services.payment.utils.robokassa import (
 )
 from services.role.schemas import RoleNameChoice
 from services.user import db_handlers as user_hand
-from services.user.dependencies import get_current_user
+from services.user.dependencies import get_current_user, get_user_time
 from services.user.models import User
 from settings import config
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_payment_link(
-    request: fa.Request,
     payment_schema: payment_schemas.PaymentCreate,
     current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
+    user_datetime: datetime = fa.Depends(get_user_time),
 ) -> Any:
     payment_data = {
         "user_id": current_user.id,
@@ -33,7 +34,7 @@ async def get_payment_link(
         ticket_id=payment.id,
         amount=payment_schema.amount,
         email=current_user.email,
-        timezone=request.cookies["tz"],
+        user_datetime=user_datetime,
     )
     return url
 
