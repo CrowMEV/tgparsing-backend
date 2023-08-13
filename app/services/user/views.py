@@ -94,6 +94,29 @@ async def patch_current_user(
     return user
 
 
+async def patch_user_by_admin(
+    id_row: int,
+    update_data: user_schema.UserPatchByAdmin = fa.Depends(
+        user_schema.UserPatchByAdmin
+    ),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    db_user = await db_hand.get_current_by_id(session, id_row)
+    if not db_user:
+        raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
+    if db_user.role_name.value == user_schema.RoleNameChoice.SUPERUSER.value:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_403_FORBIDDEN,
+            detail="Изменение админа или суперпользователя недоступно",
+        )
+    user = await helpers.update_user(
+        session=session,
+        changing_user=db_user,
+        update_data=update_data,
+    )
+    return user
+
+
 async def check_password(
     password: str = fa.Body(..., embed=True),
     user=fa.Depends(get_current_user),
@@ -107,29 +130,6 @@ async def check_password(
         status_code=fa.status.HTTP_200_OK,
         content={"detail": "Успешно"},
     )
-
-
-async def patch_user_by_admin(
-    id_row: int,
-    update_data: user_schema.UserPatchByAdmin = fa.Depends(
-        user_schema.UserPatchByAdmin
-    ),
-    session: AsyncSession = fa.Depends(get_async_session),
-) -> Any:
-    db_user = await db_hand.get_current_by_id(session, id_row)
-    if not db_user:
-        raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
-    if db_user.role_name.value in ["superuser", "admin"]:
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_403_FORBIDDEN,
-            detail="Изменение админа или суперпользователя недоступно",
-        )
-    user = await helpers.update_user(
-        session=session,
-        changing_user=db_user,
-        update_data=update_data,
-    )
-    return user
 
 
 async def toggle_tariff_auto_write_off(

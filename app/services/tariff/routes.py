@@ -2,6 +2,7 @@ import fastapi as fa
 from services.role.schemas import RoleNameChoice
 from services.tariff import views
 from services.tariff.schemas import TariffResponse
+from services.user.dependencies import get_current_user
 from services.user.schemas import UserRead
 from services.user.utils import permissions as perm
 from settings import config
@@ -42,15 +43,7 @@ tariff_router.add_api_route(
     methods=["GET"],
     name=config.TARIFF_GET,
     response_model=TariffResponse,
-    dependencies=[
-        fa.Depends(
-            perm.RoleChecker(
-                [
-                    RoleNameChoice.SUPERUSER,
-                ]
-            )
-        )
-    ],
+    dependencies=[fa.Depends(get_current_user)],
 )
 
 tariff_router.add_api_route(

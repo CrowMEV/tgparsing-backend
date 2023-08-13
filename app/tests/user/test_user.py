@@ -486,7 +486,6 @@ class TestUser:
             422,
         ),
         # wrong permission
-        ("1", "Valera", "", "", "", "", "", "", 403),
         ("2", "", "Gor", "", "", "", "", "", 403),
         # correct data
         ("3", "Valera", "", "", "", "", "", "", 200),
@@ -542,8 +541,6 @@ class TestUser:
         assert response.status_code == code
 
     admin_patch_data = {
-        # wrong permission
-        ("1", "Valera", "", "", "", "", "", "", "", 403),
         # correct data
         ("3", "", "", "", "", "", "False", "", "", 200),
         ("3", "", "", "", "", "", "", "False", "", 200),
