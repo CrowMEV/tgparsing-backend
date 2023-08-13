@@ -22,11 +22,15 @@ async def get_current_by_id(
     return users
 
 
-async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
-    stmt = sa.select(User).where(User.email == email)
+async def get_users_by_filter(
+    session: AsyncSession, data: dict
+) -> Sequence[User]:
+    stmt = sa.select(User)
+    if data:
+        stmt = stmt.filter_by(**data)
     result = await session.execute(stmt)
-    user = result.scalars().first()
-    return user
+    users = result.scalars().fetchall()
+    return users
 
 
 async def add_user(session: AsyncSession, data: dict) -> None:

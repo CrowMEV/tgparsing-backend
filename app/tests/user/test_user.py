@@ -88,9 +88,9 @@ class TestUser:
         ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
         # wrong email
         ("Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2904242", "igorpupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2904242", "igor123pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2904242", "123%", 422),
+        ("Igor", "Pupkin", "123", "+2914242", "igorpupkin.com", 422),
+        ("Igor", "Pupkin", "123", "+2924242", "igor123pupkin.com", 422),
+        ("Igor", "Pupkin", "123", "+2934242", "123%", 422),
         # correct data
         ("Vasya", "", "", "", "", 200),
         ("", "Gordeev", "", "", "", 200),
@@ -505,6 +505,18 @@ class TestUser:
             "accountant",
             200,
         ),
+        # double phone number
+        (
+            "3",
+            "",
+            "",
+            "",
+            "+79998886600",
+            "",
+            "",
+            "",
+            400,
+        ),
     ]
 
     @pytest.mark.parametrize(
@@ -550,7 +562,7 @@ class TestUser:
             "Dasha",
             "Zecharova",
             "sAlenowS2023#",
-            "+79998886600",
+            "+79998886601",
             "dasha@pukin.com",
             "True",
             "",

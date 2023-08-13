@@ -16,20 +16,20 @@ services:
       retries: 5
       start_period: 3s
 
-  backend:
-    build: ./
-    depends_on:
-      postgresql:
-        condition: service_healthy
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - ./app/:/app/
-      - ./app/static:/app/static
-    ports:
-      - 80:8000
-    entrypoint: ["sh", "run.sh"]
+  # backend:
+  #   build: ./
+  #   depends_on:
+  #     postgresql:
+  #       condition: service_healthy
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./app/:/app/
+  #     - ./app/static:/app/static
+  #   ports:
+  #     - 80:8000
+  #   entrypoint: ["sh", "run.sh"]
 
 
   redis:
