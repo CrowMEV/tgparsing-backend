@@ -107,7 +107,7 @@ async def patch_user_by_admin(
     if db_user.role_name.value == user_schema.RoleNameChoice.SUPERUSER.value:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_403_FORBIDDEN,
-            detail="Изменение админа или суперпользователя недоступно",
+            detail="Изменение суперпользователя недоступно",
         )
     user = await helpers.update_user(
         session=session,
