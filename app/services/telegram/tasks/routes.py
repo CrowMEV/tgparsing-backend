@@ -3,7 +3,6 @@ from typing import List
 import fastapi as fa
 from services.role.schemas import RoleNameChoice
 from services.telegram.tasks import schemas, views
-from services.user.dependencies import check_is_banned
 from services.user.utils import permissions as perm
 from settings import config
 
@@ -44,10 +43,7 @@ task_router.add_api_route(
     endpoint=views.delete_task,
     methods=["DELETE"],
     name=config.TASK_ME_DELETE,
-    dependencies=[
-        fa.Depends(perm.RoleChecker(ME_ROLES_LIST)),
-        fa.Depends(check_is_banned),
-    ],
+    dependencies=[fa.Depends(perm.RoleChecker(ME_ROLES_LIST))],
     description="Delete current user task. "
     "This endpoint can use user and admin",
 )

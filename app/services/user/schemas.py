@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from fastapi import Form, HTTPException, UploadFile, status
+from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr, Field
 from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
@@ -31,7 +31,7 @@ class UserRead(BaseModel):
     email: EmailStr
     timezone: int
     is_staff: bool
-    is_banned: bool
+    is_active: bool = True
     is_verified: bool = False
     avatar_url: str
     role: RoleResponse
@@ -84,16 +84,9 @@ class UserPatch:
         regex=r"^\+[0-9+][0-9()-]{4,14}\d$",
     )
 
-    def __post_init__(self):
-        if self.avatar_url and not self.avatar_url.content_type:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Picture can't be empty",
-            )
-
 
 @dataclass
 class UserPatchByAdmin(UserPatch):
     is_staff: Optional[bool] = Form(default=None)
     role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
-    is_banned: Optional[bool] = Form(default=None)
+    is_active: Optional[bool] = Form(default=None)

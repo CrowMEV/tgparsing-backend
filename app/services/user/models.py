@@ -32,9 +32,9 @@ class User(Base):
         default=str(config.base_avatar_url),
         server_default=str(config.base_avatar_url),
     )
-    is_banned: Mapped[bool] = mapped_column(
-        default=False,
-        server_default=sa.false(),
+    is_active: Mapped[bool] = mapped_column(
+        default=config.IS_ACTIVE,
+        server_default=sa.text(f"{config.IS_ACTIVE}"),
     )
     is_staff: Mapped[bool] = mapped_column(
         default=False, server_default=sa.false()

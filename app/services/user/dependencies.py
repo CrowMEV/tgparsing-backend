@@ -34,12 +34,3 @@ async def get_user_time(request: fa.Request) -> datetime:
             detail=str(exc),
         )
     return date
-
-
-def check_is_banned(user: User = fa.Depends(get_current_user)):
-    if user.is_banned:
-        raise fa.HTTPException(
-            status_code=fa.status.HTTP_406_NOT_ACCEPTABLE,
-            detail="Доступ к данному функционалу запрещен. Обратитесь в службу"
-            "поддержки.",
-        )

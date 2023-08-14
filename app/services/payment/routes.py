@@ -1,7 +1,6 @@
 import fastapi as fa
 from services.payment import views
 from services.role.schemas import RoleNameChoice
-from services.user.dependencies import check_is_banned
 from services.user.utils import permissions as perm
 from settings import config
 
@@ -22,6 +21,7 @@ payment_router.add_api_route(
                 [
                     RoleNameChoice.SUPERUSER,
                     RoleNameChoice.ADMIN,
+                    RoleNameChoice.USER,
                 ]
             )
         )
@@ -32,7 +32,6 @@ payment_router.add_api_route(
     endpoint=views.get_payment_link,
     methods=["POST"],
     name=config.PAYMENT_ADD,
-    dependencies=[fa.Depends(check_is_banned)],
 )
 payment_router.add_api_route(
     path="/callback",

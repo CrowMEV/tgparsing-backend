@@ -1,6 +1,6 @@
 import fastapi as fa
 from services.telegram.bot_server import views
-from services.user.dependencies import check_is_banned
+from services.user.dependencies import get_current_user
 from services.user.utils import permissions as perm
 from settings import config
 
@@ -8,7 +8,7 @@ from settings import config
 parser_router = fa.APIRouter(
     prefix="/parser",
     tags=["Parser"],
-    dependencies=[fa.Depends(check_is_banned)],
+    dependencies=[fa.Depends(get_current_user)],
 )
 
 parser_router.add_api_route(
