@@ -32,14 +32,10 @@ def load_roles(path: str, db_session=Session):
 
 
 @db_group.command()
-@click.option("-f", "--firstname", help="User name", required=True)
-@click.option("-l", "--lastname", help="User surname", required=True)
 @click.option("-e", "--email", help="User email", required=True)
 @click.option("-p", "--password", help="User password", required=True)
 @click.option("-r", "--role", default="user", help="User role")
 def add_user(
-    firstname: str,
-    lastname: str,
     email: str,
     password: str,
     role: str,
@@ -50,8 +46,6 @@ def add_user(
         if user:
             sys.exit("There is such email in the database")
         prepared_data = {
-            "firstname": firstname,
-            "lastname": lastname,
             "email": email,
             "password": password,
         }

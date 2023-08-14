@@ -21,8 +21,18 @@ def generate_payment_link(
         "%Y-%m-%dT%H:%M:%S.%f%z"
     )
     payment_url = config.RK_PAYMENT_URL
+    receipt = {
+        "items": [
+            {
+                "name": config.RK_PURCHASE_NAME,
+                "quantity": 1,
+                "sum": float(amount),
+                "tax": config.RK_TAX,
+            }
+        ]
+    }
     signature = calc_signature(
-        config.RK_LOGIN, amount, ticket_id, config.rk_password_1
+        config.RK_LOGIN, amount, ticket_id, receipt, config.rk_password_1
     )
     # redis_client
     payment_data = {
@@ -30,6 +40,7 @@ def generate_payment_link(
         "OutSum": amount,
         "InvId": ticket_id,
         "Email": email,
+        "Receipt": receipt,
         "SignatureValue": signature,
         "ExpirationDate": expiration_date,
     }
