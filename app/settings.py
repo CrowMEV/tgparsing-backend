@@ -3,13 +3,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional
 
-from pydantic import BaseSettings, Field
+from pydantic import ConfigDict, Field
+from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = ConfigDict(extra="allow", env_file=".env")
 
     BASE_DIR: Path = Path(__file__).parent
 
@@ -86,7 +85,7 @@ class Config(BaseSettings):
 
     # jwt
     JWT_SECRET: str = Field(default="jwt_secret")
-    JWT_ALGORITHM = "HS256"
+    JWT_ALGORITHM: str = "HS256"
     JWT_TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings

@@ -51,7 +51,7 @@ def validate_password(password: str, hashed_password: str) -> bool:
 
 def login(user: User, data: dict) -> fa.Response:
     access_token = create_token(data)
-    user_json = UserRead.from_orm(user).json()
+    user_json = UserRead.model_validate(user).model_dump_json()
     user_data = json.loads(user_json)
     response = JSONResponse(
         status_code=fa.status.HTTP_200_OK,

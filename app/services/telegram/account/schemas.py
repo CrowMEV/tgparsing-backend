@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class WorkChoice(enum.Enum):
@@ -18,8 +18,7 @@ class TgAccountBase(BaseModel):
     api_id: int
     api_hash: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TgAccountRead(TgAccountBase):

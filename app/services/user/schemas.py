@@ -1,10 +1,11 @@
 import decimal
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
 
@@ -40,8 +41,7 @@ class UserRead(BaseModel):
     balance: decimal.Decimal
     subscribe: UserSubscribeResponse | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(BaseModel):
@@ -50,9 +50,17 @@ class UserCreate(BaseModel):
         ...,
         alias="password",
         min_length=8,
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
     )
     timezone: Optional[int] = Field(default=0, ge=-12, le=12)
+
+    @field_validator("hashed_password")
+    @classmethod
+    def check_hashed_password(cls, value):
+        pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
+        checked_password = re.match(pattren, value)
+        if not checked_password:
+            raise ValueError("")
+        return value
 
 
 @dataclass
@@ -61,19 +69,18 @@ class UserPatch:
         default=None,
         min_length=1,
         max_length=61,
-        regex=NAME_PATTER,
+        pattern=NAME_PATTER,
     )
     lastname: Optional[str] = Form(
         default=None,
         min_length=1,
         max_length=61,
-        regex=NAME_PATTER,
+        pattern=NAME_PATTER,
     )
     timezone: Optional[int] = Form(default=None, ge=-12, le=12)
     hashed_password: Optional[str] = Form(
         default=None,
         min_length=8,
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_]).",
         alias="password",
     )
     avatar_url: Optional[UploadFile] = Form(default=None, alias="picture")
@@ -81,8 +88,17 @@ class UserPatch:
     phone_number: Optional[str] = Form(
         default=None,
         min_length=8,
-        regex=r"^\+[0-9+][0-9()-]{4,14}\d$",
+        pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
     )
+
+    @field_validator("hashed_password")
+    @classmethod
+    def check_hashed_password(cls, value):
+        pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
+        checked_password = re.match(pattren, value)
+        if not checked_password:
+            raise ValueError("")
+        return value
 
 
 @dataclass

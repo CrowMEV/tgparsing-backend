@@ -1,37 +1,36 @@
 from datetime import date, datetime
-from typing import List
+from typing import List, Set
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class GetChats(BaseModel):
     task_name: str = Field(
-        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     query: str = Field(description="Ключевое слово")
 
 
 class GetMembers(BaseModel):
     task_name: str = Field(
-        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
-    parsed_chats: List[str] = Field(
+    parsed_chats: Set[str] = Field(
         min_items=1,
         max_items=5,
-        unique_items=True,
         description="Чаты для парсинга",
     )
     groups_count: int = Field(default=1, ge=1)
     rerun: bool = Field(default=False)
 
-    @validator("parsed_chats", pre=True)
+    @field_validator("parsed_chats", mode="before")
     def check_chats(cls, value):  # pylint: disable=E0213
         new_value = []
         for item in value:
             new_value.append(item.split("/")[-1])
         return new_value
 
-    @validator("groups_count")
+    @field_validator("groups_count")
     def check_groups_count(cls, value, values):  # pylint: disable=E0213
         if value > len(values["parsed_chats"]):
             raise ValueError(
@@ -48,12 +47,11 @@ class Activity(BaseModel):
 
 class GetActiveMembers(BaseModel):
     task_name: str = Field(
-        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
-    parsed_chats: List[str] = Field(
+    parsed_chats: Set[str] = Field(
         min_items=1,
         max_items=5,
-        unique_items=True,
         description="Чаты для парсинга",
     )
     from_date: date
@@ -62,17 +60,17 @@ class GetActiveMembers(BaseModel):
     activity: Activity
     rerun: bool = Field(default=False)
 
-    @validator("from_date")
+    @field_validator("from_date")
     def change_from_date(cls, value):  # pylint: disable=E0213
         return str(datetime.combine(value, datetime.min.time()))
 
-    @validator("to_date")
+    @field_validator("to_date")
     def change_to_date(cls, value):  # pylint: disable=E0213
         return str(
             datetime.combine(value, datetime.max.time().replace(microsecond=0))
         )
 
-    @validator("activity")
+    @field_validator("activity")
     def check_values(cls, value):  # pylint: disable=E0213
         data = value.dict()
         new_data = {key: value for key, value in data.items() if value}
@@ -90,7 +88,7 @@ class LatLotSchema(BaseModel):
 
 class GetByGeo(BaseModel):
     task_name: str = Field(
-        min_length=1, regex="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
+        min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     coordinates: List[LatLotSchema] = Field(
         description="Координаты внутри массива "

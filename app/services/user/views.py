@@ -26,7 +26,7 @@ async def login(
             detail="Неверный логин или пароль",
         )
     form.password = users[0].hashed_password
-    response = security.login(users[0], form.dict())
+    response = security.login(users[0], form.model_dump())
     return response
 
 
@@ -59,7 +59,7 @@ async def create_user(
             detail="Пользователь с такой почтой уже существует",
         )
     user.hashed_password = security.get_hash_password(user.hashed_password)
-    await db_hand.add_user(session, user.dict())
+    await db_hand.add_user(session, user.model_dump())
     return JSONResponse(
         status_code=fa.status.HTTP_201_CREATED,
         content={"detail": "Пользователь создан успешно"},
@@ -93,7 +93,7 @@ async def patch_current_user(
         db_users = await db_hand.get_users_by_filter(
             session, {"phone_number": phone_number}
         )
-        if db_users:
+        if len(db_users) < 1:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_400_BAD_REQUEST,
                 detail="Пользователь с таким телефоном уже существует",
