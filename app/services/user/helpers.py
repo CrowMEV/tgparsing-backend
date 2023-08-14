@@ -25,14 +25,13 @@ async def update_user(
             detail="Нет данных для изменений",
         )
     picture = data.get("avatar_url")
-    if not data.get("is_staff") and data.get("is_staff") is not None:
+    is_staff = data.get("is_staff")
+    user_role = data.get("role_name")
+    if is_staff is False:
         data["role_name"] = role_schema.RoleNameChoice.USER
-    if data.get("role_name") == role_schema.RoleNameChoice.USER:
+    if user_role == role_schema.RoleNameChoice.USER:
         data["is_staff"] = False
-    if (
-        data.get("role_name") != role_schema.RoleNameChoice.USER
-        and data.get("role_name") is not None
-    ):
+    if user_role != role_schema.RoleNameChoice.USER:
         data["is_staff"] = True
     if picture and picture.content_type:
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
