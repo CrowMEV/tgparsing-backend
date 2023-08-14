@@ -57,6 +57,14 @@ class Config(BaseSettings):
     RK_TICKET_EXPIRE_HOURS: int = Field(default=0, ge=0, le=23)
     RK_TICKET_EXPIRE_MINUTES: int = Field(default=0, ge=0, le=59)
     RK_TICKET_EXPIRE_SECONDS: int = Field(default=0, ge=0, le=59)
+    RK_TAX: Optional[
+        Literal["none", "vat0", "vat10", "vat110", "vat20", "vat120"]
+    ] = Field(default="none")
+    RK_PURCHASE_NAME: str = Field(
+        default="Пополнение средств",
+        min_length=5,
+        max_length=128,
+    )
 
     @property
     def rk_ticket_life(self):

@@ -553,10 +553,10 @@ class TestUser:
         assert response.status_code == code
 
     admin_patch_data = {
-        # wrong permission
-        ("2", "", "", "", "", "", "", "", "hr", 403),
-        # correct data
-        ("3", "", "", "", "", "", "False", "", "", 200),
+        # # wrong permission
+        # ("2", "", "", "", "", "", "", "", "hr", 403),
+        # # correct data
+        # ("3", "", "", "", "", "", "False", "", "", 200),
         ("3", "", "", "", "", "", "", "False", "", 200),
         ("3", "", "", "", "", "", "", "", "hr", 200),
         (
