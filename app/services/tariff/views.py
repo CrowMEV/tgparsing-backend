@@ -25,7 +25,7 @@ async def get_tariff(
 ) -> Any:
     tariff = await db_hand_tariff.get_tariff_by_id(session, id_row)
     if not tariff:
-        raise fa.HTTPException(status_code=404, detail="Тариф не найден")
+        raise fa.HTTPException(status_code=400, detail="Тариф не найден")
     return tariff
 
 
@@ -51,7 +51,7 @@ async def change_tariff(
 ):
     check_tariff = await db_hand_tariff.get_tariff_by_id(session, id_row)
     if not check_tariff:
-        raise fa.HTTPException(status_code=404, detail="Тариф не найден")
+        raise fa.HTTPException(status_code=400, detail="Тариф не найден")
     patch_data = {
         key: value
         for key, value in tariff_schema.dict().items()
@@ -72,7 +72,7 @@ async def delete_tariff(
 ) -> Any:
     check_tariff = await db_hand_tariff.get_tariff_by_id(session, id_row)
     if not check_tariff:
-        raise fa.HTTPException(status_code=404, detail="Тариф не найден")
+        raise fa.HTTPException(status_code=400, detail="Тариф не найден")
     await db_hand_tariff.delete_tariff_by_id(session, id_row)
     return {"detail": "Тариф успешно удалён"}
 
@@ -84,10 +84,10 @@ async def purchase_tariff(
 ) -> Any:
     tariff = await db_hand_tariff.get_tariff_by_id(session, id_row)
     if not tariff:
-        raise fa.HTTPException(status_code=404, detail="Тариф не найден")
+        raise fa.HTTPException(status_code=400, detail="Тариф не найден")
     if user.balance < tariff.price:
         raise fa.HTTPException(
-            status_code=404, detail="У вас недостаточно средств на балансе"
+            status_code=403, detail="У вас недостаточно средств на балансе"
         )
     await update_user(
         session, user.id, {"balance": user.balance - tariff.price}
