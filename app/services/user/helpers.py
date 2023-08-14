@@ -1,5 +1,6 @@
 import aiofiles
 import fastapi as fa
+from services.role import schemas as role_schema
 from services.user import db_handlers as db_hand
 from services.user import schemas as user_schema
 from services.user.models import User
@@ -24,6 +25,14 @@ async def update_user(
             detail="Нет данных для изменений",
         )
     picture = data.get("avatar_url")
+    is_staff = data.get("is_staff")
+    user_role = data.get("role_name")
+    if is_staff is False:
+        data["role_name"] = role_schema.RoleNameChoice.USER
+    if user_role == role_schema.RoleNameChoice.USER:
+        data["is_staff"] = False
+    if user_role != role_schema.RoleNameChoice.USER:
+        data["is_staff"] = True
     if picture and picture.content_type:
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
         file_name = (
