@@ -128,3 +128,15 @@ async def purchase_tariff(
         )
     await session.refresh(user)
     return user
+
+
+async def toggle_tariff_auto_write_off(
+    user: User = fa.Depends(get_current_user),
+    session: AsyncSession = fa.Depends(get_async_session),
+) -> Any:
+    if not user.subscribe:
+        raise fa.HTTPException(status_code=400, detail="У вас нет подписки")
+    updated_sub = await db_hand_tariff.update_user_subscribe(
+        session, user.id, {"auto_debit": not user.subscribe.auto_debit}
+    )
+    return updated_sub

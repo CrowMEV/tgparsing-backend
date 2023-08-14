@@ -50,4 +50,5 @@ async def update_user(
             data["hashed_password"]
         )
     user_db = await db_hand.update_user(session, changing_user.id, data)
+    await session.refresh(user_db)
     return user_db
