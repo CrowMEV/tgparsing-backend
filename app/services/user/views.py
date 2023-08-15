@@ -7,6 +7,7 @@ from services.user import db_handlers as db_hand
 from services.user import helpers
 from services.user import schemas as user_schema
 from services.user.dependencies import get_current_user
+from services.user.helpers import check_data_exists
 from services.user.models import User
 from services.user.utils import cookie, security
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -88,53 +89,38 @@ async def patch_current_user(
     current_user: User = fa.Depends(get_current_user),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    phone_number = update_data.phone_number
-    if phone_number:
-        db_users = await db_hand.get_users_by_filter(
-            session, {"phone_number": phone_number}
-        )
-        if db_users:
-            raise fa.HTTPException(
-                status_code=fa.status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь с таким телефоном уже существует",
-            )
+    await check_data_exists(session, "phone_number", update_data.phone_number)
+    await check_data_exists(session, "email", update_data.email)
     user = await helpers.update_user(
         session=session,
         changing_user=current_user,
-        update_data=update_data,
+        update_data=update_data.__dict__,
     )
     return user
 
 
 async def patch_user_by_admin(
     id_row: int,
-    update_data: user_schema.UserPatchByAdmin = fa.Depends(
-        user_schema.UserPatchByAdmin
-    ),
+    update_data: user_schema.UserPatchByAdmin = fa.Depends(),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
     db_user = await db_hand.get_current_by_id(session, id_row)
     if not db_user:
-        raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь не найден",
+        )
     if db_user.role_name.value == user_schema.RoleNameChoice.SUPERUSER.value:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_403_FORBIDDEN,
             detail="Изменение суперпользователя недоступно",
         )
-    phone_number = update_data.phone_number
-    if phone_number:
-        db_users = await db_hand.get_users_by_filter(
-            session, {"phone_number": phone_number}
-        )
-        if db_users:
-            raise fa.HTTPException(
-                status_code=fa.status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь с таким телефоном уже существует",
-            )
+    await check_data_exists(session, "phone_number", update_data.phone_number)
+    await check_data_exists(session, "email", update_data.email)
     user = await helpers.update_user(
         session=session,
         changing_user=db_user,
-        update_data=update_data,
+        update_data=update_data.__dict__,
     )
     return user
 
