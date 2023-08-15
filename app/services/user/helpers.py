@@ -31,12 +31,6 @@ async def update_user(
             data["is_staff"] = False
         else:
             data["is_staff"] = True
-    is_banned = update_data.get("is_banned")
-    if is_banned is True:
-        data["role_name"] = role_schema.RoleNameChoice.USER
-        data["is_staff"] = False
-    elif is_banned is False:
-        data["is_banned"] = False
     picture = data.get("avatar_url")
     if picture:
         folder_path = config.static_dir_url / config.AVATARS_FOLDER
