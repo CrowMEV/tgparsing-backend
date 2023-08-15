@@ -98,4 +98,3 @@ class UserPatch:
 @dataclass
 class UserPatchByAdmin(UserPatch):
     role_name: RoleNameChoice = Form(default=None, alias="role")
-    is_banned: bool = Form(default=None)
