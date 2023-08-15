@@ -11,116 +11,101 @@ class TestUser:
 
     register_data = [
         # wrong email
-        ("@mail.ru", "123", 422),
-        ("1@", "123", 422),
-        ("1@mail", "123", 422),
-        ("1@mail.", "123", 422),
-        ("1@.ru", "123", 422),
+        ({"email": "@mail.ru", "password": "123"}, 422),
+        ({"email": "1@", "password": "123"}, 422),
+        ({"email": "1@mail", "password": "123"}, 422),
+        ({"email": "1@mail.", "password": "123"}, 422),
+        ({"email": "1@.ru", "password": "123"}, 422),
         # wrong password
-        ("1@mail.ru", "", 422),
-        ("1@mail.ru", "1michail#", 422),
-        ("1@mail.ru", "Michail#", 422),
-        ("1@mail.ru", "1Michail", 422),
-        ("1@mail.ru", "1michail#", 422),
+        ({"email": "1@mail.ru", "password": ""}, 422),
+        ({"email": "1@mail.ru", "password": "1michail#"}, 422),
+        ({"email": "1@mail.ru", "password": "Michail#"}, 422),
+        ({"email": "1@mail.ru", "password": "1Michail"}, 422),
+        ({"email": "1@mail.ru", "password": "1michail#"}, 422),
         # correct data
-        ("1@mail.ru", "1Michail#", 201),
+        ({"email": "1@mail.ru", "password": "1Michail#"}, 201),
     ]
 
-    @pytest.mark.parametrize("email,password,code", register_data)
-    async def test_user_register(self, async_client, email, password, code):
+    @pytest.mark.parametrize("data,code", register_data)
+    async def test_user_register(self, async_client, data, code):
         response = await async_client.post(
             self.register_url,
-            json={"email": email, "password": password},
+            json=data,
         )
 
         assert response.status_code == code
 
     login_data = [
         # wrong data
-        ("2@mail.ru", "1Michail#", 400),
-        ("1@mail.ru", "2Michail#", 400),
+        ({"email": "2@mail.ru", "password": "1Michail#"}, 400),
+        ({"email": "1@mail.ru", "password": "2Michail#"}, 400),
         # correct data
-        ("1@mail.ru", "1Michail#", 200),
+        ({"email": "1@mail.ru", "password": "1Michail#"}, 200),
     ]
 
-    @pytest.mark.parametrize("email,password,code", login_data)
-    async def test_user_login(self, async_client, email, password, code):
-        response = await async_client.post(
-            self.login_url, json={"email": email, "password": password}
-        )
+    @pytest.mark.parametrize("data,code", login_data)
+    async def test_user_login(self, async_client, data, code):
+        response = await async_client.post(self.login_url, json=data)
 
         assert response.status_code == code
 
     patch_data = [
         # wrong firstname
-        (" ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        (" Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("&Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("1Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor1", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor%", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ({"firstname": " "}, 422),
+        ({"firstname": " Igor"}, 422),
+        ({"firstname": "&Igor"}, 422),
+        ({"firstname": "1Igor"}, 422),
+        ({"firstname": "Igor1"}, 422),
+        ({"firstname": "Igor "}, 422),
+        ({"firstname": "Igor-"}, 422),
+        ({"firstname": "Igor%"}, 422),
+        ({"firstname": "igor"}, 422),
         # wrong lastname
-        ("Igor", " ", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", " Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "1Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "%Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin ", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin1", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin%", "123", "+2904242", "igor@pupkin.com", 422),
+        ({"lastname": " "}, 422),
+        ({"lastname": " Pupkin"}, 422),
+        ({"lastname": "1Pupkin"}, 422),
+        ({"lastname": "%Pupkin"}, 422),
+        ({"lastname": "Pupkin "}, 422),
+        ({"lastname": "Pupkin1"}, 422),
+        ({"lastname": "Pupkin%"}, 422),
+        ({"lastname": "Pupkin-"}, 422),
+        ({"lastname": "pupkin"}, 422),
         # wrong password
-        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "Michail#", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "1Michail", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
+        ({"password": "1michail#"}, 422),
+        ({"password": "Michail#"}, 422),
+        ({"password": "1Michail"}, 422),
+        ({"password": "1michail#"}, 422),
         # wrong phone_number
-        ("Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
-        (
-            "Igor",
-            "Pupkin",
-            "123",
-            "+8888 8888 77775566",
-            "igor@pupkin.com",
-            422,
-        ),
-        ("Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
+        ({"phone_number": "lalala"}, 422),
+        ({"phone_number": "89997775544"}, 422),
+        ({"phone_number": "+8888 8888 77775566"}, 422),
+        ({"phone_number": "+341234"}, 422),
+        ({"phone_number": " "}, 422),
         # wrong email
-        ("Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2914242", "igorpupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2924242", "igor123pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2934242", "123%", 422),
+        ({"email": "igor#pupkin.com"}, 422),
+        ({"email": "igorpupkin.com"}, 422),
+        ({"email": "igor123pupkin.com"}, 422),
+        ({"email": "123%"}, 422),
         # correct data
-        ("Vasya", "", "", "", "", 200),
-        ("", "Gordeev", "", "", "", 200),
-        ("", "", "HEro2023#", "", "", 200),
-        ("", "", "", "+37(787)5675656", "", 200),
+        ({"firstname": "Vasya"}, 200),
+        ({"lastname": "Gordeev"}, 200),
+        ({"password": "HEro2023#"}, 200),
+        ({"phone_number": "+37(787)5675656"}, 200),
         (
-            "Masha",
-            "Zacharova",
-            "sAlenow2023#",
-            "+79998886655",
-            "igor@pupkin.com",
+            {
+                "firstname": "Masha",
+                "lastname": "Zacharova",
+                "password": "sAlenow2023#",
+                "phone_number": "+79998886655",
+                "email": "igor@pupkin.com",
+            },
             200,
         ),
     ]
 
-    @pytest.mark.parametrize(
-        "name,surname,password,phone_number,email,code", patch_data
-    )
-    async def test_user_patch(
-        self, async_client, name, surname, password, phone_number, email, code
-    ):
-        params = {
-            "firstname": name,
-            "lastname": surname,
-            "password": password,
-            "phone_number": phone_number,
-            "email": email,
-        }
-        params = {key: value for key, value in params.items() if value}
-        response = await async_client.patch(self.patch_url, data=params)
+    @pytest.mark.parametrize("data,code", patch_data)
+    async def test_user_patch(self, async_client, data, code):
+        response = await async_client.patch(self.patch_url, data=data)
 
         assert response.status_code == code
 

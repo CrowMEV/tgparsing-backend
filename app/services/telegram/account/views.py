@@ -14,7 +14,7 @@ async def get_accounts(
 ):
     data = {
         key: value
-        for key, value in get_data.dict().items()
+        for key, value in get_data.model_dump().items()
         if value is not None
     }
     accounts = await db_hand.get_tgaccounts(session, data)

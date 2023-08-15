@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GetAllMembers(BaseModel):
@@ -43,8 +43,7 @@ class ChatMember(BaseModel):
 class ChatMemberRead(ChatMember):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ParsedChat(BaseModel):
@@ -57,5 +56,4 @@ class ParsedChat(BaseModel):
 class ParsedChatRead(ParsedChat):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

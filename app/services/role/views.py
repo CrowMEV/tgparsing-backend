@@ -26,7 +26,7 @@ async def patch_role(
     role_schema: role_schemas.RolePatch,
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
-    update_date = role_schema.dict()
+    update_date = role_schema.model_dump()
     role_name = update_date.pop("name")
     update_date.pop("pretty_name")
     data = {

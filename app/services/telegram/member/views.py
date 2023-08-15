@@ -13,7 +13,7 @@ async def get_members(
 ) -> Any:
     data = {
         key: value
-        for key, value in get_data.dict().items()
+        for key, value in get_data.model_dump().items()
         if value is not None
     }
     members = await db_hand.get_members(session, data)

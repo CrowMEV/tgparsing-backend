@@ -25,9 +25,9 @@ repos:
         name: pylint
         entry: pylint
         language: system
-        types: [python]
+        types: [ python ]
         exclude: migrations/
-        args: ["--disable=C0114,C0115,C0116,W0511"]
+        args: [ "--disable=C0114,C0115,C0116,W0511" ]
 
   - repo: local
     hooks:
@@ -35,9 +35,9 @@ repos:
         name: mypy
         entry: mypy
         language: system
-        types: [python]
+        types: [ python ]
         exclude: "(migrations|.venv)/"
-        args: ["--exclude=migrations"]
+        args: [ "--exclude=migrations" ]
 
   - repo: local
     hooks:
@@ -45,6 +45,6 @@ repos:
         name: pytest
         entry: pytest
         language: system
-        types: [python]
+        types: [ python ]
         pass_filenames: false
-        args: ["-p no:cacheprovider"]
+        args: [ "-p no:cacheprovider" ]

@@ -1,7 +1,7 @@
 import re
 
 import fastapi as fa
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
 class WsCreateBotSchema(BaseModel):
@@ -9,8 +9,9 @@ class WsCreateBotSchema(BaseModel):
     api_hash: str
     phone_number: str
 
-    @validator("phone_number")
-    def check_phone(cls, phone):  # pylint: disable=E0213
+    @field_validator("phone_number")
+    @classmethod
+    def check_phone(cls, phone):
         pattern = r"^\+7[0-9]{10}$"
         if not re.match(pattern, phone):
             raise fa.HTTPException(
