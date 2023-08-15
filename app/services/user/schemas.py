@@ -38,7 +38,7 @@ class UserRead(BaseModel):
     role: RoleResponse
     phone_number: str | None
     created_at: datetime
-    balance: decimal.Decimal = Field(decimal_places=2)
+    balance: decimal.Decimal
     subscribe: UserSubscribeResponse | None
 
     model_config = ConfigDict(from_attributes=True)

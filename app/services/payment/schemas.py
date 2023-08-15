@@ -1,7 +1,6 @@
 import enum
 import re
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic.types import Decimal
@@ -25,6 +24,6 @@ class PaymentCreate(BaseModel):
 
 
 class PaymentsGetAll(BaseModel):
-    status: Optional[bool]
-    period_start: Optional[date]
-    period_end: Optional[date]
+    status: bool | None = Field(default=None)
+    period_start: date | None = Field(default=None)
+    period_end: date | None = Field(default=None)
