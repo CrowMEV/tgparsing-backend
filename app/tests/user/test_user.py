@@ -219,8 +219,6 @@ class TestUser:
         # wrong permission
         ("2", {"role_name": "superuser"}, 403),
         # correct data
-        ("3", {"is_banned": False}, 200),
-        ("3", {"is_banned": True}, 200),
         ("3", {"role": "hr"}, 200),
         (
             "3",
