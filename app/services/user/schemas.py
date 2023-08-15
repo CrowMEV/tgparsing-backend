@@ -5,9 +5,11 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import Form, HTTPException, UploadFile, status
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
+from typing_extensions import Annotated
+from utils.validators import Regex
 
 
 NAME_PATTER = r"^[А-ЯA-ZЁ][а-яa-zё]*(-[А-ЯA-ZЁ][а-яa-zё]*)?$"
@@ -44,42 +46,35 @@ class UserRead(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
-    hashed_password: str = Field(..., min_length=8, alias="password")
+    hashed_password: Annotated[str, Regex(PASSWORD_PATTERN)] = Field(
+        ..., min_length=8, alias="password"
+    )
     timezone: Optional[int] = Field(default=0, ge=-12, le=12)
-
-    @field_validator("hashed_password", mode="after")
-    @classmethod
-    def check_hashed_password(cls, password):
-        pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
-        checked_password = re.match(pattren, password)
-        if not checked_password:
-            raise ValueError("Not secure password")
-        return password
 
 
 @dataclass
 class UserPatch:
-    firstname: Optional[str] = Form(
+    firstname: str = Form(
         default=None,
         min_length=1,
         max_length=61,
         pattern=NAME_PATTER,
     )
-    lastname: Optional[str] = Form(
+    lastname: str = Form(
         default=None,
         min_length=1,
         max_length=61,
         pattern=NAME_PATTER,
     )
-    timezone: Optional[int] = Form(default=None, ge=-12, le=12)
+    timezone: int = Form(default=None, ge=-12, le=12)
     hashed_password: str = Form(
         default=None,
         min_length=8,
         alias="password",
     )
-    avatar_url: Optional[UploadFile] = Form(default=None, alias="picture")
-    email: Optional[EmailStr] = Form(default=None)
-    phone_number: Optional[str] = Form(
+    avatar_url: UploadFile = Form(default=None, alias="picture")
+    email: EmailStr = Form(default=None)
+    phone_number: str = Form(
         default=None,
         min_length=8,
         pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
@@ -102,5 +97,5 @@ class UserPatch:
 
 @dataclass
 class UserPatchByAdmin(UserPatch):
-    role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
-    is_banned: Optional[bool] = Form(default=None)
+    role_name: RoleNameChoice = Form(default=None, alias="role")
+    is_banned: bool = Form(default=None)

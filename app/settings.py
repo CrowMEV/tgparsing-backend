@@ -3,12 +3,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional
 
-from pydantic import ConfigDict, Field
-from pydantic_settings import BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
-    model_config = ConfigDict(extra="allow", env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
     BASE_DIR: Path = Path(__file__).parent
 
