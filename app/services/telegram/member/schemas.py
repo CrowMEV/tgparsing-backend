@@ -1,11 +1,11 @@
 from datetime import date
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GetAllMembers(BaseModel):
-    chat_id: Optional[str]
+    chat_id: Optional[int] = Field(default=None)
 
 
 class Parser(BaseModel):
