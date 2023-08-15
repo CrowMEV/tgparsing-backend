@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -23,13 +22,13 @@ class TariffPostModel(BaseModel):
 
 
 class TariffPatchModel(BaseModel):
-    name: Optional[str]
-    description: Optional[str]
-    limitation_days: Optional[int]
-    price: Optional[int]
-    options: Optional[TariffOptions]
-    active: Optional[bool]
-    archive: Optional[bool]
+    name: str | None
+    description: str | None
+    limitation_days: int | None
+    price: int | None
+    options: TariffOptions | None
+    active: bool
+    archive: bool
 
 
 class TariffResponse(TariffPostModel):

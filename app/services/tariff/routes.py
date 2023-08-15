@@ -18,6 +18,7 @@ tariff_router.add_api_route(
     endpoint=views.get_tariff_list,
     methods=["GET"],
     name=config.TARIFF_GET_ALL,
+    response_model=list[TariffResponse],
 )
 
 tariff_router.add_api_route(
