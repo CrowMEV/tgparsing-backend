@@ -2,8 +2,9 @@ from typing import Any
 
 import fastapi as fa
 from database.db_async import get_async_session
+from services.role.schemas import RoleNameChoice
 from services.tariff.db_handlers import update_user_subscribe
-from services.user import db_handlers as db_hand
+from services.user import db_handlers as user_hand
 from services.user import helpers
 from services.user import schemas as user_schema
 from services.user.dependencies import get_current_user
@@ -18,7 +19,7 @@ async def login(
     form: user_schema.UserLogin,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    users = await db_hand.get_users_by_filter(session, {"email": form.email})
+    users = await user_hand.get_users_by_filter(session, {"email": form.email})
     if len(users) < 1 or not security.validate_password(
         form.password, users[0].hashed_password
     ):
@@ -51,7 +52,7 @@ async def create_user(
     user: user_schema.UserCreate,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> fa.Response:
-    exist_user = await db_hand.get_users_by_filter(
+    exist_user = await user_hand.get_users_by_filter(
         session, {"email": user.email}
     )
     if exist_user:
@@ -60,7 +61,7 @@ async def create_user(
             detail="Пользователь с такой почтой уже существует",
         )
     user.hashed_password = security.get_hash_password(user.hashed_password)
-    await db_hand.add_user(session, user.model_dump())
+    await user_hand.add_user(session, user.model_dump())
     return JSONResponse(
         status_code=fa.status.HTTP_201_CREATED,
         content={"detail": "Пользователь создан успешно"},
@@ -71,7 +72,7 @@ async def get_user_by_id(
     id_row: int,
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    user = await db_hand.get_current_by_id(session, id_row)
+    user = await user_hand.get_current_by_id(session, id_row)
     if not user:
         raise fa.HTTPException(status_code=fa.status.HTTP_404_NOT_FOUND)
     return user
@@ -80,7 +81,7 @@ async def get_user_by_id(
 async def get_users(
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    users = await db_hand.get_users(session)
+    users = await user_hand.get_users(session)
     return users
 
 
@@ -104,7 +105,7 @@ async def patch_user_by_admin(
     update_data: user_schema.UserPatchByAdmin = fa.Depends(),
     session: AsyncSession = fa.Depends(get_async_session),
 ) -> Any:
-    db_user = await db_hand.get_current_by_id(session, id_row)
+    db_user = await user_hand.get_current_by_id(session, id_row)
     if not db_user:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
@@ -150,3 +151,28 @@ async def toggle_tariff_auto_write_off(
         session, user.id, {"auto_debit": not user.subscribe.auto_debit}
     )
     return updated_sub
+
+
+async def set_ban_for_user(
+    ban_data: user_schema.UserBanSchema,
+    session: AsyncSession = fa.Depends(get_async_session),
+    current_user: User = fa.Depends(get_current_user),
+) -> Any:
+    if current_user.id == ban_data.user_id:
+        raise fa.HTTPException(
+            status_code=400, detail="Нельзя забанить самого себя"
+        )
+    db_user = await user_hand.get_current_by_id(session, ban_data.user_id)
+    if not db_user:
+        raise fa.HTTPException(status_code=400, detail="Юзер не найден")
+    if ban_data.is_banned and db_user.role_name == RoleNameChoice.SUPERUSER:
+        raise fa.HTTPException(
+            status_code=400,
+            detail="Администратор не может заблокировать суперпользователя",
+        )
+    update_data = ban_data.model_dump()
+    user_id = update_data.pop("user_id")
+    if ban_data.is_banned:
+        update_data["role_name"] = RoleNameChoice.USER
+    banned_user = await user_hand.update_user(session, user_id, update_data)
+    return banned_user
