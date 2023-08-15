@@ -10,10 +10,8 @@ from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
 
 
-NAME_PATTER = (
-    "^(([а-яА-ЯёЁ][а-яё]*)(-[а-яА-ЯёЁ][а-яё]*)?)|"
-    "(([a-zA-Z][a-z]*)(-[a-zA-Z][a-z]*)?)$"
-)
+NAME_PATTER = r"^[А-ЯA-ZЁ][а-яa-zё]*(-[А-ЯA-ZЁ][а-яa-zё]*)?$"
+PASSWORD_PATTERN = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
 
 
 class UserLogin(BaseModel):
@@ -46,21 +44,17 @@ class UserRead(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
-    hashed_password: str = Field(
-        ...,
-        alias="password",
-        min_length=8,
-    )
+    hashed_password: str = Field(..., min_length=8, alias="password")
     timezone: Optional[int] = Field(default=0, ge=-12, le=12)
 
-    @field_validator("hashed_password")
+    @field_validator("hashed_password", mode="after")
     @classmethod
-    def check_hashed_password(cls, value):
+    def check_hashed_password(cls, password):
         pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
-        checked_password = re.match(pattren, value)
+        checked_password = re.match(pattren, password)
         if not checked_password:
             raise ValueError("Not secure password")
-        return value
+        return password
 
 
 @dataclass
@@ -78,7 +72,7 @@ class UserPatch:
         pattern=NAME_PATTER,
     )
     timezone: Optional[int] = Form(default=None, ge=-12, le=12)
-    hashed_password: Optional[str] = Form(
+    hashed_password: str = Form(
         default=None,
         min_length=8,
         alias="password",
@@ -91,24 +85,19 @@ class UserPatch:
         pattern=r"^\+[0-9+][0-9()-]{4,14}\d$",
     )
 
-    @field_validator("hashed_password")
-    @classmethod
-    def check_hashed_password(cls, password):
-        pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
-        checked_password = re.match(pattren, password)
-        if not checked_password:
-            raise ValueError("Not secure password")
-        return password
-
-    @field_validator("avatar_url")
-    @classmethod
-    def check_avatar_url(cls, avatar):
-        if avatar and not avatar.content_type:
+    def __post_init__(self):
+        if self.avatar_url and not self.avatar_url.content_type:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Picture can't be empty",
             )
-        return avatar
+        if self.hashed_password:
+            checked_password = re.match(PASSWORD_PATTERN, self.hashed_password)
+            if not checked_password:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Picture can't be empty",
+                )
 
 
 @dataclass
