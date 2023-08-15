@@ -11,116 +11,101 @@ class TestUser:
 
     register_data = [
         # wrong email
-        ("@mail.ru", "123", 422),
-        ("1@", "123", 422),
-        ("1@mail", "123", 422),
-        ("1@mail.", "123", 422),
-        ("1@.ru", "123", 422),
+        ({"email": "@mail.ru", "password": "123"}, 422),
+        ({"email": "1@", "password": "123"}, 422),
+        ({"email": "1@mail", "password": "123"}, 422),
+        ({"email": "1@mail.", "password": "123"}, 422),
+        ({"email": "1@.ru", "password": "123"}, 422),
         # wrong password
-        ("1@mail.ru", "", 422),
-        ("1@mail.ru", "1michail#", 422),
-        ("1@mail.ru", "Michail#", 422),
-        ("1@mail.ru", "1Michail", 422),
-        ("1@mail.ru", "1michail#", 422),
+        ({"email": "1@mail.ru", "password": ""}, 422),
+        ({"email": "1@mail.ru", "password": "1michail#"}, 422),
+        ({"email": "1@mail.ru", "password": "Michail#"}, 422),
+        ({"email": "1@mail.ru", "password": "1Michail"}, 422),
+        ({"email": "1@mail.ru", "password": "1michail#"}, 422),
         # correct data
-        ("1@mail.ru", "1Michail#", 201),
+        ({"email": "1@mail.ru", "password": "1Michail#"}, 201),
     ]
 
-    @pytest.mark.parametrize("email,password,code", register_data)
-    async def test_user_register(self, async_client, email, password, code):
+    @pytest.mark.parametrize("data,code", register_data)
+    async def test_user_register(self, async_client, data, code):
         response = await async_client.post(
             self.register_url,
-            json={"email": email, "password": password},
+            json=data,
         )
 
         assert response.status_code == code
 
     login_data = [
         # wrong data
-        ("2@mail.ru", "1Michail#", 400),
-        ("1@mail.ru", "2Michail#", 400),
+        ({"email": "2@mail.ru", "password": "1Michail#"}, 400),
+        ({"email": "1@mail.ru", "password": "2Michail#"}, 400),
         # correct data
-        ("1@mail.ru", "1Michail#", 200),
+        ({"email": "1@mail.ru", "password": "1Michail#"}, 200),
     ]
 
-    @pytest.mark.parametrize("email,password,code", login_data)
-    async def test_user_login(self, async_client, email, password, code):
-        response = await async_client.post(
-            self.login_url, json={"email": email, "password": password}
-        )
+    @pytest.mark.parametrize("data,code", login_data)
+    async def test_user_login(self, async_client, data, code):
+        response = await async_client.post(self.login_url, json=data)
 
         assert response.status_code == code
 
     patch_data = [
         # wrong firstname
-        (" ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        (" Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("&Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("1Igor", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor1", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor ", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor%", "Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
+        ({"firstname": " "}, 422),
+        ({"firstname": " Igor"}, 422),
+        ({"firstname": "&Igor"}, 422),
+        ({"firstname": "1Igor"}, 422),
+        ({"firstname": "Igor1"}, 422),
+        ({"firstname": "Igor "}, 422),
+        ({"firstname": "Igor-"}, 422),
+        ({"firstname": "Igor%"}, 422),
+        ({"firstname": "igor"}, 422),
         # wrong lastname
-        ("Igor", " ", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", " Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "1Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "%Pupkin", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin ", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin1", "123", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin%", "123", "+2904242", "igor@pupkin.com", 422),
+        ({"lastname": " "}, 422),
+        ({"lastname": " Pupkin"}, 422),
+        ({"lastname": "1Pupkin"}, 422),
+        ({"lastname": "%Pupkin"}, 422),
+        ({"lastname": "Pupkin "}, 422),
+        ({"lastname": "Pupkin1"}, 422),
+        ({"lastname": "Pupkin%"}, 422),
+        ({"lastname": "Pupkin-"}, 422),
+        ({"lastname": "pupkin"}, 422),
         # wrong password
-        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "Michail#", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "1Michail", "+2904242", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "1michail#", "+2904242", "igor@pupkin.com", 422),
+        ({"password": "1michail#"}, 422),
+        ({"password": "Michail#"}, 422),
+        ({"password": "1Michail"}, 422),
+        ({"password": "1michail#"}, 422),
         # wrong phone_number
-        ("Igor", "Pupkin", "123", "lalala", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "89997775544", "igor@pupkin.com", 422),
-        (
-            "Igor",
-            "Pupkin",
-            "123",
-            "+8888 8888 77775566",
-            "igor@pupkin.com",
-            422,
-        ),
-        ("Igor", "Pupkin", "123", "+341234", "igor@pupkin.com", 422),
-        ("Igor", "Pupkin", "123", " ", "igor@pupkin.com", 422),
+        ({"phone_number": "lalala"}, 422),
+        ({"phone_number": "89997775544"}, 422),
+        ({"phone_number": "+8888 8888 77775566"}, 422),
+        ({"phone_number": "+341234"}, 422),
+        ({"phone_number": " "}, 422),
         # wrong email
-        ("Igor", "Pupkin", "123", "+2904242", "igor#pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2914242", "igorpupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2924242", "igor123pupkin.com", 422),
-        ("Igor", "Pupkin", "123", "+2934242", "123%", 422),
+        ({"email": "igor#pupkin.com"}, 422),
+        ({"email": "igorpupkin.com"}, 422),
+        ({"email": "igor123pupkin.com"}, 422),
+        ({"email": "123%"}, 422),
         # correct data
-        ("Vasya", "", "", "", "", 200),
-        ("", "Gordeev", "", "", "", 200),
-        ("", "", "HEro2023#", "", "", 200),
-        ("", "", "", "+37(787)5675656", "", 200),
+        ({"firstname": "Vasya"}, 200),
+        ({"lastname": "Gordeev"}, 200),
+        ({"password": "HEro2023#"}, 200),
+        ({"phone_number": "+37(787)5675656"}, 200),
         (
-            "Masha",
-            "Zacharova",
-            "sAlenow2023#",
-            "+79998886655",
-            "igor@pupkin.com",
+            {
+                "firstname": "Masha",
+                "lastname": "Zacharova",
+                "password": "sAlenow2023#",
+                "phone_number": "+79998886655",
+                "email": "igor@pupkin.com",
+            },
             200,
         ),
     ]
 
-    @pytest.mark.parametrize(
-        "name,surname,password,phone_number,email,code", patch_data
-    )
-    async def test_user_patch(
-        self, async_client, name, surname, password, phone_number, email, code
-    ):
-        params = {
-            "firstname": name,
-            "lastname": surname,
-            "password": password,
-            "phone_number": phone_number,
-            "email": email,
-        }
-        params = {key: value for key, value in params.items() if value}
-        response = await async_client.patch(self.patch_url, data=params)
+    @pytest.mark.parametrize("data,code", patch_data)
+    async def test_user_patch(self, async_client, data, code):
+        response = await async_client.patch(self.patch_url, data=data)
 
         assert response.status_code == code
 
@@ -145,465 +130,120 @@ class TestUser:
 
     superuser_patch_data = [
         # wrong id
-        (
-            " ",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "lala",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "44",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
+        (" ", {}, 422),
+        ("lala", {}, 422),
+        (99999999, {}, 400),
         # wrong firstname
-        (
-            "1",
-            " ",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            " Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "&Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "1Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor1",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor ",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor%",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
+        (1, {"firstname": " "}, 422),
+        (1, {"firstname": " Igor"}, 422),
+        (1, {"firstname": "&Igor"}, 422),
+        (1, {"firstname": "1Igor"}, 422),
+        (1, {"firstname": "Igor1"}, 422),
+        (1, {"firstname": "Igor "}, 422),
+        (1, {"firstname": "Igor%"}, 422),
         # wrong lastname
-        ("1", "Igor", " ", "123", "+2904242", "igor@pupkin.com", "", "", 422),
-        (
-            "1",
-            "Igor",
-            " Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "1Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "%Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin ",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin1",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin%",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
+        (1, {"firstname": "123"}, 422),
+        (1, {"firstname": " Pupkin"}, 422),
+        (1, {"firstname": "1Pupkin"}, 422),
+        (1, {"firstname": "%Pupkin"}, 422),
+        (1, {"firstname": "Pupkin "}, 422),
+        (1, {"firstname": "Pupkin1"}, 422),
+        (1, {"firstname": "Pupkin%"}, 422),
         # wrong password
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "1michail#",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "Michail#",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "1Michail",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "1michail#",
-            "+2904242",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
+        (1, {"password": "1michail#"}, 422),
+        (1, {"password": "Michail#"}, 422),
+        (1, {"password": "1Michail"}, 422),
+        (1, {"password": "1michail#"}, 422),
         # wrong phone_number
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "lalala",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "89997775544",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+8888 8888 77775566",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+341234",
-            "igor@pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        ("1", "Igor", "Pupkin", "123", " ", "igor@pupkin.com", "", "", 422),
+        (1, {"phone_number": "lalala"}, 422),
+        (1, {"phone_number": "89997775544"}, 422),
+        (1, {"phone_number": "+8888 8888 77775566"}, 422),
+        (1, {"phone_number": "+341234"}, 422),
+        ("1", {"phone_number": " "}, 422),
         # wrong email
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor#pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igorpupkin.com",
-            "",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor123pupkin.com",
-            "",
-            "",
-            422,
-        ),
-        ("1", "Igor", "Pupkin", "123", "+2904242", "123%", "", "", 422),
-        # wrong is_staff
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "Igor",
-            "",
-            422,
-        ),
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "123",
-            "",
-            422,
-        ),
+        (1, {"email": "igor#pupkin.com"}, 422),
+        (1, {"email": "igorpupkin.com"}, 422),
+        (1, {"email": "igor123pupkin.com"}, 422),
+        ("1", {"email": "123%"}, 422),
+        # wrong param
+        (1, {"is_staff": True}, 400),
         # wrong role
-        (
-            "1",
-            "Igor",
-            "Pupkin",
-            "123",
-            "+2904242",
-            "igor@pupkin.com",
-            "True",
-            "loser",
-            422,
-        ),
-        # wrong permission
-        ("2", "", "Gor", "", "", "", "", "", 403),
+        (1, {"role": "loser"}, 422),
+        # can't update superuser
+        ("2", {"lastname": "Gor"}, 403),
         # correct data
-        ("3", "Valera", "", "", "", "", "", "", 200),
-        ("3", "", "Gor", "", "", "", "", "", 200),
-        ("3", "", "", "HEro202333#", "", "", "", "", 200),
-        ("3", "", "", "", "+38(787)5675659", "", "", "", 200),
-        ("3", "", "", "", "", "", "True", "", 200),
-        ("3", "", "", "", "", "", "", "hr", 200),
+        (3, {"firstname": "Valera"}, 200),
+        (3, {"lastname": "Gor"}, 200),
+        (3, {"password": "HEro202333#"}, 200),
+        (3, {"phone_number": "+38(787)5675659"}, 200),
+        (3, {"email": "igor123@user.com"}, 200),
+        (3, {"role": "hr"}, 200),
         (
-            "3",
-            "Dasha",
-            "Zecharova",
-            "sAlenowS2023#",
-            "+79998886600",
-            "dasha@pukin.com",
-            "False",
-            "accountant",
+            3,
+            {
+                "firstname": "Dasha",
+                "lastname": "Zecharova",
+                "password": "sAlenowS2023#",
+                "phone_number": "+79998886600",
+                "email": "dasha@pukin.com",
+                "role": "accountant",
+            },
             200,
         ),
-        # double phone number
+        # # Check double values. This test depends on the previous entity
         (
-            "3",
-            "",
-            "",
-            "",
-            "+79998886600",
-            "",
-            "",
-            "",
+            3,
+            {"phone_number": "+79998886600"},
+            400,
+        ),
+        (
+            3,
+            {"email": "dasha@pukin.com"},
             400,
         ),
     ]
 
     @pytest.mark.parametrize(
-        "id_row,name,surname,password,phone_number,email,is_staff,role,code",
+        "id_row,data,code",
         superuser_patch_data,
     )
     async def test_user_patch_by_superuser(
-        self,
-        async_client,
-        superuser_login,
-        id_row,
-        name,
-        surname,
-        password,
-        phone_number,
-        email,
-        is_staff,
-        role,
-        code,
+        self, async_client, superuser_login, id_row, data, code
     ):
-        params = {
-            "firstname": name,
-            "lastname": surname,
-            "password": password,
-            "phone_number": phone_number,
-            "email": email,
-            "is_staff": is_staff,
-            "role": role,
-        }
-        params = {key: value for key, value in params.items() if value}
         url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=id_row)
-        response = await async_client.patch(url, data=params)
+        response = await async_client.patch(url, data=data)
 
         assert response.status_code == code
 
-    admin_patch_data = {
+    admin_patch_data = [
         # wrong permission
-        ("2", "", "", "", "", "", "", "", "hr", 403),
+        ("2", {"role_name": "superuser"}, 403),
         # correct data
-        ("3", "", "", "", "", "", "False", "", "", 200),
-        ("3", "", "", "", "", "", "", "False", "", 200),
-        ("3", "", "", "", "", "", "", "", "hr", 200),
+        ("3", {"is_banned": False}, 200),
+        ("3", {"is_banned": True}, 200),
+        ("3", {"role": "hr"}, 200),
         (
             "3",
-            "Dasha",
-            "Zecharova",
-            "sAlenowS2023#",
-            "+79998886601",
-            "dasha@pukin.com",
-            "True",
-            "",
-            "user",
+            {
+                "firstname": "Dasha",
+                "lastname": "Zecharova",
+                "password": "sAlenowS2023#",
+                "phone_number": "+79998886601",
+                "email": "admin@admin.com",
+                "role": "user",
+            },
             200,
         ),
-    }
+    ]
 
     @pytest.mark.parametrize(
-        "id_row,name,surname,password,phone,email,active,staff,role,code",
+        "id_row,data,code",
         admin_patch_data,
     )
     async def test_user_patch_by_admin(
-        self,
-        async_client,
-        admin_login,
-        id_row,
-        name,
-        surname,
-        password,
-        phone,
-        email,
-        active,
-        staff,
-        role,
-        code,
+        self, async_client, admin_login, id_row, data, code
     ):
-        params = {
-            "firstname": name,
-            "lastname": surname,
-            "password": password,
-            "phone_number": phone,
-            "email": email,
-            "is_active": active,
-            "is_staff": staff,
-            "role": role,
-        }
-        params = {key: value for key, value in params.items() if value}
         url = app.url_path_for(config.USER_PATCH_BY_ADMIN, id_row=id_row)
-        response = await async_client.patch(url, data=params)
+        response = await async_client.patch(url, data=data)
 
         assert response.status_code == code

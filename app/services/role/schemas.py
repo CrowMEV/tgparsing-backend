@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RoleNameChoice(enum.Enum):
@@ -21,8 +21,7 @@ class RoleResponse(RoleGet):
     # Inherit name from RoleGet
     is_active: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RolePatch(RoleGet):

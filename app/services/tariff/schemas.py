@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class TariffOptions(BaseModel):
@@ -35,8 +35,7 @@ class TariffPatchModel(BaseModel):
 class TariffResponse(TariffPostModel):
     id: int
 
-    class Config:
-        orm_mode: bool = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserSubscribe(BaseModel):
@@ -49,5 +48,4 @@ class UserSubscribe(BaseModel):
 
 
 class UserSubscribeResponse(UserSubscribe):
-    class Config:
-        orm_mode: bool = True
+    model_config = ConfigDict(from_attributes=True)

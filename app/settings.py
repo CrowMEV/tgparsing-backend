@@ -3,13 +3,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal, Optional
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
     BASE_DIR: Path = Path(__file__).parent
 
@@ -57,6 +56,14 @@ class Config(BaseSettings):
     RK_TICKET_EXPIRE_HOURS: int = Field(default=0, ge=0, le=23)
     RK_TICKET_EXPIRE_MINUTES: int = Field(default=0, ge=0, le=59)
     RK_TICKET_EXPIRE_SECONDS: int = Field(default=0, ge=0, le=59)
+    RK_TAX: Optional[
+        Literal["none", "vat0", "vat10", "vat110", "vat20", "vat120"]
+    ] = Field(default="none")
+    RK_PURCHASE_NAME: str = Field(
+        default="Пополнение средств",
+        min_length=5,
+        max_length=128,
+    )
 
     @property
     def rk_ticket_life(self):
@@ -86,7 +93,7 @@ class Config(BaseSettings):
 
     # jwt
     JWT_SECRET: str = Field(default="jwt_secret")
-    JWT_ALGORITHM = "HS256"
+    JWT_ALGORITHM: str = "HS256"
     JWT_TOKEN_AGE: int = Field(default=3600, ge=1, le=86400)
 
     # user settings

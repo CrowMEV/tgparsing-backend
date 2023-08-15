@@ -4,7 +4,7 @@ import fastapi as fa
 from services.role.schemas import RoleNameChoice
 from services.user import schemas as user_schemas
 from services.user import views
-from services.user.dependencies import get_current_user
+from services.user.dependencies import check_is_banned, get_current_user
 from services.user.utils import permissions as perm
 from settings import config
 from utils.responses import HTTP_201, HTTP_401
@@ -61,12 +61,14 @@ user_router.add_api_route(
     endpoint=views.patch_current_user,
     name=config.USER_PATCH,
     response_model=user_schemas.UserRead,
+    dependencies=[fa.Depends(check_is_banned)],
 )
 user_router.add_api_route(
     path="/pass",
     methods=["POST"],
     endpoint=views.check_password,
     name=config.USER_CHECK_PASSWORD,
+    dependencies=[fa.Depends(check_is_banned)],
 )
 user_router.add_api_route(
     path="/{id_row}",

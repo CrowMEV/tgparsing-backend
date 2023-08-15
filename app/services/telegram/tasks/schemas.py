@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime, time
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class WorkStatusChoice(enum.Enum):
@@ -29,5 +29,4 @@ class GetTasksResponse(BaseModel):
     favorite: bool
     settings: dict
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

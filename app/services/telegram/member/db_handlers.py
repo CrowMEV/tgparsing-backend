@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def get_members(session: AsyncSession, data: dict) -> Sequence[Member]:
     stmt = sa.select(Member)
     if data:
-        stmt = stmt.where(**data)
+        stmt = stmt.filter_by(**data)
     result = await session.execute(stmt)
     members = result.scalars().unique().all()
     return members

@@ -2,7 +2,7 @@ import fastapi as fa
 from services.role.schemas import RoleNameChoice
 from services.tariff import schemas as tariff_sh
 from services.tariff import views
-from services.user.dependencies import get_current_user
+from services.user.dependencies import check_is_banned, get_current_user
 from services.user.schemas import UserRead
 from services.user.utils import permissions as perm
 from settings import config
@@ -85,6 +85,7 @@ tariff_router.add_api_route(
     methods=["POST"],
     name=config.TARIFF_PURCHASE,
     response_model=UserRead,
+    dependencies=[fa.Depends(check_is_banned)],
 )
 
 tariff_router.add_api_route(
