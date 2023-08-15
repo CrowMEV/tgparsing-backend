@@ -59,7 +59,7 @@ class UserCreate(BaseModel):
         pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
         checked_password = re.match(pattren, value)
         if not checked_password:
-            raise ValueError("")
+            raise ValueError("Not secure password")
         return value
 
 
@@ -97,7 +97,7 @@ class UserPatch:
         pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
         checked_password = re.match(pattren, value)
         if not checked_password:
-            raise ValueError("")
+            raise ValueError("Not secure password")
         return value
 
 

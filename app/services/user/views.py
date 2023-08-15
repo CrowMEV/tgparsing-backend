@@ -93,7 +93,7 @@ async def patch_current_user(
         db_users = await db_hand.get_users_by_filter(
             session, {"phone_number": phone_number}
         )
-        if len(db_users) < 1:
+        if len(db_users) != 0:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_400_BAD_REQUEST,
                 detail="Пользователь с таким телефоном уже существует",

@@ -16,8 +16,8 @@ class GetMembers(BaseModel):
         min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     parsed_chats: Set[str] = Field(
-        min_items=1,
-        max_items=5,
+        min_length=1,
+        max_length=5,
         description="Чаты для парсинга",
     )
     groups_count: int = Field(default=1, ge=1)
@@ -50,8 +50,8 @@ class GetActiveMembers(BaseModel):
         min_length=1, pattern="^[А-ЯЁа-яёA-Za-z0-9-_ ]{1,50}$"
     )
     parsed_chats: Set[str] = Field(
-        min_items=1,
-        max_items=5,
+        min_length=1,
+        max_length=5,
         description="Чаты для парсинга",
     )
     from_date: date
@@ -93,7 +93,7 @@ class GetByGeo(BaseModel):
     coordinates: List[LatLotSchema] = Field(
         description="Координаты внутри массива "
         "[{latitude: 0.0, longitude: 0.0}]",
-        min_items=1,
+        min_length=1,
     )
     accuracy_radius: int = Field(description="In meters")
     rerun: bool = Field(default=False)

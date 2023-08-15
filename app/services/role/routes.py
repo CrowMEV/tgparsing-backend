@@ -1,3 +1,5 @@
+from typing import List
+
 import fastapi as fa
 import services.role.schemas as role_schemas
 from services.role import views
@@ -38,4 +40,5 @@ role_router.add_api_route(
     endpoint=views.get_roles,
     methods=["GET"],
     name=config.ROLE_GET_ALL,
+    response_model=List[role_schemas.RoleResponse],
 )
