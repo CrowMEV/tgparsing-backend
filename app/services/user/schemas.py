@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from fastapi import Form, UploadFile
+from fastapi import Form, HTTPException, UploadFile, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from services.role.schemas import RoleNameChoice, RoleResponse
 from services.tariff.schemas import UserSubscribeResponse
@@ -32,7 +32,7 @@ class UserRead(BaseModel):
     email: EmailStr
     timezone: int
     is_staff: bool
-    is_active: bool = True
+    is_banned: bool
     is_verified: bool = False
     avatar_url: str
     role: RoleResponse
@@ -93,16 +93,25 @@ class UserPatch:
 
     @field_validator("hashed_password")
     @classmethod
-    def check_hashed_password(cls, value):
+    def check_hashed_password(cls, password):
         pattren = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]|.*[_])."
-        checked_password = re.match(pattren, value)
+        checked_password = re.match(pattren, password)
         if not checked_password:
             raise ValueError("Not secure password")
-        return value
+        return password
+
+    @field_validator("avatar_url")
+    @classmethod
+    def check_avatar_url(cls, avatar):
+        if avatar and not avatar.content_type:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Picture can't be empty",
+            )
+        return avatar
 
 
 @dataclass
 class UserPatchByAdmin(UserPatch):
-    is_staff: Optional[bool] = Form(default=None)
     role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
-    is_active: Optional[bool] = Form(default=None)
+    is_banned: Optional[bool] = Form(default=None)
