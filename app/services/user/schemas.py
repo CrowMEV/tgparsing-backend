@@ -98,3 +98,8 @@ class UserPatch:
 @dataclass
 class UserPatchByAdmin(UserPatch):
     role_name: RoleNameChoice = Form(default=None, alias="role")
+
+
+class UserBanSchema(BaseModel):
+    user_id: int = Field(..., ge=1)
+    is_banned: bool

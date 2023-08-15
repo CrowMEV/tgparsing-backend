@@ -51,6 +51,7 @@ async def update_user(
     result = await session.execute(stmt)
     await session.commit()
     user = result.scalars().first()
+    await session.refresh(user)
     return user
 
 

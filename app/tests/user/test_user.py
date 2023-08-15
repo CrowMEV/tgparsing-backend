@@ -1,5 +1,6 @@
 import pytest
 from server import app
+from services.role.schemas import RoleNameChoice
 from settings import config
 
 
@@ -8,6 +9,7 @@ class TestUser:
     login_url: str = app.url_path_for(config.USER_LOGIN)
     logout_url: str = app.url_path_for(config.USER_LOGOUT)
     patch_url: str = app.url_path_for(config.USER_PATCH)
+    ban_url: str = app.url_path_for(config.USER_DO_BAN)
 
     register_data = [
         # wrong email
@@ -115,6 +117,13 @@ class TestUser:
 
         assert response.status_code == 403
 
+    async def test_set_ban_by_user(self, async_client, user_login):
+        response = await async_client.post(
+            self.ban_url, json={"user_id": 2, "is_banned": True}
+        )
+
+        assert response.status_code == 403
+
     logout_data = [
         200,
         401,
@@ -215,6 +224,66 @@ class TestUser:
 
         assert response.status_code == code
 
+    ban_data = [
+        # wrong data
+        ({"user_id": 2}, 422),
+        ({"is_banned": True}, 422),
+        ({"user_id": 0, "is_banned": True}, 422),
+        ({"user_id": "how", "is_banned": True}, 422),
+        ({"user_id": 2, "is_banned": "hello"}, 422),
+        ({"user_id": 2, "is_banned": 5}, 422),
+        ({"user_id": 2, "is_banned": True}, 400),
+        ({"user_id": 9999999, "is_banned": True}, 400),
+        # correct data
+        ({"user_id": 4, "is_banned": True}, 200),
+        ({"user_id": 3, "is_banned": True}, 200),
+    ]
+
+    @pytest.mark.parametrize("data,code", ban_data)
+    async def test_set_ban_by_superuser(
+        self, async_client, superuser_login, data, code
+    ):
+        response = await async_client.post(self.ban_url, json=data)
+
+        assert response.status_code == code
+        if response.status_code == 200:
+            resp = response.json()
+            assert resp["role"]["name"] == RoleNameChoice.USER.value
+
+    # async def test_banned_user(self, async_client, user_login):
+    #     response = await async_client.patch(
+    #         self.patch_url, data={"firstname": "Gena"}
+    #     )
+    #
+    #     assert response.status_code == 406
+
+    ban_data = [
+        # wrong data
+        ({"user_id": 2}, 422),
+        ({"is_banned": True}, 422),
+        ({"user_id": 0, "is_banned": True}, 422),
+        ({"user_id": "how", "is_banned": True}, 422),
+        ({"user_id": 2, "is_banned": "hello"}, 422),
+        ({"user_id": 2, "is_banned": 5}, 422),
+        ({"user_id": 2, "is_banned": True}, 400),
+        ({"user_id": 9999999, "is_banned": True}, 400),
+        # correct data
+        ({"user_id": 4, "is_banned": False}, 200),
+        ({"user_id": 4, "is_banned": True}, 200),
+        ({"user_id": 3, "is_banned": True}, 200),
+    ]
+
+    @pytest.mark.parametrize("data,code", ban_data)
+    async def test_set_ban_by_admin(
+        self, async_client, superuser_login, data, code
+    ):
+        response = await async_client.post(self.ban_url, json=data)
+
+        assert response.status_code == code
+        if response.status_code == 200:
+            resp = response.json()
+            assert resp["role"]["name"] == RoleNameChoice.USER.value
+
     admin_patch_data = [
         # wrong permission
         ("2", {"role_name": "superuser"}, 403),
@@ -234,10 +303,7 @@ class TestUser:
         ),
     ]
 
-    @pytest.mark.parametrize(
-        "id_row,data,code",
-        admin_patch_data,
-    )
+    @pytest.mark.parametrize("id_row,data,code", admin_patch_data)
     async def test_user_patch_by_admin(
         self, async_client, admin_login, id_row, data, code
     ):
