@@ -94,6 +94,5 @@ class UserPatch:
 
 @dataclass
 class UserPatchByAdmin(UserPatch):
-    is_staff: Optional[bool] = Form(default=None)
     role_name: Optional[RoleNameChoice] = Form(default=None, alias="role")
     is_banned: Optional[bool] = Form(default=None)
