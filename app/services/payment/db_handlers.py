@@ -34,6 +34,7 @@ async def get_payments(
     data: dict,
 ) -> Sequence[RowMapping] | None:
     stmt = sa.select(
+        Payment.id,
         Payment.status,
         Payment.action,
         Payment.amount,
@@ -42,12 +43,12 @@ async def get_payments(
     ).join(user_models.User)
     period_start = data.pop("period_start", None)
     period_end = data.pop("period_end", None)
-    user_email = data.pop("user", "")
+    user_email = data.pop("user", None)
     if period_start:
         stmt = stmt.where(Payment.date >= period_start)
     if period_end:
         stmt = stmt.where(Payment.date <= period_end)
-    if user_email != "":
+    if user_email:
         stmt = stmt.where(user_models.User.email == user_email)
     for key, value in data.items():
         stmt = stmt.where(getattr(Payment, key) == value)

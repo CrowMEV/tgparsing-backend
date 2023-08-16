@@ -1,6 +1,6 @@
 import enum
 import re
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic.types import Decimal
@@ -33,8 +33,9 @@ class PaymentsGetAll(BaseModel):
 
 
 class ResponsePayments(BaseModel):
+    id: int
     email: str
     amount: Decimal
     action: PaymentChoice
     status: bool
-    date: date
+    date: datetime
