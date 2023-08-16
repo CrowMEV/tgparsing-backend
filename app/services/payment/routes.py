@@ -19,7 +19,7 @@ payment_router.add_api_route(
     endpoint=views.get_payments,
     methods=["GET"],
     name=config.PAYMENTS_GET,
-    response_model=List[paymant_schema.PaymentsGetAll],
+    response_model=List[paymant_schema.ResponsePayments],
     dependencies=[
         fa.Depends(
             perm.RoleChecker(

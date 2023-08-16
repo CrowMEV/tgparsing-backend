@@ -64,7 +64,7 @@ async def get_payments(
 ) -> Any:
     data = {
         key: value
-        for key, value in get_data.dict().items()
+        for key, value in get_data.model_dump().items()
         if value is not None
     }
     if user.role.name == RoleNameChoice.USER:

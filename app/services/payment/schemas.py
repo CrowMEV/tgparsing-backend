@@ -24,6 +24,17 @@ class PaymentCreate(BaseModel):
 
 
 class PaymentsGetAll(BaseModel):
-    status: bool | None = Field(default=None)
-    period_start: date | None = Field(default=None)
-    period_end: date | None = Field(default=None)
+    status: bool | None = None
+    period_start: date | None = None
+    period_end: date | None = None
+    amount: int | None = None
+    action: PaymentChoice | None = None
+    user: str | None = None
+
+
+class ResponsePayments(BaseModel):
+    email: str
+    amount: Decimal
+    action: PaymentChoice
+    status: bool
+    date: date

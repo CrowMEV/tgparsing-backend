@@ -1,7 +1,9 @@
 from typing import Sequence
 
+import services.user.models as user_models
 import sqlalchemy as sa
 from services.payment.models import Payment
+from sqlalchemy.engine.row import RowMapping
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -30,18 +32,27 @@ async def upd_payment(
 async def get_payments(
     session: AsyncSession,
     data: dict,
-) -> Sequence[Payment] | None:
-    stmt = sa.select(Payment)
+) -> Sequence[RowMapping] | None:
+    stmt = sa.select(
+        Payment.status,
+        Payment.action,
+        Payment.amount,
+        Payment.date,
+        user_models.User.email,
+    ).join(user_models.User)
     period_start = data.pop("period_start", None)
     period_end = data.pop("period_end", None)
+    user_email = data.pop("user", "")
     if period_start:
         stmt = stmt.where(Payment.date >= period_start)
     if period_end:
         stmt = stmt.where(Payment.date <= period_end)
+    if user_email != "":
+        stmt = stmt.where(user_models.User.email == user_email)
     for key, value in data.items():
         stmt = stmt.where(getattr(Payment, key) == value)
     result = await session.execute(stmt)
-    payments = result.scalars().fetchall()
+    payments = result.mappings().fetchall()
     return payments
 
 
