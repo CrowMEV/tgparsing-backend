@@ -49,7 +49,7 @@ async def get_payments(
     if period_end:
         stmt = stmt.where(Payment.date <= period_end)
     if user_email != "":
-        stmt = stmt.where(user_models.User.email.like(user_email))
+        stmt = stmt.where(user_models.User.email.like(f"%{user_email}%"))
     for key, value in data.items():
         stmt = stmt.where(getattr(Payment, key) == value)
     result = await session.execute(stmt)
