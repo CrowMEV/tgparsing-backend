@@ -203,9 +203,10 @@ async def do_parsing(
                     file_name=file_name,
                 )
         except Exception:  # pylint: disable=W0718:
-            options["parsers_per_day"] = options["parsers_per_day"] + 1
-            work_status = "FAILED"
+            work_status = WorkStatusChoice.FAILED
         finally:
+            if work_status == WorkStatusChoice.FAILED:  # pylint: disable=E0601
+                options["parsers_per_day"] = options["parsers_per_day"] + 1
             options["simultaneous_parsing"] = (
                 options["simultaneous_parsing"] + 1
             )
