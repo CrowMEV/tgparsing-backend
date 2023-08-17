@@ -32,7 +32,7 @@ def decode_token(token: str) -> dict:
         )
     except JWTError:
         raise fa.HTTPException(
-            status_code=fa.status.HTTP_403_FORBIDDEN,
+            status_code=fa.status.HTTP_401_UNAUTHORIZED,
             detail="Неверный токен или он истек",
         ) from None
     return data

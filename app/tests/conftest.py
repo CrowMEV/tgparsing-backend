@@ -12,6 +12,7 @@ from server import app
 from services import Base
 from services.payment.models import Payment
 from services.role.models import Role
+from services.tariff.models import Tariff
 from services.telegram.account.models import TgAccount
 from services.telegram.member.models import Chat, Member
 from services.telegram.tasks import db_handlers as task_hand
@@ -121,15 +122,21 @@ async def superuser_login(async_client, add_superuser):
 
 USER_EMAIL = "155@mail.ru"
 USER_PASSWORD = "Hero1721%"
+USER_HASHED_PASSWORD = get_hash_password(USER_PASSWORD)
 
 
 @pytest.fixture(autouse=True, scope="session")
 async def add_user(async_client, prepare_database):
-    register_url = app.url_path_for(config.USER_REGISTER)
-    await async_client.post(
-        register_url,
-        json={"email": USER_EMAIL, "password": USER_PASSWORD},
-    )
+    async with async_test_session() as session:
+        user = User(
+            email=USER_EMAIL,
+            hashed_password=USER_HASHED_PASSWORD,
+            role_name="USER",
+            is_staff=False,
+            balance=1200,
+        )
+        session.add(user)
+        await session.commit()
 
 
 @pytest.fixture(scope="function")
@@ -262,3 +269,25 @@ async def create_file(create_task):
     )
     file_url = files.get_file_url(dir_url=dir_name, file_name=file_name)
     return file_url
+
+
+@pytest.fixture(autouse=True, scope="session")
+async def add_tariff(async_client, add_superuser):
+    async with async_test_session() as session:
+        tariff = Tariff(
+            name="Test",
+            description="Test tariff",
+            limitation_days=20,
+            price=1200,
+            options={
+                "parsers_per_day": 10,
+                "simultaneous_parsing": 15,
+                "geo": True,
+                "members": True,
+                "activity": True,
+            },
+            active=True,
+            archive=True,
+        )
+        session.add(tariff)
+        await session.commit()
