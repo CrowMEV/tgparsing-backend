@@ -56,6 +56,15 @@ user_router.add_api_route(
     responses={**HTTP_401},  # type: ignore
 )
 user_router.add_api_route(
+    path="/ban",
+    methods=["POST"],
+    endpoint=views.set_ban_for_user,
+    name=config.USER_DO_BAN,
+    response_model=user_schemas.UserRead,
+    dependencies=[fa.Depends(perm.RoleChecker(ADMINS))],
+    description="This method can use admin and superuser",
+)
+user_router.add_api_route(
     path="/me",
     methods=["PATCH"],
     endpoint=views.patch_current_user,

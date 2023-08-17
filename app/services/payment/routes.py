@@ -1,4 +1,7 @@
+from typing import List
+
 import fastapi as fa
+import services.payment.schemas as paymant_schema
 from services.payment import views
 from services.role.schemas import RoleNameChoice
 from services.user.dependencies import check_is_banned
@@ -16,6 +19,7 @@ payment_router.add_api_route(
     endpoint=views.get_payments,
     methods=["GET"],
     name=config.PAYMENTS_GET,
+    response_model=List[paymant_schema.ResponsePayments],
     dependencies=[
         fa.Depends(
             perm.RoleChecker(

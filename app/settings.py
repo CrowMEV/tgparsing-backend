@@ -178,6 +178,7 @@ class Config(BaseSettings):
     USER_DELETE: str = Field(default="user_delete")
     USER_CHECK_PASSWORD: str = Field(default="check_password")
     USER_PATCH_BY_ADMIN: str = Field(default="user_admin_patch")
+    USER_DO_BAN: str = Field(default="user_do_ban")
     # role
     ROLE_GET: str = Field(default="role_get")
     ROLE_ADD: str = Field(default="role_add")

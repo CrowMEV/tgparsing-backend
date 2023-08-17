@@ -1,7 +1,6 @@
 import enum
 import re
-from datetime import date
-from typing import Optional
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic.types import Decimal
@@ -25,6 +24,18 @@ class PaymentCreate(BaseModel):
 
 
 class PaymentsGetAll(BaseModel):
-    status: Optional[bool]
-    period_start: Optional[date]
-    period_end: Optional[date]
+    status: bool | None = None
+    period_start: date | None = None
+    period_end: date | None = None
+    amount: int | None = None
+    action: PaymentChoice | None = None
+    user: str | None = None
+
+
+class ResponsePayments(BaseModel):
+    id: int
+    email: str
+    amount: Decimal
+    action: PaymentChoice
+    status: bool
+    date: datetime
